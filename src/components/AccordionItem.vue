@@ -4,6 +4,7 @@ import { useId } from '../composables/useId'
 import { ACCORDION_ITEM_KEY, ACCORDION_KEY } from './accordionContext'
 
 export interface AccordionItemProps {
+  /** Stable id used with Accordion `v-model` / open state. */
   value: string
   disabled?: boolean
 }

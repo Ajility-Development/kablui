@@ -2,6 +2,9 @@
 import { computed, inject, onBeforeUnmount, watch } from 'vue'
 import { ACCORDION_ITEM_KEY, ACCORDION_KEY } from './accordionContext'
 
+/** No props — label content comes from the default slot. */
+export type AccordionTriggerProps = Record<string, never>
+
 const accordion = inject(ACCORDION_KEY, null)
 const item = inject(ACCORDION_ITEM_KEY, null)
 

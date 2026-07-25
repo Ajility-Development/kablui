@@ -5,6 +5,10 @@ node_modules
 dist
 *.local
 
+# VitePress
+docs/.vitepress/cache
+docs/.vitepress/dist
+
 # Logs
 logs
 *.log

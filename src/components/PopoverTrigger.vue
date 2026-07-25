@@ -2,6 +2,9 @@
 import { computed, inject, onBeforeUnmount } from 'vue'
 import { POPOVER_KEY } from './popoverContext'
 
+/** No props — trigger content comes from the default slot. */
+export type PopoverTriggerProps = Record<string, never>
+
 const popover = inject(POPOVER_KEY, null)
 
 if (!popover) {

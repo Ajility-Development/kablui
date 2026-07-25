@@ -2,6 +2,7 @@
 export interface AlertProps {
   tone?: 'neutral' | 'accent' | 'danger' | 'success' | 'warning'
   title?: string
+  /** Shows a dismiss control and emits `dismiss` when activated. */
   dismissible?: boolean
 }
 

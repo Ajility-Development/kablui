@@ -1,8 +1,12 @@
 <script setup lang="ts">
 export interface SkeletonProps {
+  /** CSS width (e.g. `8rem` or `100%`). */
   width?: string
+  /** CSS height (e.g. `1rem`). */
   height?: string
+  /** Render as a circle (uses `height`/`width` for diameter). */
   circle?: boolean
+  /** Pulse animation. Defaults to `true`. */
   animated?: boolean
 }
 

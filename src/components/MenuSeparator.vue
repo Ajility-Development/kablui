@@ -2,6 +2,9 @@
 import { inject } from 'vue'
 import { MENU_KEY } from './menuContext'
 
+/** No props — visual separator only. */
+export type MenuSeparatorProps = Record<string, never>
+
 const menu = inject(MENU_KEY, null)
 
 if (!menu) {

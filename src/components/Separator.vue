@@ -1,6 +1,7 @@
 <script setup lang="ts">
 export interface SeparatorProps {
   orientation?: 'horizontal' | 'vertical'
+  /** When true, uses `role="separator"`; otherwise decorative (`aria-hidden`). */
   semantic?: boolean
 }
 

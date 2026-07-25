@@ -108,17 +108,32 @@ import {
 
 Theme tokens live in `@theme static` / CSS variables in `src/styles/index.css` (and the published `kablui/style.css`). Override those variables in your app when you need to re-skin kablui without forking components.
 
+## Documentation
+
+Consumer docs live in [`docs/`](docs/) (VitePress), alongside the playground:
+
+```bash
+npm run docs:dev
+npm run docs:build
+npm run docs:preview
+```
+
+Start with [Getting started](docs/guides/getting-started.md). Deeper guides cover [theming](docs/guides/theming.md), [Tailwind composition](docs/guides/tailwind.md), and [tree-shaking](docs/guides/tree-shaking.md). Component API pages are under [`docs/components/`](docs/components/).
+
+This README keeps install/usage short; use the docs site for full guidance.
+
 ## Development
 
 ```bash
 npm install
 npm run dev      # playground at http://localhost:5173
+npm run docs:dev # VitePress docs
 npm run build    # emit dist/ for publishing
 npm run typecheck
 npm test
 ```
 
-Stack for local work: Vue 3, Vite (library mode), TypeScript, **Tailwind CSS v4** via `@tailwindcss/vite`.
+Stack for local work: Vue 3, Vite (library mode), TypeScript, **Tailwind CSS v4** via `@tailwindcss/vite`. Docs: VitePress under `docs/`.
 
 ### Project layout
 
@@ -128,6 +143,7 @@ src/
   styles/       # Tailwind entry (`index.css` → dist/kablui.css)
   index.ts      # package public API
 playground/     # local app for developing components
+docs/           # VitePress consumer documentation
 ```
 
 Add a component under `src/components/`, export it from `src/components/index.ts`, style it with Tailwind classes, and try it in `playground/App.vue`. Library sources under `src/` are scanned for class names; the playground has its own CSS entry that also scans `playground/`.
@@ -167,11 +183,13 @@ High-level phases for building kablui. Each phase should produce something usabl
 - Document recommended composition recipes in the playground when a full component is not warranted.
 - Resist scope creep: only promote patterns that show repeated need and stable APIs.
 
-### 6. Documentation & developer experience
+### 6. Documentation & developer experience — done
 
-- Stand up component documentation (API tables, examples, accessibility notes) alongside the playground; keep examples copy-paste ready.
-- Clarify install/usage, theming (CSS variables / `@theme`), Tailwind composition, and tree-shaking guidance for consumers.
-- Tighten TypeScript surfaces and export ergonomics so autocompletion and editor DX feel first-class.
+- [x] VitePress site under [`docs/`](docs/) with consumer guides (install, theming, Tailwind composition, tree-shaking).
+- [x] Component API pages (examples, props tables, accessibility) from SFCs + playground demos.
+- [x] Public Props types exported for compound parts; TypeScript surfaces support editor autocomplete.
+
+Run `npm run docs:dev` for the docs site; playground remains the live sandbox (`npm run dev`).
 
 ### 7. Hardening & release
 

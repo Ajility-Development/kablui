@@ -1,6 +1,7 @@
 <script setup lang="ts">
 export interface LinkProps {
   href: string
+  /** Opens in a new tab with `rel="noopener noreferrer"`. */
   external?: boolean
   disabled?: boolean
 }

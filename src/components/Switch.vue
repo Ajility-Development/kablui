@@ -7,6 +7,7 @@ export interface SwitchProps {
   invalid?: boolean
   name?: string
   id?: string
+  /** Native form value submitted when on. Defaults to `"on"`. */
   value?: string
 }
 

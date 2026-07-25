@@ -3,6 +3,9 @@ import { computed, inject, onBeforeUnmount, ref } from 'vue'
 import { useFloating } from '../composables/useFloating'
 import { MENU_KEY } from './menuContext'
 
+/** No props — placement and open state come from Menu. */
+export type MenuContentProps = Record<string, never>
+
 const menu = inject(MENU_KEY, null)
 
 if (!menu) {

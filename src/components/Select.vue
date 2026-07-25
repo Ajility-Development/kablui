@@ -18,6 +18,7 @@ export interface SelectOptionProp {
 }
 
 export interface SelectProps {
+  /** Declarative options; omit when composing with `SelectItem` children instead. */
   options?: SelectOptionProp[]
   placeholder?: string
   disabled?: boolean

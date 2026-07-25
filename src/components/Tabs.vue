@@ -4,6 +4,7 @@ import { useId } from '../composables/useId'
 import { TABS_KEY, type TabRegistration } from './tabsContext'
 
 export interface TabsProps {
+  /** Layout and arrow-key direction for the tab list. Defaults to `horizontal`. */
   orientation?: 'horizontal' | 'vertical'
 }
 

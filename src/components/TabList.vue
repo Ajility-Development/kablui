@@ -2,6 +2,9 @@
 import { computed, inject } from 'vue'
 import { TABS_KEY } from './tabsContext'
 
+/** No props — orientation comes from Tabs. */
+export type TabListProps = Record<string, never>
+
 const tabs = inject(TABS_KEY, null)
 
 if (!tabs) {

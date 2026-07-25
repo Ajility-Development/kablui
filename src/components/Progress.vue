@@ -2,9 +2,12 @@
 import { computed } from 'vue'
 
 export interface ProgressProps {
+  /** Current value. Omit (or set `indeterminate`) for an indeterminate bar. */
   value?: number
   max?: number
+  /** Force indeterminate mode even when `value` is set. */
   indeterminate?: boolean
+  /** Accessible name for the progressbar. */
   label?: string
 }
 

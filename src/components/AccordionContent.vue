@@ -2,6 +2,9 @@
 import { computed, inject } from 'vue'
 import { ACCORDION_ITEM_KEY } from './accordionContext'
 
+/** No props — open state and ids come from AccordionItem. */
+export type AccordionContentProps = Record<string, never>
+
 const item = inject(ACCORDION_ITEM_KEY, null)
 
 if (!item) {

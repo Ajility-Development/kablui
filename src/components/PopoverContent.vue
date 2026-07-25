@@ -3,6 +3,9 @@ import { computed, inject, onBeforeUnmount, ref } from 'vue'
 import { useFloating } from '../composables/useFloating'
 import { POPOVER_KEY } from './popoverContext'
 
+/** No props — placement and open state come from Popover. */
+export type PopoverContentProps = Record<string, never>
+
 const popover = inject(POPOVER_KEY, null)
 
 if (!popover) {

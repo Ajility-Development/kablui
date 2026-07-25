@@ -2,6 +2,9 @@
 import { computed, inject, onBeforeUnmount } from 'vue'
 import { MENU_KEY } from './menuContext'
 
+/** No props — trigger content comes from the default slot. */
+export type MenuTriggerProps = Record<string, never>
+
 const menu = inject(MENU_KEY, null)
 
 if (!menu) {
