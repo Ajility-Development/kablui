@@ -70,8 +70,8 @@ describe('Select', () => {
             h(Select, {
               options,
               modelValue: value.value,
-              'onUpdate:modelValue': (v: string) => {
-                value.value = v
+              'onUpdate:modelValue': (v: string | undefined) => {
+                if (v !== undefined) value.value = v
               },
             })
         },
@@ -95,8 +95,8 @@ describe('Select', () => {
               Select,
               {
                 modelValue: value.value,
-                'onUpdate:modelValue': (v: string) => {
-                  value.value = v
+                'onUpdate:modelValue': (v: string | undefined) => {
+                  if (v !== undefined) value.value = v
                 },
               },
               () => [

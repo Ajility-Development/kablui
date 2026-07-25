@@ -21,12 +21,17 @@ export default defineConfig(({ command }) => {
     plugins: [
       vue(),
       tailwindcss(),
+      // Declaration emit is scoped to library sources via tsconfig.lib.json.
+      // Build type safety is gated by `vue-tsc --noEmit -p tsconfig.app.json`
+      // in the build script. To also fail vite on dts diagnostics once the
+      // public type surface is clean, throw from afterDiagnostic when
+      // diagnostics.length > 0.
       dts({
         include: ['src'],
-        exclude: ['src/**/*.{spec,test}.ts'],
+        exclude: ['src/**/*.{spec,test}.ts', 'src/test/**'],
         outDir: 'dist',
         rollupTypes: true,
-        tsconfigPath: './tsconfig.app.json',
+        tsconfigPath: './tsconfig.lib.json',
       }),
     ],
     resolve: {

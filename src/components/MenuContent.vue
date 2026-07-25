@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeUnmount, ref } from 'vue'
+import { computed, inject, onBeforeUnmount, ref, type ComponentPublicInstance } from 'vue'
 import { useFloating } from '../composables/useFloating'
 import { MENU_KEY } from './menuContext'
 
@@ -15,7 +15,7 @@ if (!menu) {
 const fallbackTrigger = ref<HTMLElement | null>(null)
 const fallbackContent = ref<HTMLElement | null>(null)
 
-function setContentRef(el: Element | null) {
+function setContentRef(el: Element | ComponentPublicInstance | null) {
   if (!menu) return
   menu.contentRef.value = el instanceof HTMLElement ? el : null
 }

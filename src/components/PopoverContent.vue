@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeUnmount, ref, useAttrs } from 'vue'
+import { computed, inject, onBeforeUnmount, ref, useAttrs, type ComponentPublicInstance } from 'vue'
 import { useFloating } from '../composables/useFloating'
 import { POPOVER_KEY } from './popoverContext'
 
@@ -18,7 +18,7 @@ if (!popover) {
 const fallbackTrigger = ref<HTMLElement | null>(null)
 const fallbackContent = ref<HTMLElement | null>(null)
 
-function setContentRef(el: Element | null) {
+function setContentRef(el: Element | ComponentPublicInstance | null) {
   if (!popover) return
   popover.contentRef.value = el instanceof HTMLElement ? el : null
 }

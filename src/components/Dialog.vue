@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, useSlots, watch } from 'vue'
+import type { ComputedRef, Slots } from 'vue'
 import { useDismissable } from '../composables/useDismissable'
 import { useFocusTrap } from '../composables/useFocusTrap'
 import { useId } from '../composables/useId'
@@ -23,14 +24,14 @@ const props = withDefaults(defineProps<DialogProps>(), {
 
 const open = defineModel<boolean>('open', { default: false })
 
-const slots = useSlots()
+const slots: Slots = useSlots()
 const panelRef = ref<HTMLElement | null>(null)
 
 const titleId = useId('dialog-title')
 const descriptionId = useId('dialog-description')
 
-const hasTitle = computed(() => !!slots.title)
-const hasDescription = computed(() => !!slots.description)
+const hasTitle: ComputedRef<boolean> = computed(() => !!slots.title)
+const hasDescription: ComputedRef<boolean> = computed(() => !!slots.description)
 
 const { register, unregister } = useOverlayStack('modal')
 

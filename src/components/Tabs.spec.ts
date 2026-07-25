@@ -24,8 +24,8 @@ function mountTabs(options?: {
           Tabs,
           {
             modelValue: value.value,
-            'onUpdate:modelValue': (v: string) => {
-              value.value = v
+            'onUpdate:modelValue': (v: string | undefined) => {
+              if (v !== undefined) value.value = v
             },
             orientation: options?.orientation,
           },
@@ -266,8 +266,8 @@ describe('a11y', () => {
               Tabs,
               {
                 modelValue: value.value,
-                'onUpdate:modelValue': (v: string) => {
-                  value.value = v
+                'onUpdate:modelValue': (v: string | undefined) => {
+                  if (v !== undefined) value.value = v
                 },
               },
               () => [

@@ -5,6 +5,7 @@ import { mount, type VueWrapper } from '@vue/test-utils'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import { expectNoA11yViolations } from '../test/a11y'
 import { __resetDismissableStack } from '../composables/useDismissable'
+import type { FloatingPlacement } from '../composables/useFloating'
 import { __resetOverlayStack } from '../composables/useOverlayStack'
 import Menu from './Menu.vue'
 import MenuContent from './MenuContent.vue'
@@ -26,7 +27,7 @@ afterEach(() => {
 })
 
 function mountMenu(
-  props: { open?: boolean; placement?: string } = {},
+  props: { open?: boolean; placement?: FloatingPlacement } = {},
   options: { withDisabled?: boolean; onSelect?: () => void } = {},
 ) {
   const open = ref(props.open ?? false)

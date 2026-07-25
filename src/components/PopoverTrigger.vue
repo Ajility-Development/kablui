@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeUnmount } from 'vue'
+import { computed, inject, onBeforeUnmount, type ComponentPublicInstance } from 'vue'
 import { POPOVER_KEY } from './popoverContext'
 
 /** No props — trigger content comes from the default slot. */
@@ -11,7 +11,7 @@ if (!popover) {
   console.warn('[kablui] PopoverTrigger must be used inside Popover')
 }
 
-function setTriggerRef(el: Element | null) {
+function setTriggerRef(el: Element | ComponentPublicInstance | null) {
   if (!popover) return
   popover.triggerRef.value = el instanceof HTMLElement ? el : null
 }

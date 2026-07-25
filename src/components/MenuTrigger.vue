@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeUnmount } from 'vue'
+import { computed, inject, onBeforeUnmount, type ComponentPublicInstance } from 'vue'
 import { MENU_KEY } from './menuContext'
 
 /** No props — trigger content comes from the default slot. */
@@ -11,7 +11,7 @@ if (!menu) {
   console.warn('[kablui] MenuTrigger must be used inside Menu')
 }
 
-function setTriggerRef(el: Element | null) {
+function setTriggerRef(el: Element | ComponentPublicInstance | null) {
   if (!menu) return
   menu.triggerRef.value = el instanceof HTMLElement ? el : null
 }

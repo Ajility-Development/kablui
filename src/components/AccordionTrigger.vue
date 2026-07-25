@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeUnmount, watch } from 'vue'
+import { computed, inject, onBeforeUnmount, watch, type ComponentPublicInstance } from 'vue'
 import { ACCORDION_ITEM_KEY, ACCORDION_KEY } from './accordionContext'
 
 /** No props — label content comes from the default slot. */
@@ -17,7 +17,7 @@ const isDisabled = computed(() => !!item?.disabled.value)
 
 let triggerEl: HTMLButtonElement | null = null
 
-function setTriggerRef(el: Element | null) {
+function setTriggerRef(el: Element | ComponentPublicInstance | null) {
   triggerEl = el instanceof HTMLButtonElement ? el : null
   if (accordion && item) {
     accordion.registerTrigger(item.value, triggerEl, isDisabled.value)

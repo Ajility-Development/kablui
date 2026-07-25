@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount, type VueWrapper } from '@vue/test-utils'
 import { defineComponent, h, nextTick } from 'vue'
 import { expectNoA11yViolations } from '../test/a11y'
+import type { FloatingPlacement } from '../composables/useFloating'
 import { __resetIdCounter } from '../composables/useId'
 import Tooltip from './Tooltip.vue'
 
@@ -20,7 +21,7 @@ afterEach(() => {
 })
 
 function mountTooltip(
-  props: { content?: string; delay?: number; placement?: string } = {},
+  props: { content?: string; delay?: number; placement?: FloatingPlacement } = {},
 ) {
   const Host = defineComponent({
     setup() {

@@ -3,6 +3,7 @@ import { mount, type VueWrapper } from '@vue/test-utils'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import { expectNoA11yViolations } from '../test/a11y'
 import { __resetDismissableStack } from '../composables/useDismissable'
+import type { FloatingPlacement } from '../composables/useFloating'
 import { __resetOverlayStack } from '../composables/useOverlayStack'
 import Popover from './Popover.vue'
 import PopoverContent from './PopoverContent.vue'
@@ -21,7 +22,7 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-function mountPopover(props: { open?: boolean; placement?: string } = {}) {
+function mountPopover(props: { open?: boolean; placement?: FloatingPlacement } = {}) {
   const open = ref(props.open ?? false)
 
   const Host = defineComponent({

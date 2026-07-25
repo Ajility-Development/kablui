@@ -18,8 +18,8 @@ describe('RadioGroup / Radio', () => {
             RadioGroup,
             {
               modelValue: value.value,
-              'onUpdate:modelValue': (v: string) => {
-                value.value = v
+              'onUpdate:modelValue': (v: string | undefined) => {
+                if (v !== undefined) value.value = v
               },
               name: 'choice',
             },
@@ -46,8 +46,8 @@ describe('RadioGroup / Radio', () => {
               RadioGroup,
               {
                 modelValue: value.value,
-                'onUpdate:modelValue': (v: string) => {
-                  value.value = v
+                'onUpdate:modelValue': (v: string | undefined) => {
+                  if (v !== undefined) value.value = v
                 },
                 name: 'skip',
               },
@@ -77,8 +77,8 @@ describe('RadioGroup / Radio', () => {
               RadioGroup,
               {
                 modelValue: value.value,
-                'onUpdate:modelValue': (v: string) => {
-                  value.value = v
+                'onUpdate:modelValue': (v: string | undefined) => {
+                  if (v !== undefined) value.value = v
                 },
                 name: 'arrows',
               },
