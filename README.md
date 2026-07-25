@@ -199,9 +199,9 @@ Run `npm run docs:dev` for the docs site; playground remains the live sandbox (`
 
 ## Publish
 
-Full steps (semver policy, changelog, npm publish, GitHub Release tag): [Releasing](docs/guides/releasing.md).
+Requires `npm login` (verify with `npm whoami`); 2FA/OTP may be prompted. Full steps: [Releasing](docs/guides/releasing.md).
 
 ```bash
-npm run build
+npm run build   # also runs via prepublishOnly
 npm publish
 ```
