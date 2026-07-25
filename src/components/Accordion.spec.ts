@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { mount, type VueWrapper } from '@vue/test-utils'
 import { defineComponent, h, nextTick, ref } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import Accordion from './Accordion.vue'
 import AccordionContent from './AccordionContent.vue'
 import AccordionItem from './AccordionItem.vue'
@@ -265,5 +266,35 @@ describe('Accordion', () => {
       expect(source).not.toMatch(/kablui-neutral-\d+/)
       expect(source).not.toMatch(/kablui-accent-\d+/)
     }
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations with one item open', async () => {
+    const model = ref<string | undefined>('a')
+    const Host = defineComponent({
+      setup() {
+        return () =>
+          h('main', null, [
+            h(
+              Accordion,
+              {
+                type: 'single',
+                modelValue: model.value,
+                'onUpdate:modelValue': (value: string | string[] | undefined) => {
+                  model.value = value as string | undefined
+                },
+              },
+              () => [
+                item('a', 'Item A', 'Content A'),
+                item('b', 'Item B', 'Content B'),
+              ],
+            ),
+          ])
+      },
+    })
+    wrapper = mount(Host, { attachTo: document.body })
+    await nextTick()
+    await expectNoA11yViolations(wrapper.element)
   })
 })

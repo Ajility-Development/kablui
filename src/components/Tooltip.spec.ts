@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount, type VueWrapper } from '@vue/test-utils'
 import { defineComponent, h, nextTick } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import { __resetIdCounter } from '../composables/useId'
 import Tooltip from './Tooltip.vue'
 
@@ -138,5 +139,35 @@ describe('Tooltip', () => {
     expect(tip?.getAttribute('data-placement')).toBe('bottom-start')
     expect(tip?.className).toContain('z-kablui-tooltip')
     expect(tip?.className).toContain('pointer-events-none')
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations when open', async () => {
+    const Host = defineComponent({
+      setup() {
+        return () =>
+          h('main', null, [
+            h(
+              Tooltip,
+              { content: 'Tip text', delay: 0 },
+              () => h('button', { type: 'button' }, 'Hover me'),
+            ),
+          ])
+      },
+    })
+    wrapper = mount(Host, { attachTo: document.body })
+    await wrapper.find('button').trigger('focusin')
+    await vi.advanceTimersByTimeAsync(0)
+    await nextTick()
+    // Tooltip teleports to body; reparent into the landmark for page-level region.
+    const portal = document.querySelector('[role="tooltip"]')
+    const landmark = document.querySelector('main')
+    expect(portal).not.toBeNull()
+    expect(landmark).not.toBeNull()
+    landmark!.appendChild(portal!)
+    // axe needs real timers; suite uses fake timers for delay control
+    vi.useRealTimers()
+    await expectNoA11yViolations(document.body)
   })
 })

@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { defineComponent, h, nextTick, ref } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import Tabs from './Tabs.vue'
 import TabList from './TabList.vue'
 import Tab from './Tab.vue'
@@ -251,5 +252,39 @@ describe('Tabs', () => {
       const source = readFileSync(resolve(__dirname, file), 'utf8')
       expect(source).toMatch(/kablui-/)
     }
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations for default tabs', async () => {
+    const value = ref('a')
+    const Host = defineComponent({
+      setup() {
+        return () =>
+          h('main', null, [
+            h(
+              Tabs,
+              {
+                modelValue: value.value,
+                'onUpdate:modelValue': (v: string) => {
+                  value.value = v
+                },
+              },
+              () => [
+                h(TabList, null, () => [
+                  h(Tab, { value: 'a' }, () => 'Alpha'),
+                  h(Tab, { value: 'b' }, () => 'Beta'),
+                ]),
+                h(TabPanel, { value: 'a' }, () => 'Panel A'),
+                h(TabPanel, { value: 'b' }, () => 'Panel B'),
+              ],
+            ),
+          ])
+      },
+    })
+    const wrapper = mount(Host, { attachTo: document.body })
+    await nextTick()
+    await expectNoA11yViolations(wrapper.element)
+    wrapper.unmount()
   })
 })

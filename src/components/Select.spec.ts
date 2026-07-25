@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { defineComponent, h, nextTick, ref } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import Select from './Select.vue'
 import SelectItem from './SelectItem.vue'
 import Field from './Field.vue'
@@ -145,6 +146,16 @@ describe('Select', () => {
     expect(trigger.attributes('aria-describedby')).toContain(
       wrapper.find('[data-slot="field-hint"]').attributes('id')!,
     )
+    expect(wrapper.find('[role="listbox"]').attributes('aria-labelledby')).toBe(
+      'country',
+    )
+  })
+
+  it('names the listbox with placeholder aria-label when unlabeled', () => {
+    const wrapper = mount(Select, { props: { options, placeholder: 'Pick' } })
+    const listbox = wrapper.find('[role="listbox"]')
+    expect(listbox.attributes('aria-label')).toBe('Pick')
+    expect(listbox.attributes('aria-labelledby')).toBeUndefined()
   })
 
   it('includes focus-visible ring on trigger', () => {
@@ -168,5 +179,37 @@ describe('Select', () => {
       expect(source).not.toMatch(/kablui-neutral-\d+/)
       expect(source).not.toMatch(/kablui-accent-\d+/)
     }
+  })
+})
+
+describe('a11y', () => {
+  function mountLabeledSelect() {
+    return mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [
+              h(Field, { id: 'fruit' }, () => [
+                h(Label, null, () => 'Fruit'),
+                h(Select, { options, placeholder: 'Pick' }),
+              ]),
+            ])
+        },
+      }),
+    )
+  }
+
+  it('has no axe violations when closed', async () => {
+    const wrapper = mountLabeledSelect()
+    await nextTick()
+    await expectNoA11yViolations(wrapper.element)
+  })
+
+  it('has no axe violations when open', async () => {
+    const wrapper = mountLabeledSelect()
+    await nextTick()
+    await wrapper.find('button').trigger('click')
+    await nextTick()
+    await expectNoA11yViolations(wrapper.element)
   })
 })

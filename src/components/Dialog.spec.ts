@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { defineComponent, nextTick, ref } from 'vue'
 import { mount, type VueWrapper } from '@vue/test-utils'
+import { expectNoA11yViolations } from '../test/a11y'
 import { __resetDismissableStack } from '../composables/useDismissable'
 import { __resetIdCounter } from '../composables/useId'
 import { __resetOverlayStack } from '../composables/useOverlayStack'
@@ -333,5 +334,25 @@ describe('Dialog', () => {
     expect(source).toMatch(/kablui-/)
     expect(source).not.toMatch(/#[0-9a-fA-F]{3,8}\b/)
     expect(source).not.toMatch(/kablui-neutral-\d+/)
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations for open dialog', async () => {
+    const Host = defineComponent({
+      components: { Dialog },
+      template: `
+        <main>
+          <Dialog :open="true">
+            <template #title>A11y title</template>
+            <template #description>A11y description</template>
+            <template #default>Body content</template>
+          </Dialog>
+        </main>
+      `,
+    })
+    wrapper = mount(Host, { attachTo: document.body })
+    await nextTick()
+    await expectNoA11yViolations(document.body)
   })
 })

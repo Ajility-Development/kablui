@@ -197,6 +197,65 @@ describe('ToastProvider', () => {
     expect(document.body.textContent).toContain('Second')
   })
 
+  it('dismiss(id) drops a queued toast without promoting it', async () => {
+    let queuedId = ''
+    wrapper = mountWithToast(
+      () => {
+        const api = useToast()
+        return {
+          onTrigger: () => {
+            api.toast({ title: 'One', duration: 0 })
+            api.toast({ title: 'Two', duration: 0 })
+            queuedId = api.toast({ title: 'Queued', duration: 0 })
+            api.dismiss(queuedId)
+          },
+        }
+      },
+      { maxVisible: 2 },
+    )
+
+    await wrapper.find('[data-trigger]').trigger('click')
+    await nextTick()
+
+    const titles = () =>
+      [...document.querySelectorAll('[data-kablui-toast]')].map((el) =>
+        el.querySelector('.font-kablui-semibold')?.textContent,
+      )
+
+    expect(titles()).toEqual(['One', 'Two'])
+    expect(document.body.textContent).not.toContain('Queued')
+
+    const firstDismiss = document.querySelector(
+      '[data-kablui-toast] button[aria-label="Dismiss"]',
+    ) as HTMLButtonElement
+    firstDismiss.click()
+    await nextTick()
+
+    expect(titles()).toEqual(['Two'])
+    expect(document.body.textContent).not.toContain('Queued')
+  })
+
+  it('uses the default duration when none is provided', async () => {
+    wrapper = mountWithToast(() => {
+      const { toast } = useToast()
+      return {
+        onTrigger: () => toast({ title: 'Default timed' }),
+      }
+    })
+
+    await wrapper.find('[data-trigger]').trigger('click')
+    await nextTick()
+    expect(document.body.textContent).toContain('Default timed')
+
+    await vi.advanceTimersByTimeAsync(4999)
+    await nextTick()
+    expect(document.body.textContent).toContain('Default timed')
+
+    await vi.advanceTimersByTimeAsync(1)
+    await nextTick()
+    expect(document.body.textContent).not.toContain('Default timed')
+  })
+
   it('invokes action onClick', async () => {
     const onClick = vi.fn()
     wrapper = mountWithToast(() => {

@@ -43,6 +43,13 @@ describe('Toast', () => {
     expect(wrapper.emitted('dismiss')).toHaveLength(1)
   })
 
+  it('omits aria-describedby when there is no description', () => {
+    const wrapper = mount(Toast, { props: { title: 'Title only' } })
+
+    expect(wrapper.attributes('aria-describedby')).toBeUndefined()
+    expect(wrapper.attributes('aria-labelledby')).toBeTruthy()
+  })
+
   it('renders action and emits action', async () => {
     const wrapper = mount(Toast, {
       props: { title: 'Undoable', actionLabel: 'Undo' },

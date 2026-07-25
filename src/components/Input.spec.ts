@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { defineComponent, h, ref } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import Input from './Input.vue'
 import Field from './Field.vue'
 import Label from './Label.vue'
@@ -97,5 +98,24 @@ describe('Input', () => {
     expect(source).not.toMatch(/kablui-neutral-\d+/)
     expect(source).not.toMatch(/kablui-accent-\d+/)
     expect(source).not.toMatch(/kablui-danger-\d+/)
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations when labeled via Field', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [
+              h(Field, { id: 'username' }, () => [
+                h(Label, null, () => 'Username'),
+                h(Input),
+              ]),
+            ])
+        },
+      }),
+    )
+    await expectNoA11yViolations(wrapper.element)
   })
 })

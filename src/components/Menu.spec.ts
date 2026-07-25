@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount, type VueWrapper } from '@vue/test-utils'
 import { defineComponent, h, nextTick, ref } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import { __resetDismissableStack } from '../composables/useDismissable'
 import { __resetOverlayStack } from '../composables/useOverlayStack'
 import Menu from './Menu.vue'
@@ -406,5 +407,43 @@ describe('Menu', () => {
       expect(source).not.toMatch(/kablui-neutral-\d+/)
       expect(source).not.toMatch(/kablui-accent-\d+/)
     }
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations when open', async () => {
+    const open = ref(true)
+    const Host = defineComponent({
+      setup() {
+        return () =>
+          h('main', null, [
+            h(
+              Menu,
+              {
+                open: open.value,
+                'onUpdate:open': (value: boolean) => {
+                  open.value = value
+                },
+              },
+              () => [
+                h(MenuTrigger, null, () => 'Actions'),
+                h(MenuContent, null, () => [
+                  h(MenuItem, null, () => 'Edit'),
+                  h(MenuItem, null, () => 'Delete'),
+                ]),
+              ],
+            ),
+          ])
+      },
+    })
+    wrapper = mount(Host, { attachTo: document.body })
+    await flushFocus()
+    // MenuContent teleports to body; reparent into the landmark for page-level region.
+    const portal = document.querySelector('[data-slot="menu-content"]')
+    const landmark = document.querySelector('main')
+    expect(portal).not.toBeNull()
+    expect(landmark).not.toBeNull()
+    landmark!.appendChild(portal!)
+    await expectNoA11yViolations(document.body)
   })
 })

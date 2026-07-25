@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount, type VueWrapper } from '@vue/test-utils'
 import { defineComponent, h, nextTick, ref } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import { __resetDismissableStack } from '../composables/useDismissable'
 import { __resetOverlayStack } from '../composables/useOverlayStack'
 import Popover from './Popover.vue'
@@ -112,6 +113,38 @@ describe('Popover', () => {
     expect(content?.getAttribute('data-placement')).toBe('top-end')
   })
 
+  it('forwards attrs to the teleported dialog panel', async () => {
+    const open = ref(true)
+    const Host = defineComponent({
+      setup() {
+        return () =>
+          h(
+            Popover,
+            {
+              open: open.value,
+              'onUpdate:open': (value: boolean) => {
+                open.value = value
+              },
+            },
+            () => [
+              h(PopoverTrigger, null, () => 'Open'),
+              h(
+                PopoverContent,
+                { 'aria-label': 'Details' },
+                () => 'Popover body',
+              ),
+            ],
+          )
+      },
+    })
+    wrapper = mount(Host, { attachTo: document.body })
+    await nextTick()
+
+    const content = document.querySelector('[data-slot="popover-content"]')
+    expect(content?.getAttribute('role')).toBe('dialog')
+    expect(content?.getAttribute('aria-label')).toBe('Details')
+  })
+
   it('focuses content when opened via keyboard', async () => {
     mountPopover()
     const trigger = wrapper!.find('[data-slot="popover-trigger"]')
@@ -193,5 +226,44 @@ describe('Popover', () => {
     expect(warn).toHaveBeenCalled()
     orphan.unmount()
     warn.mockRestore()
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations when open', async () => {
+    const open = ref(true)
+    const Host = defineComponent({
+      setup() {
+        return () =>
+          h('main', null, [
+            h(
+              Popover,
+              {
+                open: open.value,
+                'onUpdate:open': (value: boolean) => {
+                  open.value = value
+                },
+              },
+              () => [
+                h(PopoverTrigger, null, () => 'Open'),
+                h(
+                  PopoverContent,
+                  { 'aria-label': 'Details' },
+                  () => 'Popover body',
+                ),
+              ],
+            ),
+          ])
+      },
+    })
+    wrapper = mount(Host, { attachTo: document.body })
+    await nextTick()
+    // PopoverContent teleports to body; reparent into the landmark for page-level region.
+    const portal = document.querySelector('[data-slot="popover-content"]')
+    const landmark = document.querySelector('main')
+    expect(portal).not.toBeNull()
+    expect(landmark).not.toBeNull()
+    landmark!.appendChild(portal!)
+    await expectNoA11yViolations(document.body)
   })
 })

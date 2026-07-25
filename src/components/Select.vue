@@ -292,6 +292,12 @@ const triggerClasses = computed(() => [
   fieldAttrs.invalid.value ? 'border-kablui-danger' : '',
   !displayLabel.value ? 'text-kablui-muted-fg' : '',
 ])
+
+/** Name the listbox via the trigger id (Field label) or placeholder fallback. */
+const listboxLabelledBy = computed(() => fieldAttrs.id.value)
+const listboxAriaLabel = computed(() =>
+  fieldAttrs.id.value ? undefined : props.placeholder,
+)
 </script>
 
 <template>
@@ -330,6 +336,8 @@ const triggerClasses = computed(() => [
       ref="listboxRef"
       role="listbox"
       tabindex="-1"
+      :aria-labelledby="listboxLabelledBy"
+      :aria-label="listboxAriaLabel"
       :aria-activedescendant="activeDescendant"
       class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-kablui-md border border-kablui-border bg-kablui-bg p-1 shadow-kablui-sm"
       @keydown="onListboxKeydown"

@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build library
+        run: npm run build
+
+      - name: Build docs
+        run: npm run docs:build
+
+  # Soft gate until Agent B adds Playwright tests under e2e/ (and playwright.config).
+  # Quality job above is the required green check for Wave 0.
+  visual:
+    if: ${{ hashFiles('e2e/**/*.{ts,js}', 'playwright.config.*') != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Visual / e2e tests
+        run: npm run test:visual

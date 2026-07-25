@@ -67,6 +67,79 @@ describe('RadioGroup / Radio', () => {
     expect(value.value).toBe('c')
   })
 
+  it('moves selection with arrow keys and wraps at the edges', async () => {
+    const value = ref('a')
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h(
+              RadioGroup,
+              {
+                modelValue: value.value,
+                'onUpdate:modelValue': (v: string) => {
+                  value.value = v
+                },
+                name: 'arrows',
+              },
+              () => [
+                h(Radio, { value: 'a' }),
+                h(Radio, { value: 'b' }),
+                h(Radio, { value: 'c' }),
+              ],
+            )
+        },
+      }),
+    )
+
+    await nextTick()
+    const radios = wrapper.findAll('input[type="radio"]')
+
+    await radios[0]!.trigger('keydown', { key: 'ArrowRight' })
+    expect(value.value).toBe('b')
+
+    await radios[1]!.trigger('keydown', { key: 'ArrowDown' })
+    expect(value.value).toBe('c')
+
+    await radios[2]!.trigger('keydown', { key: 'ArrowRight' })
+    expect(value.value).toBe('a')
+
+    await radios[0]!.trigger('keydown', { key: 'ArrowUp' })
+    expect(value.value).toBe('c')
+
+    await radios[2]!.trigger('keydown', { key: 'ArrowLeft' })
+    expect(value.value).toBe('b')
+  })
+
+  it('binds v-model through a host and disables the whole group', async () => {
+    const Host = defineComponent({
+      components: { RadioGroup, Radio },
+      setup() {
+        const plan = ref('free')
+        return { plan }
+      },
+      template: `
+        <RadioGroup v-model="plan" name="plan" :disabled="true">
+          <Radio value="free" />
+          <Radio value="pro" />
+        </RadioGroup>
+      `,
+    })
+
+    const wrapper = mount(Host)
+    await nextTick()
+
+    const group = wrapper.find('[role="radiogroup"]')
+    expect(group.attributes('aria-disabled')).toBe('true')
+
+    const radios = wrapper.findAll('input[type="radio"]')
+    expect(radios[0]!.attributes('disabled')).toBeDefined()
+    expect(radios[1]!.attributes('disabled')).toBeDefined()
+
+    await radios[1]!.trigger('keydown', { key: 'ArrowDown' })
+    expect(wrapper.vm.plan).toBe('free')
+  })
+
   it('exposes radiogroup role and orientation', () => {
     const wrapper = mount(RadioGroup, {
       props: { orientation: 'horizontal' },

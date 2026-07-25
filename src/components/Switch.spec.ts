@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { defineComponent, h, nextTick, ref } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import Switch from './Switch.vue'
 import Field from './Field.vue'
 import Label from './Label.vue'
@@ -116,5 +117,25 @@ describe('Switch', () => {
     expect(source).toMatch(/kablui-/)
     expect(source).not.toMatch(/#[0-9a-fA-F]{3,8}\b/)
     expect(source).not.toMatch(/kablui-neutral-\d+/)
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations when labeled', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [
+              h(Field, { id: 'alerts' }, () => [
+                h(Switch),
+                h(Label, null, () => 'Alerts'),
+              ]),
+            ])
+        },
+      }),
+    )
+    await nextTick()
+    await expectNoA11yViolations(wrapper.element)
   })
 })

@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { defineComponent, h } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import Alert from './Alert.vue'
 
 describe('Alert', () => {
@@ -99,4 +101,28 @@ describe('Alert', () => {
     expect(source).not.toMatch(/kablui-success-\d+/)
     expect(source).not.toMatch(/kablui-warning-\d+/)
   })
+})
+
+describe('a11y', () => {
+  const tones = ['neutral', 'accent', 'danger', 'success', 'warning'] as const
+
+  for (const tone of tones) {
+    it(`has no axe violations for ${tone} tone`, async () => {
+      const wrapper = mount(
+        defineComponent({
+          setup() {
+            return () =>
+              h('main', null, [
+                h(
+                  Alert,
+                  { tone, title: `${tone} title` },
+                  () => `${tone} message`,
+                ),
+              ])
+          },
+        }),
+      )
+      await expectNoA11yViolations(wrapper.element)
+    })
+  }
 })

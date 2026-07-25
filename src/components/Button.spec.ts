@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { defineComponent, h } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import Button from './Button.vue'
 
 describe('Button', () => {
@@ -126,5 +128,30 @@ describe('Button', () => {
     expect(source).not.toMatch(/kablui-neutral-\d+/)
     expect(source).not.toMatch(/kablui-accent-\d+/)
     expect(source).not.toMatch(/kablui-danger-\d+/)
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations for default button', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () => h('main', null, [h(Button, null, () => 'Save')])
+        },
+      }),
+    )
+    await expectNoA11yViolations(wrapper.element)
+  })
+
+  it('has no axe violations for disabled button', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [h(Button, { disabled: true }, () => 'Save')])
+        },
+      }),
+    )
+    await expectNoA11yViolations(wrapper.element)
   })
 })

@@ -34,3 +34,9 @@ Thumbs.db
 
 # Test / coverage
 coverage
+
+# Playwright (keep e2e/visual/ snapshots committed)
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

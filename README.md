@@ -191,13 +191,15 @@ High-level phases for building kablui. Each phase should produce something usabl
 
 Run `npm run docs:dev` for the docs site; playground remains the live sandbox (`npm run dev`).
 
-### 7. Hardening & release
+### 7. Hardening & release — done
 
-- Add unit/component tests for critical behavior and visual/regression coverage where it pays off; run automated a11y checks on key components.
-- Define versioning, changelog, and release process (semver, breaking-change policy) on top of the existing build/publish scripts.
-- Cut a first public release once foundations, a useful primitive + form set, docs, and quality gates are in place—then iterate.
+- [x] Add unit/component tests for critical behavior and visual/regression coverage where it pays off; run automated a11y checks on key components.
+- [x] Define versioning, changelog, and release process (semver, breaking-change policy)—see [`CHANGELOG.md`](CHANGELOG.md) and [Releasing](docs/guides/releasing.md).
+- [x] Cut a first public release (`0.1.0`) once foundations, a useful primitive + form set, docs, and quality gates are in place—then iterate.
 
 ## Publish
+
+Full steps (semver policy, changelog, npm publish, GitHub Release tag): [Releasing](docs/guides/releasing.md).
 
 ```bash
 npm run build

@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeUnmount, ref } from 'vue'
+import { computed, inject, onBeforeUnmount, ref, useAttrs } from 'vue'
 import { useFloating } from '../composables/useFloating'
 import { POPOVER_KEY } from './popoverContext'
 
 /** No props — placement and open state come from Popover. */
 export type PopoverContentProps = Record<string, never>
 
+defineOptions({ inheritAttrs: false })
+
+const attrs = useAttrs()
 const popover = inject(POPOVER_KEY, null)
 
 if (!popover) {
@@ -55,6 +58,7 @@ const classes = [
       :data-placement="placement"
       :class="classes"
       :style="style"
+      v-bind="attrs"
       @pointerdown.stop
     >
       <slot />

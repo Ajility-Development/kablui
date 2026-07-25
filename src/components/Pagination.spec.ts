@@ -60,6 +60,20 @@ describe('Pagination', () => {
     expect(buttonByLabel(last, 'Next page').attributes('disabled')).toBeDefined()
   })
 
+  it('disables both edges on a single-page range and neither in the middle', () => {
+    const single = mount(Pagination, {
+      props: { pageCount: 1, page: 1 },
+    })
+    expect(buttonByLabel(single, 'Previous page').attributes('disabled')).toBeDefined()
+    expect(buttonByLabel(single, 'Next page').attributes('disabled')).toBeDefined()
+
+    const middle = mount(Pagination, {
+      props: { pageCount: 5, page: 3 },
+    })
+    expect(buttonByLabel(middle, 'Previous page').attributes('disabled')).toBeUndefined()
+    expect(buttonByLabel(middle, 'Next page').attributes('disabled')).toBeUndefined()
+  })
+
   it('disables all controls when disabled is true', () => {
     const wrapper = mount(Pagination, {
       props: { pageCount: 5, page: 3, disabled: true },
@@ -105,6 +119,15 @@ describe('Pagination', () => {
 
     await buttonByLabel(wrapper, 'Page 2').trigger('click')
     expect(wrapper.emitted('update:page')).toEqual([[2]])
+  })
+
+  it('does not emit when next is clicked on the last page', async () => {
+    const wrapper = mount(Pagination, {
+      props: { pageCount: 3, page: 3 },
+    })
+
+    await buttonByLabel(wrapper, 'Next page').trigger('click')
+    expect(wrapper.emitted('update:page')).toBeUndefined()
   })
 
   it('does not update the model when disabled', async () => {

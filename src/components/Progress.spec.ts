@@ -25,6 +25,26 @@ describe('Progress', () => {
     expect(bar.attributes('aria-busy')).toBe('true')
   })
 
+  it('renders an indeterminate fill with pulse animation and no width style', () => {
+    const wrapper = mount(Progress, { props: { indeterminate: true } })
+    const fill = wrapper.find('[role="progressbar"] > div')
+
+    expect(fill.classes()).toContain('animate-pulse')
+    expect(fill.classes()).toContain('absolute')
+    expect(fill.attributes('style') ?? '').not.toMatch(/width/)
+  })
+
+  it('omits aria-busy when determinate and respects a custom max', () => {
+    const wrapper = mount(Progress, { props: { value: 1, max: 4 } })
+    const bar = wrapper.find('[role="progressbar"]')
+
+    expect(bar.attributes('aria-busy')).toBeUndefined()
+    expect(bar.attributes('aria-valuemin')).toBe('0')
+    expect(bar.attributes('aria-valuemax')).toBe('4')
+    expect(bar.attributes('aria-valuenow')).toBe('1')
+    expect(bar.find('div').attributes('style')).toMatch(/width:\s*25%/)
+  })
+
   it('treats missing value as indeterminate', () => {
     const wrapper = mount(Progress)
     const bar = wrapper.find('[role="progressbar"]')
