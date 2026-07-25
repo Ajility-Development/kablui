@@ -1,29 +1,26 @@
 <script setup lang="ts">
-import { version } from '../src'
+import { version, Text, Separator } from '../src'
+import ThemeControl from './demos/ThemeControl.vue'
+import TokenSamples from './demos/TokenSamples.vue'
+import PrimitiveDemos from './demos/PrimitiveDemos.vue'
+import FormDemos from './demos/FormDemos.vue'
 </script>
 
 <template>
-  <main class="playground">
-    <h1>kablui</h1>
-    <p>Playground for developing Vue components. Version {{ version }}.</p>
+  <main class="mx-auto max-w-3xl space-y-10 px-6 py-12">
+    <header class="space-y-2">
+      <Text as="h1" size="lg" weight="semibold">kablui playground</Text>
+      <Text tone="muted" size="sm">
+        Local proof for tokens, theming, primitives, and forms. Version {{ version }}.
+      </Text>
+    </header>
+
+    <ThemeControl />
+    <Separator />
+    <TokenSamples />
+    <Separator />
+    <PrimitiveDemos id="primitives" />
+    <Separator />
+    <FormDemos id="forms" />
   </main>
 </template>
-
-<style scoped>
-.playground {
-  font-family: system-ui, sans-serif;
-  max-width: 40rem;
-  margin: 4rem auto;
-  padding: 0 1.5rem;
-}
-
-h1 {
-  margin: 0 0 0.5rem;
-  font-size: 2rem;
-}
-
-p {
-  margin: 0;
-  color: #555;
-}
-</style>

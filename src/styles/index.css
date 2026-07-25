@@ -1,1 +1,162 @@
-/* Shared library styles. Import component styles here as needed. */
+/*
+ * kablui styles entry.
+ * Built to dist/kablui.css and published as `kablui/style.css`.
+ *
+ * Components should use Tailwind utilities. Theme tokens live in `@theme`
+ * (and CSS variables) so consumers can override them later.
+ *
+ * Token layers:
+ *   - Primitives (mode-stable palette) — authoring / advanced overrides only
+ *   - Semantics (mode-aware roles) — components use these utilities only
+ *     e.g. bg-kablui-bg, text-kablui-fg, ring-kablui-focus
+ *
+ * Consumer overrides (after `import 'kablui/style.css'`):
+ *   Prefer overriding primitive steps when you want brand color in both modes:
+ *     :root {
+ *       --color-kablui-accent-400: oklch(0.65 0.2 30);
+ *       --color-kablui-accent-500: oklch(0.52 0.22 30);
+ *     }
+ *   Or re-declare semantics inside each theme selector (`:root`, dark media,
+ *   `[data-theme=…]`) — dark rules reassign semantic vars and will overwrite a
+ *   lone `:root { --color-kablui-accent: … }` in dark mode.
+ *   Keep accent/danger fg pairs ≥4.5:1 with their fills.
+ *   Load app CSS after kablui/style.css.
+ *
+ * Light / dark:
+ *   - Default: prefers-color-scheme reassigns semantic vars
+ *   - Forced: set data-theme="dark"|"light" on html / :root / :host
+ *   - Forced light wins over OS dark
+ */
+@import 'tailwindcss' source(none);
+
+/* Scan library sources only — playground is wired separately for local dev. */
+@source '../**/*.{vue,js,ts,tsx}';
+@source not '../**/*.{spec,test}.ts';
+
+@theme static {
+  /* ── Primitive colors (mode-stable) ── */
+  --color-kablui-neutral-0: oklch(1 0 0);
+  --color-kablui-neutral-50: oklch(0.985 0.002 247);
+  --color-kablui-neutral-100: oklch(0.967 0.003 247);
+  --color-kablui-neutral-200: oklch(0.928 0.006 247);
+  --color-kablui-neutral-300: oklch(0.869 0.01 247);
+  --color-kablui-neutral-400: oklch(0.704 0.015 247);
+  --color-kablui-neutral-500: oklch(0.554 0.016 247);
+  --color-kablui-neutral-600: oklch(0.446 0.014 247);
+  --color-kablui-neutral-700: oklch(0.372 0.012 247);
+  --color-kablui-neutral-800: oklch(0.278 0.01 247);
+  --color-kablui-neutral-900: oklch(0.21 0.008 247);
+  --color-kablui-neutral-950: oklch(0.145 0.006 247);
+
+  --color-kablui-accent-400: oklch(0.65 0.18 255);
+  /* Slightly darker than mid for ≥4.5:1 with accent-fg (neutral-0) on solid fills */
+  --color-kablui-accent-500: oklch(0.52 0.2 255);
+  --color-kablui-accent-600: oklch(0.48 0.18 255);
+
+  --color-kablui-danger-400: oklch(0.68 0.19 25);
+  /* Slightly darker than mid for ≥4.5:1 with danger-fg (neutral-0) on solid fills */
+  --color-kablui-danger-500: oklch(0.55 0.21 25);
+  --color-kablui-danger-600: oklch(0.5 0.19 25);
+
+  /* ── Semantic colors (mode-aware; light defaults) ── */
+  --color-kablui-bg: var(--color-kablui-neutral-0);
+  --color-kablui-fg: var(--color-kablui-neutral-950);
+  --color-kablui-muted: var(--color-kablui-neutral-100);
+  --color-kablui-muted-fg: var(--color-kablui-neutral-500);
+  --color-kablui-border: var(--color-kablui-neutral-200);
+  --color-kablui-border-strong: var(--color-kablui-neutral-400);
+  --color-kablui-accent: var(--color-kablui-accent-500);
+  --color-kablui-accent-fg: var(--color-kablui-neutral-0);
+  --color-kablui-danger: var(--color-kablui-danger-500);
+  --color-kablui-danger-fg: var(--color-kablui-neutral-0);
+  --color-kablui-focus: var(--color-kablui-accent-500);
+
+  /* ── Type ── */
+  --font-kablui-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  --text-kablui-sm: 0.875rem;
+  --text-kablui-sm--line-height: 1.25rem;
+  --text-kablui-md: 1rem;
+  --text-kablui-md--line-height: 1.5rem;
+  --text-kablui-lg: 1.125rem;
+  --text-kablui-lg--line-height: 1.75rem;
+
+  --font-weight-kablui-normal: 400;
+  --font-weight-kablui-medium: 500;
+  --font-weight-kablui-semibold: 600;
+
+  /* ── Radius / elevation (space: use Tailwind default --spacing) ── */
+  --radius-kablui-sm: 0.25rem;
+  --radius-kablui-md: 0.375rem;
+  --radius-kablui-full: calc(infinity * 1px);
+
+  --shadow-kablui-sm: 0 1px 2px 0 oklch(0 0 0 / 0.05);
+}
+
+/*
+ * Mode reassignments — semantic variables only (primitives stay stable).
+ * Placed in @layer theme so they participate with Tailwind theme cascade.
+ */
+@layer theme {
+  :root,
+  :host {
+    color-scheme: light dark;
+  }
+
+  /* OS dark when not forcing light */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']),
+    :host:not([data-theme='light']) {
+      color-scheme: dark;
+      --color-kablui-bg: var(--color-kablui-neutral-950);
+      --color-kablui-fg: var(--color-kablui-neutral-50);
+      --color-kablui-muted: var(--color-kablui-neutral-900);
+      --color-kablui-muted-fg: var(--color-kablui-neutral-400);
+      --color-kablui-border: var(--color-kablui-neutral-800);
+      --color-kablui-border-strong: var(--color-kablui-neutral-500);
+      --color-kablui-accent: var(--color-kablui-accent-400);
+      --color-kablui-accent-fg: var(--color-kablui-neutral-950);
+      --color-kablui-danger: var(--color-kablui-danger-400);
+      --color-kablui-danger-fg: var(--color-kablui-neutral-950);
+      --color-kablui-focus: var(--color-kablui-accent-400);
+      --shadow-kablui-sm: 0 1px 2px 0 oklch(0 0 0 / 0.35);
+    }
+  }
+
+  /* Forced dark (wins over OS light) */
+  :root[data-theme='dark'],
+  :host[data-theme='dark'] {
+    color-scheme: dark;
+    --color-kablui-bg: var(--color-kablui-neutral-950);
+    --color-kablui-fg: var(--color-kablui-neutral-50);
+    --color-kablui-muted: var(--color-kablui-neutral-900);
+    --color-kablui-muted-fg: var(--color-kablui-neutral-400);
+    --color-kablui-border: var(--color-kablui-neutral-800);
+    --color-kablui-border-strong: var(--color-kablui-neutral-500);
+    --color-kablui-accent: var(--color-kablui-accent-400);
+    --color-kablui-accent-fg: var(--color-kablui-neutral-950);
+    --color-kablui-danger: var(--color-kablui-danger-400);
+    --color-kablui-danger-fg: var(--color-kablui-neutral-950);
+    --color-kablui-focus: var(--color-kablui-accent-400);
+    --shadow-kablui-sm: 0 1px 2px 0 oklch(0 0 0 / 0.35);
+  }
+
+  /* Forced light (wins over OS dark) */
+  :root[data-theme='light'],
+  :host[data-theme='light'] {
+    color-scheme: light;
+    --color-kablui-bg: var(--color-kablui-neutral-0);
+    --color-kablui-fg: var(--color-kablui-neutral-950);
+    --color-kablui-muted: var(--color-kablui-neutral-100);
+    --color-kablui-muted-fg: var(--color-kablui-neutral-500);
+    --color-kablui-border: var(--color-kablui-neutral-200);
+    --color-kablui-border-strong: var(--color-kablui-neutral-400);
+    --color-kablui-accent: var(--color-kablui-accent-500);
+    --color-kablui-accent-fg: var(--color-kablui-neutral-0);
+    --color-kablui-danger: var(--color-kablui-danger-500);
+    --color-kablui-danger-fg: var(--color-kablui-neutral-0);
+    --color-kablui-focus: var(--color-kablui-accent-500);
+    --shadow-kablui-sm: 0 1px 2px 0 oklch(0 0 0 / 0.05);
+  }
+}
