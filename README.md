@@ -199,7 +199,7 @@ Run `npm run docs:dev` for the docs site; playground remains the live sandbox (`
 
 ## Publish
 
-Requires `npm login` (verify with `npm whoami`); 2FA/OTP may be prompted. Full steps: [Releasing](docs/guides/releasing.md).
+Requires `npm login` (verify with `npm whoami`). Publish may still need 2FA (`--otp`) or a granular token with bypass 2FA—see [Releasing](docs/guides/releasing.md).
 
 ```bash
 npm run build   # also runs via prepublishOnly

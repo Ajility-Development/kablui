@@ -53,7 +53,32 @@ Publishing to the public [npmjs](https://www.npmjs.com/) registry requires an au
    npm whoami
    ```
 
-If `npm whoami` errors, fix auth before continuing. On publish, npm may prompt for a **2FA / OTP** code when two-factor authentication is enabled on the account—have your authenticator ready.
+If `npm whoami` errors, fix auth before continuing.
+
+### Publish may still fail with E403 (2FA required)
+
+`npm whoami` succeeding is not enough. Publish can still fail with:
+
+```text
+403 Forbidden - Two-factor authentication or granular access token with bypass 2fa enabled is required to publish packages.
+```
+
+Use one of these:
+
+**Option A (interactive)** — Enable 2FA on your [npm account settings](https://www.npmjs.com/settings), then publish with a current authenticator code:
+
+```bash
+npm publish --otp=123456
+```
+
+**Option B (token)** — Create a **granular access token** on npmjs.com with permission to publish to the package (or create/publish), and **bypass 2FA** enabled for automation. Configure auth:
+
+```bash
+npm config set //registry.npmjs.org/:_authToken=YOUR_TOKEN
+# or set NPM_TOKEN in the environment for CI
+```
+
+Do **not** commit tokens to the repo.
 
 Do not invent org- or registry-specific setup beyond public npmjs.
 
@@ -69,9 +94,10 @@ Suggested sequence: **login → whoami → build → npm publish → git tag / G
    ```bash
    npm run build
    npm publish
+   # If E403 requires 2FA: npm publish --otp=123456
    ```
 
-   Be ready for a 2FA/OTP prompt during `npm publish`.
+   See [Publish may still fail with E403](#publish-may-still-fail-with-e403-2fa-required) if publish fails after a successful `whoami`.
 5. **Tag and GitHub Release** — Create a git tag and GitHub Release as `vX.Y.Z` (leading `v`), with release notes from the changelog section for that version.
 
    ```bash
@@ -87,5 +113,5 @@ Suggested sequence: **login → whoami → build → npm publish → git tag / G
 - [ ] `package.json` version matches `X.Y.Z`
 - [ ] `npm whoami` succeeds (authenticated for public npmjs)
 - [ ] `npm run build` succeeds
-- [ ] `npm publish` succeeds (OTP/2FA completed if prompted)
+- [ ] `npm publish` succeeds (use `--otp` or a bypass-2FA granular token if E403)
 - [ ] Git tag / GitHub Release `vX.Y.Z` created
