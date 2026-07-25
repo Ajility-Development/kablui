@@ -8,6 +8,7 @@ import {
   type InjectionKey,
   type MaybeRefOrGetter,
 } from 'vue'
+import { __resetIdCounter, useId } from './useId'
 
 export interface FieldContext {
   controlId: string
@@ -21,16 +22,9 @@ export interface FieldContext {
 
 const FIELD_KEY: InjectionKey<FieldContext> = Symbol('kablui-field')
 
-let idCounter = 0
-
-function createId(prefix: string): string {
-  idCounter += 1
-  return `kablui-${prefix}-${idCounter}`
-}
-
 /** @internal — reset between tests */
 export function __resetFieldIdCounter(): void {
-  idCounter = 0
+  __resetIdCounter()
 }
 
 export interface ProvideFieldOptions {
@@ -39,9 +33,9 @@ export interface ProvideFieldOptions {
 }
 
 export function provideField(options: ProvideFieldOptions = {}): FieldContext {
-  const controlId = options.id ?? createId('control')
-  const hintId = createId('hint')
-  const errorId = createId('error')
+  const controlId = options.id ?? useId('control')
+  const hintId = useId('hint')
+  const errorId = useId('error')
   const hasHint = ref(false)
   const hasError = ref(false)
 

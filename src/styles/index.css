@@ -19,7 +19,7 @@
  *   Or re-declare semantics inside each theme selector (`:root`, dark media,
  *   `[data-theme=…]`) — dark rules reassign semantic vars and will overwrite a
  *   lone `:root { --color-kablui-accent: … }` in dark mode.
- *   Keep accent/danger fg pairs ≥4.5:1 with their fills.
+ *   Keep accent/danger/success/warning fg pairs ≥4.5:1 with their fills.
  *   Load app CSS after kablui/style.css.
  *
  * Light / dark:
@@ -58,6 +58,16 @@
   --color-kablui-danger-500: oklch(0.55 0.21 25);
   --color-kablui-danger-600: oklch(0.5 0.19 25);
 
+  --color-kablui-success-400: oklch(0.72 0.16 155);
+  /* Slightly darker than mid for ≥4.5:1 with success-fg (neutral-0) on solid fills */
+  --color-kablui-success-500: oklch(0.52 0.15 155);
+  --color-kablui-success-600: oklch(0.45 0.14 155);
+
+  --color-kablui-warning-400: oklch(0.78 0.15 75);
+  /* Darker amber for ≥4.5:1 with warning-fg (neutral-0) on solid fills */
+  --color-kablui-warning-500: oklch(0.55 0.16 65);
+  --color-kablui-warning-600: oklch(0.48 0.15 60);
+
   /* ── Semantic colors (mode-aware; light defaults) ── */
   --color-kablui-bg: var(--color-kablui-neutral-0);
   --color-kablui-fg: var(--color-kablui-neutral-950);
@@ -69,7 +79,12 @@
   --color-kablui-accent-fg: var(--color-kablui-neutral-0);
   --color-kablui-danger: var(--color-kablui-danger-500);
   --color-kablui-danger-fg: var(--color-kablui-neutral-0);
+  --color-kablui-success: var(--color-kablui-success-500);
+  --color-kablui-success-fg: var(--color-kablui-neutral-0);
+  --color-kablui-warning: var(--color-kablui-warning-500);
+  --color-kablui-warning-fg: var(--color-kablui-neutral-0);
   --color-kablui-focus: var(--color-kablui-accent-500);
+  --color-kablui-overlay: oklch(0 0 0 / 0.5);
 
   /* ── Type ── */
   --font-kablui-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
@@ -92,6 +107,18 @@
   --radius-kablui-full: calc(infinity * 1px);
 
   --shadow-kablui-sm: 0 1px 2px 0 oklch(0 0 0 / 0.05);
+  --shadow-kablui-md:
+    0 4px 6px -1px oklch(0 0 0 / 0.1), 0 2px 4px -2px oklch(0 0 0 / 0.1);
+  --shadow-kablui-lg:
+    0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -4px oklch(0 0 0 / 0.1);
+
+  /* ── Z-index scale (utilities: z-kablui-*) ── */
+  --z-kablui-dropdown: 1000;
+  --z-kablui-sticky: 1100;
+  --z-kablui-overlay: 1200;
+  --z-kablui-modal: 1300;
+  --z-kablui-toast: 1400;
+  --z-kablui-tooltip: 1500;
 }
 
 /*
@@ -119,8 +146,17 @@
       --color-kablui-accent-fg: var(--color-kablui-neutral-950);
       --color-kablui-danger: var(--color-kablui-danger-400);
       --color-kablui-danger-fg: var(--color-kablui-neutral-950);
+      --color-kablui-success: var(--color-kablui-success-400);
+      --color-kablui-success-fg: var(--color-kablui-neutral-950);
+      --color-kablui-warning: var(--color-kablui-warning-400);
+      --color-kablui-warning-fg: var(--color-kablui-neutral-950);
       --color-kablui-focus: var(--color-kablui-accent-400);
+      --color-kablui-overlay: oklch(0 0 0 / 0.65);
       --shadow-kablui-sm: 0 1px 2px 0 oklch(0 0 0 / 0.35);
+      --shadow-kablui-md:
+        0 4px 6px -1px oklch(0 0 0 / 0.45), 0 2px 4px -2px oklch(0 0 0 / 0.4);
+      --shadow-kablui-lg:
+        0 10px 15px -3px oklch(0 0 0 / 0.5), 0 4px 6px -4px oklch(0 0 0 / 0.45);
     }
   }
 
@@ -138,8 +174,17 @@
     --color-kablui-accent-fg: var(--color-kablui-neutral-950);
     --color-kablui-danger: var(--color-kablui-danger-400);
     --color-kablui-danger-fg: var(--color-kablui-neutral-950);
+    --color-kablui-success: var(--color-kablui-success-400);
+    --color-kablui-success-fg: var(--color-kablui-neutral-950);
+    --color-kablui-warning: var(--color-kablui-warning-400);
+    --color-kablui-warning-fg: var(--color-kablui-neutral-950);
     --color-kablui-focus: var(--color-kablui-accent-400);
+    --color-kablui-overlay: oklch(0 0 0 / 0.65);
     --shadow-kablui-sm: 0 1px 2px 0 oklch(0 0 0 / 0.35);
+    --shadow-kablui-md:
+      0 4px 6px -1px oklch(0 0 0 / 0.45), 0 2px 4px -2px oklch(0 0 0 / 0.4);
+    --shadow-kablui-lg:
+      0 10px 15px -3px oklch(0 0 0 / 0.5), 0 4px 6px -4px oklch(0 0 0 / 0.45);
   }
 
   /* Forced light (wins over OS dark) */
@@ -156,7 +201,16 @@
     --color-kablui-accent-fg: var(--color-kablui-neutral-0);
     --color-kablui-danger: var(--color-kablui-danger-500);
     --color-kablui-danger-fg: var(--color-kablui-neutral-0);
+    --color-kablui-success: var(--color-kablui-success-500);
+    --color-kablui-success-fg: var(--color-kablui-neutral-0);
+    --color-kablui-warning: var(--color-kablui-warning-500);
+    --color-kablui-warning-fg: var(--color-kablui-neutral-0);
     --color-kablui-focus: var(--color-kablui-accent-500);
+    --color-kablui-overlay: oklch(0 0 0 / 0.5);
     --shadow-kablui-sm: 0 1px 2px 0 oklch(0 0 0 / 0.05);
+    --shadow-kablui-md:
+      0 4px 6px -1px oklch(0 0 0 / 0.1), 0 2px 4px -2px oklch(0 0 0 / 0.1);
+    --shadow-kablui-lg:
+      0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -4px oklch(0 0 0 / 0.1);
   }
 }
