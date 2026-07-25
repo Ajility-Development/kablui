@@ -7,6 +7,7 @@ import FormDemos from './demos/FormDemos.vue'
 import LayoutDemos from './demos/LayoutDemos.vue'
 import FeedbackDemos from './demos/FeedbackDemos.vue'
 import OverlayDemos from './demos/OverlayDemos.vue'
+import CompositionDemos from './demos/CompositionDemos.vue'
 </script>
 
 <template>
@@ -15,8 +16,8 @@ import OverlayDemos from './demos/OverlayDemos.vue'
       <header class="space-y-2">
         <Text as="h1" size="lg" weight="semibold">kablui playground</Text>
         <Text tone="muted" size="sm">
-          Local proof for tokens, theming, primitives, forms, layout, feedback, and overlays.
-          Version {{ version }}.
+          Local proof for tokens, theming, primitives, forms, layout, feedback, overlays, and
+          composition. Version {{ version }}.
         </Text>
       </header>
 
@@ -33,6 +34,8 @@ import OverlayDemos from './demos/OverlayDemos.vue'
       <FeedbackDemos id="feedback" />
       <Separator />
       <OverlayDemos id="overlays" />
+      <Separator />
+      <CompositionDemos id="composition" />
     </main>
   </ToastProvider>
 </template>
