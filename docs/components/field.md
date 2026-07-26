@@ -6,45 +6,19 @@ Field owns labeling and description wiring for a single control. Nest `FieldLabe
 
 Use `Field` as the wrapper around one form control (or a control group such as `RadioGroup`). It provides a shared control id and description ids to descendants. Set `invalid` on `Field` to mark nested field-aware controls invalid (danger border, `aria-invalid`) without passing props to each child.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Field, FieldError, FieldHint, FieldLabel, Input } from 'kablui'
+### Basic
 
-const name = ref('')
-</script>
+Field wires label, hint, and error to the nested control. Clear the name to see invalid styling and `FieldError`.
 
-<template>
-  <Field :invalid="!name">
-    <FieldLabel required>Name</FieldLabel>
-    <Input v-model="name" name="name" placeholder="Ada Lovelace" />
-    <FieldHint>Used on invoices and receipts.</FieldHint>
-    <FieldError v-if="!name">Name is required.</FieldError>
-  </Field>
-</template>
-```
+<Demo src="./demos/field-basic.vue" />
 
-Checkbox / Switch with an adjacent label (same Field-owned id):
+### Adjacent label
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Checkbox, Field, FieldLabel } from 'kablui'
+For `Checkbox` or `Switch`, place the control and `FieldLabel` side by side so they share the Field-owned id.
 
-const subscribe = ref(false)
-</script>
-
-<template>
-  <Field>
-    <div class="flex items-center gap-2">
-      <Checkbox v-model="subscribe" name="subscribe" />
-      <FieldLabel>Subscribe to product updates</FieldLabel>
-    </div>
-  </Field>
-</template>
-```
+<Demo src="./demos/field-adjacent-label.vue" />
 
 ### Parts
 

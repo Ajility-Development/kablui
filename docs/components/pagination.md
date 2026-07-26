@@ -4,33 +4,19 @@
 
 Navigation control for paged lists. Bind the current page with `v-model:page` and pass `pageCount`. Renders Previous / Next plus numbered page buttons with ellipsis when the range is large.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Pagination, Stack, Text } from 'kablui'
+### Controlled page
 
-const page = ref(1)
-const disabledPage = ref(3)
-</script>
+Bind the current page with `v-model:page` and pass `pageCount`. `siblingCount` controls how many page numbers appear on each side of the current page before ellipsis appear (default `1`).
 
-<template>
-  <Stack gap="md">
-    <div class="space-y-2">
-      <Text size="sm" tone="muted">Page {{ page }} of 12</Text>
-      <Pagination v-model:page="page" :page-count="12" />
-    </div>
+<Demo src="./demos/pagination-controlled.vue" />
 
-    <div class="space-y-2">
-      <Text size="sm" tone="muted">Disabled</Text>
-      <Pagination v-model:page="disabledPage" :page-count="8" disabled />
-    </div>
-  </Stack>
-</template>
-```
+### Disabled
 
-`siblingCount` controls how many page numbers appear on each side of the current page before ellipsis appear (default `1`).
+Set `disabled` to disable Previous, Next, and all page buttons.
+
+<Demo src="./demos/pagination-disabled.vue" />
 
 ## Props / Models / Emits / Slots
 

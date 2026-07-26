@@ -4,35 +4,15 @@
 
 `Stack` lays out children in a vertical flex column with consistent gap and cross-axis alignment. Use it for form groups, stacked text, or any simple vertical rhythm.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { Stack, Text } from 'kablui'
-</script>
+### Basic
 
-<template>
-  <Stack gap="sm">
-    <Text size="sm">Item one</Text>
-    <Text size="sm">Item two</Text>
-    <Text size="sm">Item three</Text>
-  </Stack>
-</template>
-```
+`gap` controls vertical spacing between children.
 
-Change the root element with `as` when semantics matter (for example `as="ul"` with list items as children).
+<Demo src="./demos/stack-basic.vue" />
 
-```vue
-<script setup lang="ts">
-import { Stack } from 'kablui'
-</script>
-
-<template>
-  <Stack as="section" gap="lg" align="center">
-    <p>Centered column</p>
-  </Stack>
-</template>
-```
+Change the root element with `as` when semantics matter (for example `as="ul"` with list items as children). Use `align` for cross-axis alignment — see Props below.
 
 ## Props / Models / Emits / Slots
 

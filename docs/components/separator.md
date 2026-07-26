@@ -4,27 +4,13 @@
 
 Visual divider, horizontal by default. Decorative (`aria-hidden`) by default. Set `decorative` to `false` for a semantic separator with `role="separator"` and a stronger border.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { Separator, Text } from 'kablui'
-</script>
+### Horizontal and vertical
 
-<template>
-  <Text size="sm" tone="muted">Horizontal (default decorative)</Text>
-  <Separator />
+Default horizontal is decorative. Vertical + `decorative=false` is semantic; stretch height in a flex row with a consumer class (e.g. `self-stretch`).
 
-  <Text size="sm" tone="muted">Vertical + semantic</Text>
-  <div class="flex h-8 items-center gap-3">
-    <Text size="sm">Left</Text>
-    <Separator orientation="vertical" :decorative="false" class="self-stretch" />
-    <Text size="sm">Right</Text>
-  </div>
-</template>
-```
-
-For a vertical separator in a flex row, stretch height with a consumer class (e.g. `self-stretch`) as in the playground.
+<Demo src="./demos/separator-orientations.vue" />
 
 ## Props / Models / Emits / Slots
 

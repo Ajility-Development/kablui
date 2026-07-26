@@ -91,6 +91,65 @@ describe('Switch', () => {
     expect(wrapper.find('span').attributes('class')).toMatch(/rounded-kablui-full/)
   })
 
+  it('uses fg border so the outline matches text color', () => {
+    const className = mount(Switch).find('button').attributes('class') ?? ''
+    expect(className).toMatch(/border-kablui-fg/)
+    expect(className).not.toMatch(/border-kablui-border(?!-)/)
+  })
+
+  it('uses muted track when off and accent track when on', async () => {
+    const value = ref(false)
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h(Switch, {
+              modelValue: value.value,
+              'onUpdate:modelValue': (v: boolean) => {
+                value.value = v
+              },
+            })
+        },
+      }),
+    )
+
+    const offClass = wrapper.find('button').attributes('class') ?? ''
+    expect(offClass).toMatch(/bg-kablui-muted/)
+    expect(offClass).not.toMatch(/(?:^|\s)bg-kablui-fg(?:\s|$)/)
+    expect(offClass).not.toMatch(/bg-kablui-accent/)
+
+    await wrapper.find('button').trigger('click')
+    const onClass = wrapper.find('button').attributes('class') ?? ''
+    expect(onClass).toMatch(/bg-kablui-accent/)
+    expect(onClass).not.toMatch(/bg-kablui-muted/)
+  })
+
+  it('uses fg thumb when off and bg thumb when on', async () => {
+    const value = ref(false)
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h(Switch, {
+              modelValue: value.value,
+              'onUpdate:modelValue': (v: boolean) => {
+                value.value = v
+              },
+            })
+        },
+      }),
+    )
+
+    const offThumb = wrapper.find('span').attributes('class') ?? ''
+    expect(offThumb).toMatch(/bg-kablui-fg/)
+    expect(offThumb).not.toMatch(/bg-kablui-bg/)
+
+    await wrapper.find('button').trigger('click')
+    const onThumb = wrapper.find('span').attributes('class') ?? ''
+    expect(onThumb).toMatch(/bg-kablui-bg/)
+    expect(onThumb).not.toMatch(/bg-kablui-fg/)
+  })
+
   it('inherits Field wiring', async () => {
     const wrapper = mount(
       defineComponent({

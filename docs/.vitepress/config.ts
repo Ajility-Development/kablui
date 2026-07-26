@@ -1,15 +1,55 @@
+import { fileURLToPath, URL } from 'node:url'
+import tailwindcss from '@tailwindcss/vite'
+import type { Plugin } from 'vite'
 import { defineConfig } from 'vitepress'
 
 /**
+ * VitePress 1.6.x ships `base.css` unlayered. Tailwind v4 utilities live in
+ * `@layer utilities`, and unlayered rules win over layered ones — so VP’s
+ * `button` / form resets wipe kablui demo styles. Upstream wraps this file in
+ * `@layer __vitepress_base` (#4905); mirror that until a release includes it.
+ */
+function vitepressBaseCssLayer(): Plugin {
+  return {
+    name: 'kablui:vitepress-base-css-layer',
+    enforce: 'pre',
+    transform(code, id) {
+      const file = id.split('?')[0]?.replace(/\\/g, '/')
+      if (
+        !file?.endsWith(
+          '/vitepress/dist/client/theme-default/styles/base.css',
+        )
+      ) {
+        return null
+      }
+      if (code.includes('@layer __vitepress_base')) return null
+      return {
+        code: `@layer __vitepress_base {\n${code}\n}\n`,
+        map: null,
+      }
+    },
+  }
+}
+
+/**
  * Component page convention:
- * Overview → Usage → Props/Models/Emits/Slots → Accessibility → Related
- * Examples import from `kablui`, not relative `src/` paths.
+ * Overview → Usage/Examples → Props/Models/Emits/Slots → Accessibility → Related
+ * Live demos: `<Demo src="./demos/<component>-<example>.vue" />` (imports from `kablui`).
  * See docs/guides/writing-docs.md
  */
 export default defineConfig({
   title: 'kablui',
   description: 'Tailwind CSS–based UI components for Vue 3',
   cleanUrls: true,
+
+  vite: {
+    plugins: [vitepressBaseCssLayer(), tailwindcss()],
+    resolve: {
+      alias: {
+        kablui: fileURLToPath(new URL('../../src', import.meta.url)),
+      },
+    },
+  },
 
   themeConfig: {
     nav: [

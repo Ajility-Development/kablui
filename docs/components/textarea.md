@@ -6,24 +6,13 @@ Multi-line text field with Field-aware labeling, invalid styling, and `v-model`.
 
 Use `Textarea` for longer plain-text values. Behavior matches `Input` for Field context, sizes, and invalid/disabled states, with a `rows` prop for height.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Field, FieldHint, FieldLabel, Textarea } from 'kablui'
+### Basic
 
-const bio = ref('')
-</script>
+Use `Textarea` with `Field` for longer plain-text values. Adjust height with `rows`.
 
-<template>
-  <Field>
-    <FieldLabel>Bio</FieldLabel>
-    <Textarea v-model="bio" name="bio" :rows="3" placeholder="Short introduction" />
-    <FieldHint>Plain text, a few sentences.</FieldHint>
-  </Field>
-</template>
-```
+<Demo src="./demos/textarea-basic.vue" />
 
 ## Props / Models / Emits / Slots
 

@@ -4,49 +4,19 @@
 
 `Alert` shows an inline status message with an optional title and dismiss control. Use tones to communicate severity without interrupting the page flow (prefer [Toast](./toast.md) for transient notifications).
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { Alert, Stack } from 'kablui'
-</script>
+### Tones
 
-<template>
-  <Stack gap="sm">
-    <Alert tone="neutral" title="Neutral">Supporting copy for a status message.</Alert>
-    <Alert tone="accent" title="Accent">Highlight something noteworthy.</Alert>
-    <Alert tone="success" title="Success">Changes saved.</Alert>
-    <Alert tone="warning" title="Warning">Review before continuing.</Alert>
-    <Alert tone="danger" title="Danger">Something went wrong.</Alert>
-  </Stack>
-</template>
-```
+`tone` sets visual severity. Optional `title` sits above the body.
+
+<Demo src="./demos/alert-tones.vue" />
+
+### Dismissible
 
 Dismissible alerts emit `dismiss` when the close control is activated; the parent decides visibility.
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Alert, Button } from 'kablui'
-
-const visible = ref(true)
-</script>
-
-<template>
-  <Alert
-    v-if="visible"
-    tone="neutral"
-    title="Dismissible"
-    dismissible
-    @dismiss="visible = false"
-  >
-    Click × to hide this alert.
-  </Alert>
-  <Button v-else size="sm" variant="outline" @click="visible = true">
-    Show dismissible alert
-  </Button>
-</template>
-```
+<Demo src="./demos/alert-dismissible.vue" />
 
 ## Props / Models / Emits / Slots
 

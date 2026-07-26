@@ -4,32 +4,15 @@
 
 `Container` centers content horizontally and constrains width with size presets and horizontal padding. Use it for page sections and readable content columns.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { Container, Text } from 'kablui'
-</script>
+### Basic
 
-<template>
-  <Container size="sm">
-    <Text size="sm">size="sm" — centered, padded max-width</Text>
-  </Container>
-</template>
-```
+`size` sets the max-width preset. The dashed border below is demo chrome so you can see centering against a wider parent.
 
-```vue
-<script setup lang="ts">
-import { Container } from 'kablui'
-</script>
+<Demo src="./demos/container-basic.vue" />
 
-<template>
-  <Container as="main" size="lg">
-    <h1>Page title</h1>
-    <p>Body copy stays within the large max-width.</p>
-  </Container>
-</template>
-```
+Use `as` for landmarks (for example `as="main"`) — see Props below.
 
 ## Props / Models / Emits / Slots
 

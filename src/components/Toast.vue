@@ -14,10 +14,13 @@ export interface ToastProps {
   description?: string
   /** Presentational action; click emits `action` (provider wires `onClick`). */
   action?: ToastActionProp
+  /** When true, plays the leave (fade-out) styles before the provider removes the toast. */
+  exiting?: boolean
 }
 
 withDefaults(defineProps<ToastProps>(), {
   tone: 'neutral',
+  exiting: false,
 })
 
 const emit = defineEmits<{
@@ -32,7 +35,10 @@ const baseClasses = [
   'pointer-events-auto relative flex w-80 max-w-[calc(100vw-2rem)] gap-3',
   'rounded-kablui-md border px-3 py-2.5 shadow-kablui-md',
   'text-kablui-md',
+  'transition-[opacity,transform] duration-200 ease-out',
 ].join(' ')
+
+const exitingClasses = 'pointer-events-none opacity-0 translate-y-1'
 
 const actionClasses = [
   'mt-1.5 inline-flex items-center text-kablui-sm font-kablui-medium',
@@ -54,8 +60,9 @@ function onAction() {
     :role="tone === 'danger' ? 'alert' : 'status'"
     :aria-labelledby="titleId"
     :aria-describedby="description ? descriptionId : undefined"
-    :class="[baseClasses, SURFACE_TONE_CLASSES[tone]]"
+    :class="[baseClasses, SURFACE_TONE_CLASSES[tone], exiting ? exitingClasses : undefined]"
     data-kablui-toast
+    :data-exiting="exiting ? '' : undefined"
   >
     <div class="min-w-0 flex-1">
       <div

@@ -4,23 +4,13 @@
 
 Compact status label for short text. Supports the full status tone set (neutral, accent, danger, success, warning) and small, medium, and large sizes.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { Badge } from 'kablui'
-</script>
+### Tones and sizes
 
-<template>
-  <Badge tone="neutral">Neutral</Badge>
-  <Badge tone="accent">Accent</Badge>
-  <Badge tone="danger">Danger</Badge>
-  <Badge tone="success">Success</Badge>
-  <Badge tone="warning">Warning</Badge>
-  <Badge size="sm" tone="accent">sm accent</Badge>
-  <Badge size="lg" tone="accent">lg accent</Badge>
-</template>
-```
+All status tones plus `sm` / `lg` size samples.
+
+<Demo src="./demos/badge-tones.vue" />
 
 ## Props / Models / Emits / Slots
 

@@ -4,39 +4,15 @@
 
 `Cluster` lays out children in a wrapping horizontal flex row with gap, alignment, and justify controls. Use it for badge groups, button toolbars, and other wrap-friendly collections.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { Badge, Cluster } from 'kablui'
-</script>
+### Basic
 
-<template>
-  <Cluster gap="sm">
-    <Badge
-      v-for="n in 8"
-      :key="n"
-      size="sm"
-      tone="neutral"
-    >
-      Item {{ n }}
-    </Badge>
-  </Cluster>
-</template>
-```
+Children wrap with consistent `gap`. Tone and size on the badges are independent of the cluster.
 
-```vue
-<script setup lang="ts">
-import { Button, Cluster } from 'kablui'
-</script>
+<Demo src="./demos/cluster-basic.vue" />
 
-<template>
-  <Cluster gap="sm" justify="between" align="center">
-    <Button size="sm" variant="outline">Cancel</Button>
-    <Button size="sm">Save</Button>
-  </Cluster>
-</template>
-```
+Use `justify` and `align` for toolbars (for example `justify="between"` with Cancel / Save buttons) — see Props below.
 
 ## Props / Models / Emits / Slots
 

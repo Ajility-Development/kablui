@@ -29,7 +29,7 @@ const fieldAttrs = useFieldControlAttrs({
 
 const trackClasses = computed(() =>
   [
-    'relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-kablui-full border border-kablui-border',
+    'relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-kablui-full border border-kablui-fg',
     'transition-colors',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kablui-focus focus-visible:ring-offset-2 focus-visible:ring-offset-kablui-bg',
     'disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none',
@@ -40,9 +40,9 @@ const trackClasses = computed(() =>
 
 const thumbClasses = computed(() =>
   [
-    'pointer-events-none inline-block size-3.5 rounded-kablui-full bg-kablui-bg shadow-kablui-sm',
+    'pointer-events-none inline-block size-3.5 rounded-kablui-full shadow-kablui-sm',
     'transition-transform',
-    model.value ? 'translate-x-4' : 'translate-x-0.5',
+    model.value ? 'translate-x-4 bg-kablui-bg' : 'translate-x-0.5 bg-kablui-fg',
   ].join(' '),
 )
 

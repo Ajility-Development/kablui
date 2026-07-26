@@ -6,34 +6,19 @@ Exclusive choice within a `RadioGroup`. Documented together as one compound patt
 
 Wrap options in `RadioGroup` and nest `Radio` children (each with a `value`). The group holds `v-model` (selected value string), shared `name`, disabled/invalid state, and arrow-key focus movement. Use `Field` + `FieldLabel` on the group; label each option with a native `<label>` (or your own markup) around `Radio`.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Field, FieldError, FieldLabel, Radio, RadioGroup } from 'kablui'
+### Basic
 
-const plan = ref('pro')
-</script>
+Horizontal group with a disabled option. Arrow keys move focus among enabled radios.
 
-<template>
-  <Field :invalid="!plan">
-    <FieldLabel>Plan</FieldLabel>
-    <RadioGroup v-model="plan" name="plan" orientation="horizontal">
-      <label class="inline-flex items-center gap-2">
-        <Radio value="free" /> Free
-      </label>
-      <label class="inline-flex items-center gap-2">
-        <Radio value="pro" /> Pro
-      </label>
-      <label class="inline-flex items-center gap-2">
-        <Radio value="enterprise" disabled /> Enterprise
-      </label>
-    </RadioGroup>
-    <FieldError v-if="!plan">Choose a plan.</FieldError>
-  </Field>
-</template>
-```
+<Demo src="./demos/radio-group-basic.vue" />
+
+### Vertical
+
+Default orientation stacks options. Use `orientation="vertical"` (or omit — it is the default).
+
+<Demo src="./demos/radio-group-vertical.vue" />
 
 ## Props / Models / Emits / Slots
 

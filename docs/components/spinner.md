@@ -4,21 +4,13 @@
 
 `Spinner` is a compact loading indicator. Pass `label` so assistive technology announces the busy state; the label is visually hidden.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { Spinner } from 'kablui'
-</script>
+### Sizes
 
-<template>
-  <div class="flex flex-wrap items-center gap-4">
-    <Spinner size="sm" label="Loading small" />
-    <Spinner size="md" label="Loading" />
-    <Spinner size="lg" label="Loading large" />
-  </div>
-</template>
-```
+`sm`, `md`, and `lg` control visual size. Always pass `label` for meaningful loading states.
+
+<Demo src="./demos/spinner-sizes.vue" />
 
 ## Props / Models / Emits / Slots
 

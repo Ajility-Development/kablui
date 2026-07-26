@@ -31,9 +31,12 @@ defineSlots<{
 }>()
 
 const DEFAULT_DURATION = 5000
+/** Fade-out duration before a dismissed toast is removed from the DOM. */
+const EXIT_DURATION_MS = 200
 
 const visible = ref<ToastItem[]>([])
 const pending = ref<ToastItem[]>([])
+const exitingIds = ref(new Set<string>())
 const timers = new Map<string, ReturnType<typeof setTimeout>>()
 
 // Use stack z-index; do not register — toasts must not steal Escape from dialogs.
@@ -87,20 +90,36 @@ function toast(options: ToastOptions): string {
   return item.id
 }
 
+function removeVisible(id: string) {
+  const visibleIndex = visible.value.findIndex((item) => item.id === id)
+  if (visibleIndex === -1) return
+
+  visible.value.splice(visibleIndex, 1)
+  const nextExiting = new Set(exitingIds.value)
+  nextExiting.delete(id)
+  exitingIds.value = nextExiting
+  promote()
+}
+
 function dismiss(id: string) {
   clearTimer(id)
-
-  const visibleIndex = visible.value.findIndex((item) => item.id === id)
-  if (visibleIndex !== -1) {
-    visible.value.splice(visibleIndex, 1)
-    promote()
-    return
-  }
 
   const pendingIndex = pending.value.findIndex((item) => item.id === id)
   if (pendingIndex !== -1) {
     pending.value.splice(pendingIndex, 1)
+    return
   }
+
+  const visibleIndex = visible.value.findIndex((item) => item.id === id)
+  if (visibleIndex === -1) return
+  if (exitingIds.value.has(id)) return
+
+  exitingIds.value = new Set(exitingIds.value).add(id)
+  const handle = setTimeout(() => {
+    timers.delete(id)
+    removeVisible(id)
+  }, EXIT_DURATION_MS)
+  timers.set(id, handle)
 }
 
 function onAction(item: ToastItem) {
@@ -153,6 +172,7 @@ const orderedVisible = computed(() =>
           :title="item.title"
           :description="item.description"
           :action="item.action ? { label: item.action.label } : undefined"
+          :exiting="exitingIds.has(item.id)"
           @dismiss="dismiss(item.id)"
           @action="onAction(item)"
         />

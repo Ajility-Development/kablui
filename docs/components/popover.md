@@ -6,55 +6,19 @@ Compound floating panel for lightweight non-action content (details, filters, sh
 
 **Popover is not for action menus.** Use [Menu](./menu.md) when the panel is a list of actions (edit, delete, share, etc.).
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { Popover, PopoverContent, PopoverTrigger, Stack, Text } from 'kablui'
-</script>
+### Basic
 
-<template>
-  <Popover>
-    <PopoverTrigger>Details</PopoverTrigger>
-    <PopoverContent aria-label="Account details">
-      <Stack gap="sm">
-        <Text size="sm">Signed in as ada@example.com</Text>
-        <Text size="sm" tone="muted">Plan renews on August 1.</Text>
-      </Stack>
-    </PopoverContent>
-  </Popover>
-</template>
-```
+Nest `PopoverTrigger` and `PopoverContent` inside `Popover` for a lightweight details panel.
 
-### Controlled open and close on action
+<Demo src="./demos/popover-basic.vue" />
+
+### Controlled
 
 Use `v-model:open` when an in-panel control should close the popover (filters, short forms). Do not use Popover for lists of actions—that is [Menu](./menu.md).
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Button, Popover, PopoverContent, PopoverTrigger, Stack, Text } from 'kablui'
-
-const open = ref(false)
-
-function applyFilters() {
-  // Apply filter state, then close.
-  open.value = false
-}
-</script>
-
-<template>
-  <Popover v-model:open="open" placement="bottom-end">
-    <PopoverTrigger>Filters</PopoverTrigger>
-    <PopoverContent aria-label="Filters">
-      <Stack gap="sm">
-        <Text size="sm">Narrow results by status or owner.</Text>
-        <Button size="sm" variant="solid" @click="applyFilters">Apply</Button>
-      </Stack>
-    </PopoverContent>
-  </Popover>
-</template>
-```
+<Demo src="./demos/popover-controlled.vue" />
 
 ### Nesting
 
@@ -65,6 +29,7 @@ Popover
 ```
 
 `PopoverTrigger` and `PopoverContent` must be used inside `Popover`. Outside that tree they warn in the console and do not function.
+
 ## Props / Models / Emits / Slots
 
 ### Popover

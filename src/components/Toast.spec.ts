@@ -43,6 +43,14 @@ describe('Toast', () => {
     expect(wrapper.emitted('dismiss')).toHaveLength(1)
   })
 
+  it('dismiss control inherits surface text color (text-current)', () => {
+    const wrapper = mount(Toast, { props: { title: 'Closeable', tone: 'danger' } })
+    const dismiss = wrapper.find('button[aria-label="Dismiss"]')
+
+    expect(dismiss.classes()).toContain('text-current')
+    expect(dismiss.classes()).not.toContain('text-kablui-muted-fg')
+  })
+
   it('omits aria-describedby when there is no description', () => {
     const wrapper = mount(Toast, { props: { title: 'Title only' } })
 

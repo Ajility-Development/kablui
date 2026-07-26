@@ -1,3 +1,15 @@
+/*
+ * Docs theme entry: library styles + Tailwind scan of demo SFCs / Demo chrome.
+ * Demo UI tokens use VitePress brand vars so the chrome matches the docs shell.
+ *
+ * Library `src/` is scanned via `@source` inside `src/styles/index.css`.
+ * VitePress base resets are layered in config.ts so Tailwind utilities win.
+ */
+@import '../../../src/styles/index.css';
+
+@source '../../components/demos/**/*.{vue,js,ts,tsx}';
+@source '../components/**/*.{vue,js,ts,tsx}';
+
 :root {
   --vp-c-brand-1: oklch(0.52 0.2 255);
   --vp-c-brand-2: oklch(0.48 0.18 255);
@@ -10,4 +22,99 @@
   --vp-c-brand-2: oklch(0.52 0.2 255);
   --vp-c-brand-3: oklch(0.48 0.18 255);
   --vp-c-brand-soft: oklch(0.65 0.18 255 / 0.16);
+}
+
+/* ── Live <Demo> chrome (PrimeVue-like preview + code toggle) ── */
+
+.kablui-demo {
+  margin: 1.25rem 0 1.75rem;
+}
+
+.kablui-demo__title {
+  margin: 0 0 0.5rem;
+  font-size: 0.925rem;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+}
+
+.kablui-demo__chrome {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--vp-c-bg);
+}
+
+.kablui-demo__label {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--vp-c-divider);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--vp-c-text-2);
+  background: var(--vp-c-bg-soft);
+}
+
+.kablui-demo__preview {
+  padding: 1.25rem 1rem;
+  background: var(--vp-c-bg);
+  color: var(--color-kablui-fg, var(--vp-c-text-1));
+}
+
+.kablui-demo__missing {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--vp-c-text-2);
+}
+
+.kablui-demo__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.35rem 0.65rem;
+  border-top: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+}
+
+.kablui-demo__toggle {
+  appearance: none;
+  margin: 0;
+  padding: 0.25rem 0.65rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 6px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.kablui-demo__toggle:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+
+.kablui-demo__toggle:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+}
+
+.kablui-demo__source {
+  border-top: 1px solid var(--vp-c-divider);
+  background: var(--vp-code-block-bg, var(--vp-c-bg-alt));
+}
+
+.kablui-demo__source pre {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  background: transparent;
+  border-radius: 0;
+}
+
+.kablui-demo__source code {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--vp-code-block-color, var(--vp-c-text-1));
+  white-space: pre;
 }

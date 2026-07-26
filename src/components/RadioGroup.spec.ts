@@ -186,6 +186,32 @@ describe('RadioGroup / Radio', () => {
     expect(className).toMatch(/rounded-kablui-full/)
   })
 
+  it('uses fg border so radio outlines match text color', () => {
+    const wrapper = mount(RadioGroup, {
+      slots: { default: '<Radio value="x" />' },
+      global: { components: { Radio } },
+    })
+    const className = wrapper.find('input').attributes('class') ?? ''
+    expect(className).toMatch(/border-kablui-fg/)
+    expect(className).not.toMatch(/border-kablui-border(?!-)/)
+  })
+
+  it('paints a text-colored center dot when checked (appearance-none)', () => {
+    const wrapper = mount(RadioGroup, {
+      slots: { default: '<Radio value="x" />' },
+      global: { components: { Radio } },
+    })
+    const className = wrapper.find('input').attributes('class') ?? ''
+    expect(className).toMatch(/kablui-radio/)
+    expect(className).toMatch(/appearance-none/)
+    expect(className).toMatch(/text-kablui-fg/)
+    expect(className).not.toMatch(/checked:bg-kablui-accent(?:\s|$)/)
+
+    const radioSource = readFileSync(resolve(__dirname, 'Radio.vue'), 'utf8')
+    expect(radioSource).toMatch(/\.kablui-radio:checked/)
+    expect(radioSource).toMatch(/radial-gradient\(circle,\s*currentColor/)
+  })
+
   it('is available from barrels', async () => {
     const components = await import('./index')
     const pkg = await import('../index')

@@ -6,42 +6,25 @@ Single-line text field with Field-aware labeling, invalid styling, and `v-model`
 
 Use `Input` for short text values. Inside a `Field`, it picks up the shared control id, `aria-describedby`, and invalid state automatically. You can also set `invalid` / `id` on the control itself.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Field, FieldError, FieldHint, FieldLabel, Input } from 'kablui'
+### Basic
 
-const name = ref('')
-</script>
+Inside a `Field`, `Input` picks up the shared control id and description wiring automatically.
 
-<template>
-  <Field :invalid="!name">
-    <FieldLabel required>Name</FieldLabel>
-    <Input v-model="name" name="name" placeholder="Ada Lovelace" />
-    <FieldHint>Used on invoices and receipts.</FieldHint>
-    <FieldError v-if="!name">Name is required.</FieldError>
-  </Field>
-</template>
-```
+<Demo src="./demos/input-basic.vue" />
 
-Sizes and native types:
+### Sizes
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Input } from 'kablui'
+`sm`, `md`, and `lg` control visual size. Native `type` values work as usual.
 
-const email = ref('')
-</script>
+<Demo src="./demos/input-sizes.vue" />
 
-<template>
-  <Input v-model="email" type="email" size="sm" placeholder="you@example.com" />
-  <Input v-model="email" type="email" size="md" />
-  <Input v-model="email" type="email" size="lg" disabled />
-</template>
-```
+### Invalid
+
+Set `invalid` on `Field` (or the input) to show danger styling and wire `aria-invalid`.
+
+<Demo src="./demos/input-invalid.vue" />
 
 ## Props / Models / Emits / Slots
 

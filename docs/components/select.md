@@ -8,63 +8,19 @@ Use `Select` for a single string value from a list. Prefer the `options` prop fo
 
 The listbox teleports to `body`, positions with `useFloating`, and dismisses via the shared dismissible overlay stack (`menu` layer).
 
-## Usage
+## Examples
 
 ### Options prop
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Field, FieldError, FieldHint, FieldLabel, Select } from 'kablui'
-import type { SelectOption } from 'kablui'
+Data-driven list via `options`. Prefer this when options come from an array.
 
-const country = ref('')
-
-const countries: SelectOption[] = [
-  { value: 'us', label: 'United States' },
-  { value: 'ca', label: 'Canada' },
-  { value: 'uk', label: 'United Kingdom' },
-  { value: 'de', label: 'Germany', disabled: true },
-]
-</script>
-
-<template>
-  <Field :invalid="!country">
-    <FieldLabel>Country</FieldLabel>
-    <Select
-      v-model="country"
-      name="country"
-      placeholder="Select a country"
-      :options="countries"
-    />
-    <FieldHint>Arrow keys, typeahead, Escape.</FieldHint>
-    <FieldError v-if="!country">Country is required.</FieldError>
-  </Field>
-</template>
-```
+<Demo src="./demos/select-options.vue" />
 
 ### SelectItem children
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Field, FieldLabel, Select, SelectItem } from 'kablui'
+Compose options in markup with `SelectItem`. If both APIs are present, `options` wins.
 
-const fruit = ref('apple')
-</script>
-
-<template>
-  <Field>
-    <FieldLabel>Favorite fruit</FieldLabel>
-    <Select v-model="fruit" name="fruit" placeholder="Pick one">
-      <SelectItem value="apple">Apple</SelectItem>
-      <SelectItem value="banana">Banana</SelectItem>
-      <SelectItem value="cherry" disabled>Cherry</SelectItem>
-      <SelectItem value="mango">Mango</SelectItem>
-    </Select>
-  </Field>
-</template>
-```
+<Demo src="./demos/select-items.vue" />
 
 ## Props / Models / Emits / Slots
 

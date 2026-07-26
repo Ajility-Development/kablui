@@ -4,46 +4,13 @@
 
 `Empty` is a centered empty-state layout with optional icon, title, body, and action slots. Use it when a list, table, or search has no results.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { Button, Empty, Icon } from 'kablui'
+### Basic
 
-function onCreate() {
-  // Optional: navigate, open a dialog, or show a toast.
-}
-</script>
+Optional `icon`, `title`, default body, and `action` slots compose a full empty state. Title-only or body-only variants work; each region renders only when provided.
 
-<template>
-  <Empty title="No results">
-    <template #icon>
-      <Icon size="lg" label="Empty inbox">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="5" width="18" height="14" rx="2" />
-          <path d="M3 7l9 6 9-6" />
-        </svg>
-      </Icon>
-    </template>
-    Try a different filter or create something new.
-    <template #action>
-      <Button size="sm" variant="outline" @click="onCreate">Create item</Button>
-    </template>
-  </Empty>
-</template>
-```
-
-Title-only or body-only variants work; each region renders only when provided.
-
-```vue
-<script setup lang="ts">
-import { Empty } from 'kablui'
-</script>
-
-<template>
-  <Empty title="Nothing here yet" />
-</template>
-```
+<Demo src="./demos/empty-basic.vue" />
 
 ## Props / Models / Emits / Slots
 

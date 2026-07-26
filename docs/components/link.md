@@ -4,19 +4,13 @@
 
 Styled anchor for in-page and external navigation. Optional `external` opens in a new tab with safe `rel`; `disabled` blocks activation without removing the element.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { Link } from 'kablui'
-</script>
+### Basic
 
-<template>
-  <Link href="#usage">In-page link</Link>
-  <Link href="https://example.com" external>External</Link>
-  <Link href="#props" disabled>Disabled</Link>
-</template>
-```
+In-page `href`, `external` for new-tab links, and `disabled` for non-interactive anchors.
+
+<Demo src="./demos/link-basic.vue" />
 
 ## Props / Models / Emits / Slots
 

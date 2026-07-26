@@ -4,47 +4,13 @@
 
 Surface for grouping related content. Card is **slot-region composition only**—there is no provide/inject context. Nest `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, and `CardFooter` as ordinary children for consistent padding and structure. Regions own their padding; `Card` itself has no `padding` prop.
 
-## Usage
-
-```vue
-<script setup lang="ts">
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from 'kablui'
-
-function onCancel() {
-  // Optional: close a drawer, reset form state, etc.
-}
-
-function onUpgrade() {
-  // Optional: start checkout or open a confirm dialog.
-}
-</script>
-
-<template>
-  <Card as="article" class="max-w-md">
-    <CardHeader>
-      <CardTitle>Team plan</CardTitle>
-      <CardDescription>Shared workspace for up to 10 people.</CardDescription>
-    </CardHeader>
-    <CardContent>
-      Includes projects, comments, and role-based access.
-    </CardContent>
-    <CardFooter>
-      <Button variant="ghost" @click="onCancel">Cancel</Button>
-      <Button @click="onUpgrade">Upgrade</Button>
-    </CardFooter>
-  </Card>
-</template>
-```
+## Examples
 
 ### Regions
+
+`CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, and `CardFooter` nest as ordinary children for consistent padding and structure.
+
+<Demo src="./demos/card-regions.vue" />
 
 ```
 Card

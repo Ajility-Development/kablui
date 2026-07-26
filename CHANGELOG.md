@@ -42,6 +42,8 @@ See [Releasing](docs/guides/releasing.md) for versioning policy and publish step
 
 ### Fixed
 
+- Switch off-state thumb uses `kablui-fg` instead of `kablui-bg`, so the circle matches text color in light and dark mode.
+- Dismiss control (Toast, Alert, Dialog) inherits surface text color instead of hardcoding `muted-fg`, so the × matches copy in light and dark mode.
 - Barrel exports and consumer docs aligned with FieldLabel, CardContent, and RadioGroup paths.
 - VitePress brand CSS variables mapped to kablui accent OKLCH tokens.
 - Hybrid `useId` format (`kablui-${prefix}-v-*` in setup) accepted in component tests.

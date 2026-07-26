@@ -6,6 +6,14 @@ import { __resetOverlayStack } from '../composables/useOverlayStack'
 import { useToast } from '../composables/useToast'
 import ToastProvider from './ToastProvider.vue'
 
+/** Must match EXIT_DURATION_MS in ToastProvider.vue */
+const TOAST_EXIT_MS = 200
+
+async function flushToastExit() {
+  await vi.advanceTimersByTimeAsync(TOAST_EXIT_MS)
+  await nextTick()
+}
+
 function mountWithToast(
   setup: () => Record<string, unknown> | void,
   providerProps: Record<string, unknown> = {},
@@ -102,6 +110,12 @@ describe('ToastProvider', () => {
     dismissBtn.click()
     await nextTick()
 
+    expect(document.querySelector('[data-kablui-toast]')).toBeTruthy()
+    expect(document.querySelector('[data-kablui-toast]')?.hasAttribute('data-exiting')).toBe(
+      true,
+    )
+
+    await flushToastExit()
     expect(document.querySelector('[data-kablui-toast]')).toBeNull()
   })
 
@@ -123,6 +137,12 @@ describe('ToastProvider', () => {
 
     await vi.advanceTimersByTimeAsync(1)
     await nextTick()
+    expect(document.body.textContent).toContain('Timed')
+    expect(document.querySelector('[data-kablui-toast]')?.hasAttribute('data-exiting')).toBe(
+      true,
+    )
+
+    await flushToastExit()
     expect(document.body.textContent).not.toContain('Timed')
   })
 
@@ -173,19 +193,20 @@ describe('ToastProvider', () => {
     ) as HTMLButtonElement
     firstDismiss.click()
     await nextTick()
+    await flushToastExit()
 
     expect(titles()).toEqual(['Two', 'Three'])
   })
 
   it('dismiss(id) removes a specific toast', async () => {
     let firstId = ''
+    let api!: ReturnType<typeof useToast>
     wrapper = mountWithToast(() => {
-      const api = useToast()
+      api = useToast()
       return {
         onTrigger: () => {
           firstId = api.toast({ title: 'First', duration: 0 })
           api.toast({ title: 'Second', duration: 0 })
-          api.dismiss(firstId)
         },
       }
     })
@@ -193,6 +214,12 @@ describe('ToastProvider', () => {
     await wrapper.find('[data-trigger]').trigger('click')
     await nextTick()
 
+    api.dismiss(firstId)
+    await nextTick()
+    expect(document.body.textContent).toContain('First')
+    expect(document.body.textContent).toContain('Second')
+
+    await flushToastExit()
     expect(document.body.textContent).not.toContain('First')
     expect(document.body.textContent).toContain('Second')
   })
@@ -230,6 +257,7 @@ describe('ToastProvider', () => {
     ) as HTMLButtonElement
     firstDismiss.click()
     await nextTick()
+    await flushToastExit()
 
     expect(titles()).toEqual(['Two'])
     expect(document.body.textContent).not.toContain('Queued')
@@ -253,6 +281,9 @@ describe('ToastProvider', () => {
 
     await vi.advanceTimersByTimeAsync(1)
     await nextTick()
+    expect(document.body.textContent).toContain('Default timed')
+
+    await flushToastExit()
     expect(document.body.textContent).not.toContain('Default timed')
   })
 

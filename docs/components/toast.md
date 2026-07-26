@@ -10,6 +10,8 @@ Toasts are transient notifications. Mount **`ToastProvider`** near the app root,
 
 ### 1. Wrap the app with `ToastProvider`
 
+Docs already wrap the app with `ToastProvider`, so live demos below need no per-page provider. In your app, mount it near the root:
+
 ```vue
 <!-- App.vue -->
 <script setup lang="ts">
@@ -37,80 +39,25 @@ import { ToastProvider } from 'kablui'
 </template>
 ```
 
-### 2. Call `useToast` under the provider
+## Examples
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Button, Cluster, useToast } from 'kablui'
-import type { ToastTone } from 'kablui'
+### Variants
 
-const { toast, dismiss } = useToast()
-const stickyId = ref<string | null>(null)
+Call `useToast()` under a provider and pass a `tone` for each notification.
 
-function showToast(tone: ToastTone) {
-  toast({
-    tone,
-    title:
-      tone === 'success'
-        ? 'Saved'
-        : tone === 'danger'
-          ? 'Failed'
-          : tone === 'warning'
-            ? 'Heads up'
-            : tone === 'accent'
-              ? 'Note'
-              : 'Hello',
-    description: 'Toast from useToast().',
-  })
-}
+<Demo src="./demos/toast-variants.vue" />
 
-function showSticky() {
-  if (stickyId.value) dismiss(stickyId.value)
-  stickyId.value = toast({
-    title: 'Sticky',
-    description: 'Won’t auto-dismiss. Use Dismiss sticky or the × control.',
-    duration: 0,
-  })
-}
+### Sticky
 
-function dismissSticky() {
-  if (!stickyId.value) return
-  dismiss(stickyId.value)
-  stickyId.value = null
-}
+Set `duration: 0` to keep a toast until dismissed via `dismiss(id)` or the × control.
 
-function showUndo() {
-  const id = toast({
-    tone: 'warning',
-    title: 'Item deleted',
-    description: 'Your change can be reverted.',
-    action: {
-      label: 'Undo',
-      onClick: () => {
-        dismiss(id)
-        toast({ tone: 'success', title: 'Restored' })
-      },
-    },
-  })
-}
-</script>
+<Demo src="./demos/toast-sticky.vue" />
 
-<template>
-  <Cluster gap="sm">
-    <Button size="sm" variant="outline" @click="showToast('neutral')">Neutral</Button>
-    <Button size="sm" variant="outline" @click="showToast('accent')">Accent</Button>
-    <Button size="sm" variant="outline" @click="showToast('success')">Success</Button>
-    <Button size="sm" variant="outline" @click="showToast('warning')">Warning</Button>
-    <Button size="sm" variant="outline" @click="showToast('danger')">Danger</Button>
-    <Button size="sm" variant="outline" @click="showSticky">Sticky</Button>
-    <Button size="sm" variant="outline" :disabled="!stickyId" @click="dismissSticky">
-      Dismiss sticky
-    </Button>
-    <Button size="sm" variant="outline" @click="showUndo">Undo action</Button>
-  </Cluster>
-</template>
-```
+### Action
+
+Pass an `action` with `label` and `onClick` (for example, Undo).
+
+<Demo src="./demos/toast-action.vue" />
 
 `useToast()` throws if called outside `ToastProvider`.
 

@@ -6,26 +6,13 @@ Binary on/off control with a switch appearance, Field-aware labeling, and `v-mod
 
 Use `Switch` when the affordance should read as an immediate toggle (e.g. preferences) rather than a form checkbox. It is a `<button role="switch">`, not a native checkbox. Optional `name` / `value` add a hidden input for native form submission when on.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Field, FieldHint, FieldLabel, Switch } from 'kablui'
+### Basic
 
-const notifications = ref(true)
-</script>
+Toggle with an adjacent `FieldLabel`. Click, Space, or Enter flips the switch.
 
-<template>
-  <Field>
-    <div class="flex items-center gap-2">
-      <Switch v-model="notifications" name="notifications" />
-      <FieldLabel>Email notifications</FieldLabel>
-    </div>
-    <FieldHint>Space or click toggles the switch.</FieldHint>
-  </Field>
-</template>
-```
+<Demo src="./demos/switch-basic.vue" />
 
 ## Props / Models / Emits / Slots
 

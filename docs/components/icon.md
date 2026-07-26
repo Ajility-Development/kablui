@@ -4,47 +4,13 @@
 
 Sized wrapper for a slotted SVG (no icon package). Decorative by default; pass `label` when the icon conveys meaning on its own.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { Icon, Text } from 'kablui'
-</script>
+### Sizes
 
-<template>
-  <!-- Meaningful: label sets role="img" + aria-label -->
-  <Icon size="sm" label="Check small">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M5 13l4 4L19 7" />
-    </svg>
-  </Icon>
-  <Icon size="md" label="Check medium">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M5 13l4 4L19 7" />
-    </svg>
-  </Icon>
-  <Icon size="lg" label="Check large">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M5 13l4 4L19 7" />
-    </svg>
-  </Icon>
+`sm`, `md`, and `lg` set the wrapper box. Pass `label` for a meaningful icon; omit it (or use `title` alone) for decorative.
 
-  <!-- title is a native tooltip only; icon stays decorative without label -->
-  <Icon size="md" title="Accent currentColor">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 8v4l2.5 2.5" />
-    </svg>
-  </Icon>
-
-  <!-- Decorative (no label) -->
-  <Icon size="md">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M12 5v14M5 12h14" />
-    </svg>
-  </Icon>
-</template>
-```
+<Demo src="./demos/icon-sizes.vue" />
 
 Color follows `currentColor` from the parent. Pair with [Button](/components/button) for icon-only actions and put the accessible name on the button, not the decorative icon.
 

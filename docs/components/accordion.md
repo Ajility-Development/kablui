@@ -6,73 +6,19 @@ Expandable sections for FAQs and settings groups. `Accordion` provides open stat
 
 The `type` prop is tied to the `v-model` shape: `single` uses `string | undefined`; `multiple` uses `string[]`.
 
-## Usage
+## Examples
 
 ### Single (collapsible)
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from 'kablui'
+`type="single"` opens one item at a time. Set `collapsible` (default `true`) to allow collapsing the open item. Disabled items do not toggle.
 
-const open = ref<string | undefined>('billing')
-</script>
-
-<template>
-  <Accordion v-model="open" type="single" class="max-w-md">
-    <AccordionItem value="billing">
-      <AccordionTrigger>Billing</AccordionTrigger>
-      <AccordionContent>
-        Invoices, payment methods, and plan changes.
-      </AccordionContent>
-    </AccordionItem>
-    <AccordionItem value="security">
-      <AccordionTrigger>Security</AccordionTrigger>
-      <AccordionContent>
-        Password, two-factor authentication, and sessions.
-      </AccordionContent>
-    </AccordionItem>
-    <AccordionItem value="disabled" disabled>
-      <AccordionTrigger>Disabled</AccordionTrigger>
-      <AccordionContent>You should not see this.</AccordionContent>
-    </AccordionItem>
-  </Accordion>
-</template>
-```
+<Demo src="./demos/accordion-single.vue" />
 
 ### Multiple
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from 'kablui'
+`type="multiple"` keeps an array of open values. Override the trigger heading with `heading` when the outline needs a different level.
 
-const open = ref<string[]>(['shipping'])
-</script>
-
-<template>
-  <Accordion v-model="open" type="multiple" class="max-w-md">
-    <AccordionItem value="shipping">
-      <AccordionTrigger>Shipping</AccordionTrigger>
-      <AccordionContent>Addresses and delivery preferences.</AccordionContent>
-    </AccordionItem>
-    <AccordionItem value="notifications">
-      <AccordionTrigger heading="h2">Notifications</AccordionTrigger>
-      <AccordionContent>Email and in-app alert settings.</AccordionContent>
-    </AccordionItem>
-  </Accordion>
-</template>
-```
+<Demo src="./demos/accordion-multiple.vue" />
 
 ### Nesting
 

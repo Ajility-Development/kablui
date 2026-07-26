@@ -6,40 +6,13 @@ Action menu built as a provide/inject compound. `Menu` owns open state and place
 
 Use **Menu** for action lists (edit, delete, share). Do not use [Popover](./popover.md) for action menus.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import {
-  Cluster,
-  Menu,
-  MenuContent,
-  MenuItem,
-  MenuSeparator,
-  MenuTrigger,
-  Text,
-} from 'kablui'
+### Basic
 
-const lastAction = ref<string | null>(null)
-</script>
+Open from a trigger, choose an item (or a disabled item that cannot activate), and read the last selected action.
 
-<template>
-  <Cluster gap="sm" class="items-center">
-    <Menu>
-      <MenuTrigger>Actions</MenuTrigger>
-      <MenuContent>
-        <MenuItem @select="lastAction = 'Edit'">Edit</MenuItem>
-        <MenuItem @select="lastAction = 'Duplicate'">Duplicate</MenuItem>
-        <MenuSeparator />
-        <MenuItem disabled @select="lastAction = 'Archive'">Archive</MenuItem>
-        <MenuItem @select="lastAction = 'Delete'">Delete</MenuItem>
-      </MenuContent>
-    </Menu>
-    <Text size="sm" tone="muted">Last action: {{ lastAction ?? 'none' }}</Text>
-  </Cluster>
-</template>
-```
+<Demo src="./demos/menu-basic.vue" />
 
 ### Nesting
 

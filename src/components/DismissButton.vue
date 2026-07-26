@@ -5,7 +5,7 @@ const emit = defineEmits<{
 
 const classes = [
   'inline-flex size-7 shrink-0 items-center justify-center',
-  'rounded-kablui-sm text-kablui-muted-fg hover:bg-kablui-muted hover:text-kablui-fg',
+  'rounded-kablui-sm text-current hover:bg-kablui-muted',
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kablui-focus focus-visible:ring-offset-2 focus-visible:ring-offset-kablui-bg',
 ].join(' ')
 

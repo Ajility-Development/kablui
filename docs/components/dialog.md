@@ -4,37 +4,13 @@
 
 Modal dialog teleported to the document body. Use it for confirmations and short focused tasks that need focus trapping, scroll lock, and dismiss via Escape, backdrop, or an optional dismiss button.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Button, Dialog, Text } from 'kablui'
+### Basic
 
-const open = ref(false)
+Open with a button, close via footer actions, Escape, backdrop, or the header dismiss control (`show-dismiss`).
 
-function onConfirm() {
-  // Perform the confirmed action, then close.
-  open.value = false
-}
-</script>
-
-<template>
-  <Button variant="solid" @click="open = true">Open dialog</Button>
-
-  <Dialog v-model:open="open" show-dismiss>
-    <template #title>Confirm action</template>
-    <template #description>
-      Escape, backdrop click, or the dismiss button closes this dialog.
-    </template>
-    <Text size="sm">Focus stays trapped while open; body scroll is locked.</Text>
-    <template #footer>
-      <Button variant="ghost" @click="open = false">Cancel</Button>
-      <Button variant="solid" @click="onConfirm">Confirm</Button>
-    </template>
-  </Dialog>
-</template>
-```
+<Demo src="./demos/dialog-basic.vue" />
 
 Set `dismissible` to `false` when Escape and backdrop click should not close the dialog (the dismiss button still works when `showDismiss` is set).
 

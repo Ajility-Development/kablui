@@ -4,20 +4,13 @@
 
 Polymorphic text primitive. Renders as a paragraph by default, or as another element via `as`, with size, weight, and tone tokens.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { Text } from 'kablui'
-</script>
+### Sizes, weights, and tones
 
-<template>
-  <Text as="h4" size="lg" weight="semibold">Heading via as="h4"</Text>
-  <Text size="sm" tone="muted">Small muted supporting copy.</Text>
-  <Text size="md" weight="medium" tone="accent">Medium accent label</Text>
-  <Text as="span" size="sm" tone="danger">Inline danger span</Text>
-</template>
-```
+Use `as` for element type, then `size`, `weight`, and `tone` for typography tokens.
+
+<Demo src="./demos/text-tones.vue" />
 
 ## Props / Models / Emits / Slots
 

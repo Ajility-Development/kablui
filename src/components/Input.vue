@@ -30,7 +30,7 @@ const fieldAttrs = useFieldControlAttrs({
 })
 
 const baseClasses = [
-  'w-full border border-kablui-border bg-kablui-bg text-kablui-fg',
+  'w-full border border-kablui-border-strong bg-kablui-bg text-kablui-fg',
   'rounded-kablui-md font-kablui-normal',
   'placeholder:text-kablui-muted-fg',
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kablui-focus focus-visible:ring-offset-2 focus-visible:ring-offset-kablui-bg',

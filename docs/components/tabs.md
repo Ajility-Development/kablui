@@ -4,50 +4,21 @@
 
 Tabbed panels for switching views in place. `Tabs` holds the selected value via `v-model`; nest a `TabList` of `Tab`s and sibling `TabPanel`s. Parts inject from `Tabs` and warn if used outside that tree.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Tab, TabList, TabPanel, Tabs, Text } from 'kablui'
+### Basic
 
-const tab = ref('account')
-</script>
+Nest a `TabList` of `Tab`s with sibling `TabPanel`s. A panel whose matching tab is `disabled` stays unreachable.
 
-<template>
-  <Tabs v-model="tab" class="max-w-md">
-    <TabList>
-      <Tab value="account">Account</Tab>
-      <Tab value="password">Password</Tab>
-      <Tab value="team" disabled>Team</Tab>
-    </TabList>
-    <TabPanel value="account">
-      <Text size="sm">Update your profile name and email.</Text>
-    </TabPanel>
-    <TabPanel value="password">
-      <Text size="sm">Change password and review active sessions.</Text>
-    </TabPanel>
-    <TabPanel value="team">
-      <Text size="sm">Invite teammates (disabled tab).</Text>
-    </TabPanel>
-  </Tabs>
-</template>
-```
+<Demo src="./demos/tabs-basic.vue" />
 
-A panel whose matching tab is `disabled` stays unreachable: keyboard and pointer selection skip that tab, so its panel never becomes selected while disabled. Keep the panel in the tree if you will enable the tab later; omit it if the view should not exist.
+Keep the panel in the tree if you will enable the tab later; omit it if the view should not exist.
 
-Vertical orientation (arrow keys follow the axis):
+### Vertical
 
-```vue
-<Tabs v-model="tab" orientation="vertical">
-  <TabList>
-    <Tab value="a">A</Tab>
-    <Tab value="b">B</Tab>
-  </TabList>
-  <TabPanel value="a">Panel A</TabPanel>
-  <TabPanel value="b">Panel B</TabPanel>
-</Tabs>
-```
+`orientation="vertical"` stacks the tab list and changes arrow-key direction to up/down.
+
+<Demo src="./demos/tabs-vertical.vue" />
 
 ### Nesting
 

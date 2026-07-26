@@ -4,40 +4,19 @@
 
 Native `<button>` for actions and CTAs. Supports solid, outline, and ghost variants; three sizes; and a disabled state that blocks clicks.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { Button, Icon } from 'kablui'
-</script>
+### Variants and sizes
 
-<template>
-  <Button variant="solid" @click="() => {}">Solid</Button>
-  <Button variant="outline">Outline</Button>
-  <Button variant="ghost">Ghost</Button>
-  <Button size="sm">sm</Button>
-  <Button size="lg">lg</Button>
-  <Button disabled>Disabled</Button>
+`solid`, `outline`, and `ghost` control visual style. `sm` / `md` / `lg` set padding and text size. `disabled` blocks clicks.
 
-  <Button variant="outline">
-    <Icon size="sm">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M5 12h14M12 5l7 7-7 7" />
-      </svg>
-    </Icon>
-    With icon
-  </Button>
+<Demo src="./demos/button-variants.vue" />
 
-  <!-- Icon-only: provide an accessible name on the button -->
-  <Button variant="ghost" aria-label="More options">
-    <Icon size="sm">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M4 7h16M4 12h16M4 17h16" />
-      </svg>
-    </Icon>
-  </Button>
-</template>
-```
+### With icon
+
+Slot an `Icon` beside the label, or use an icon-only button with an accessible name (`aria-label`).
+
+<Demo src="./demos/button-with-icon.vue" />
 
 ## Props / Models / Emits / Slots
 

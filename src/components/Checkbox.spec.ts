@@ -52,6 +52,27 @@ describe('Checkbox', () => {
     expect(className).toMatch(/focus-visible:ring-offset-kablui-bg/)
   })
 
+  it('uses fg border so the outline matches text color', () => {
+    const className = mount(Checkbox).find('input').attributes('class') ?? ''
+    expect(className).toMatch(/border-kablui-fg/)
+    expect(className).not.toMatch(/border-kablui-border(?!-)/)
+  })
+
+  it('draws a text-colored check when checked (appearance-none)', () => {
+    const wrapper = mount(Checkbox, { props: { modelValue: true } })
+    const className = wrapper.find('input').attributes('class') ?? ''
+    expect(className).toMatch(/\bpeer\b/)
+    expect(className).toMatch(/appearance-none/)
+    expect(className).not.toMatch(/checked:bg-kablui-accent(?:\s|$)/)
+
+    const marks = wrapper.findAll('svg[aria-hidden="true"]')
+    expect(marks.length).toBe(2)
+    expect(marks[0]!.classes().join(' ')).toMatch(/text-kablui-fg/)
+    expect(marks[0]!.classes().join(' ')).toMatch(/peer-checked:opacity-100/)
+    expect(marks[1]!.classes().join(' ')).toMatch(/peer-indeterminate:opacity-100/)
+    expect(marks[0]!.find('path').attributes('stroke')).toBe('currentColor')
+  })
+
   it('inherits Field id wiring', async () => {
     const wrapper = mount(
       defineComponent({

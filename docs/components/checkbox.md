@@ -6,40 +6,19 @@ Boolean checkbox with optional indeterminate state and Field-aware labeling.
 
 Use `Checkbox` for on/off choices. Pair it with `FieldLabel` inside `Field` so click-to-focus/toggle wiring stays correct. Supports `indeterminate` for a mixed state (DOM `indeterminate` + `aria-checked="mixed"`).
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Checkbox, Field, FieldLabel } from 'kablui'
+### Basic
 
-const subscribe = ref(false)
-</script>
+Pair `Checkbox` with `FieldLabel` inside `Field` so click-to-focus and id wiring stay correct.
 
-<template>
-  <Field>
-    <div class="flex items-center gap-2">
-      <Checkbox v-model="subscribe" name="subscribe" />
-      <FieldLabel>Subscribe to product updates</FieldLabel>
-    </div>
-  </Field>
-</template>
-```
+<Demo src="./demos/checkbox-basic.vue" />
 
-Indeterminate:
+### Indeterminate
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Checkbox } from 'kablui'
+Set `indeterminate` for a mixed state (`aria-checked="mixed"` and the native indeterminate property).
 
-const allSelected = ref(false)
-</script>
-
-<template>
-  <Checkbox v-model="allSelected" indeterminate />
-</template>
-```
+<Demo src="./demos/checkbox-indeterminate.vue" />
 
 ## Props / Models / Emits / Slots
 

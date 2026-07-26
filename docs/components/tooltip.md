@@ -4,27 +4,19 @@
 
 Short hint shown on hover or focus. Wrap a single interactive (or focusable) child; pass text via the `content` prop or the `content` slot. The tip teleports to `body` and is not dismissible as a modal—it hides when pointer/focus leave.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { Button, Tooltip } from 'kablui'
-</script>
+### Basic
 
-<template>
-  <Tooltip content="Helpful hint on hover or focus">
-    <Button variant="outline">Hover or focus me</Button>
-  </Tooltip>
+Hover or focus the trigger to show a short hint. Hover show/hide only runs when `(hover: hover)` matches; focus still shows the tip on devices without hover.
 
-  <!-- Rich content via slot -->
-  <Tooltip placement="bottom" :delay="150">
-    <Button variant="ghost">Details</Button>
-    <template #content>Supports a content slot when you need markup.</template>
-  </Tooltip>
-</template>
-```
+<Demo src="./demos/tooltip-basic.vue" />
 
-Hover show/hide only runs when `(hover: hover)` matches; focus still shows the tip on devices without hover.
+### Content slot
+
+Use the `content` slot when you need markup, and optionally set `placement` and `delay`.
+
+<Demo src="./demos/tooltip-content-slot.vue" />
 
 ## Props / Models / Emits / Slots
 

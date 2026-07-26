@@ -4,35 +4,15 @@
 
 `Skeleton` is a decorative placeholder for loading content. Use rectangles and circles to mirror the eventual layout while data loads.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { Skeleton, Stack } from 'kablui'
-</script>
+### Shapes
 
-<template>
-  <div class="flex items-center gap-3">
-    <Skeleton circle width="2.5rem" height="2.5rem" />
-    <Stack gap="sm" class="flex-1">
-      <Skeleton width="60%" height="0.875rem" />
-      <Skeleton width="90%" height="0.875rem" />
-    </Stack>
-  </div>
-</template>
-```
+Combine `circle` and rectangular skeletons to mirror an avatar-plus-lines layout. Set `width` / `height` as CSS lengths.
 
-Disable pulse animation when a static placeholder is enough:
+<Demo src="./demos/skeleton-shapes.vue" />
 
-```vue
-<script setup lang="ts">
-import { Skeleton } from 'kablui'
-</script>
-
-<template>
-  <Skeleton :animated="false" width="12rem" height="1rem" />
-</template>
-```
+Set `:animated="false"` when a static placeholder is enough — see Props below.
 
 ## Props / Models / Emits / Slots
 

@@ -4,31 +4,19 @@
 
 `Progress` renders a progress bar for determinate completion or an indeterminate “working” state. Omit `value` (or set `indeterminate`) for indeterminate mode. Use `caption` for visible copy above the bar; use `label` for an accessible name that is not shown.
 
-## Usage
+## Examples
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Button, Progress, Stack } from 'kablui'
+### Value
 
-const progress = ref(42)
-</script>
+Pass `value` for a determinate bar. `caption` is visible above the track.
 
-<template>
-  <Stack gap="sm" class="max-w-md">
-    <Progress :value="progress" :caption="`${progress}% complete`" />
-    <div class="flex flex-wrap gap-2">
-      <Button size="sm" variant="outline" @click="progress = Math.max(0, progress - 10)">
-        −10
-      </Button>
-      <Button size="sm" variant="outline" @click="progress = Math.min(100, progress + 10)">
-        +10
-      </Button>
-    </div>
-    <Progress indeterminate caption="Working…" label="Upload in progress" />
-  </Stack>
-</template>
-```
+<Demo src="./demos/progress-value.vue" />
+
+### Indeterminate
+
+Set `indeterminate` (or omit `value`) for a working state. Prefer `label` when the caption alone is not enough for assistive tech.
+
+<Demo src="./demos/progress-indeterminate.vue" />
 
 ## Props / Models / Emits / Slots
 
