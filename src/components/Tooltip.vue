@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, useAttrs, watch } from 'vue'
 import {
   useFloating,
   type FloatingPlacement,
 } from '../composables/useFloating'
 import { useId } from '../composables/useId'
+import { omitDataTestId, partTestId, resolveTestId } from '../utils/testId'
 
 export interface TooltipProps {
   /** Tooltip text when the default slot for content is unused. */
@@ -14,10 +15,15 @@ export interface TooltipProps {
   delay?: number
 }
 
+defineOptions({ inheritAttrs: false })
+
 const props = withDefaults(defineProps<TooltipProps>(), {
   placement: 'top',
   delay: 300,
 })
+
+const attrs = useAttrs()
+const testIdBase = computed(() => resolveTestId(attrs, 'tooltip'))
 
 const open = ref(false)
 const anchorRef = ref<HTMLElement | null>(null)
@@ -182,8 +188,10 @@ const contentClasses = [
 <template>
   <span
     ref="anchorRef"
+    v-bind="omitDataTestId(attrs)"
     class="inline-flex"
     data-slot="tooltip"
+    :data-testid="testIdBase"
     @pointerenter="onPointerEnter"
     @pointerleave="onPointerLeave"
     @focusin="onFocusIn"
@@ -199,6 +207,7 @@ const contentClasses = [
       ref="floatingRef"
       role="tooltip"
       data-slot="tooltip-content"
+      :data-testid="partTestId(testIdBase, 'content')"
       :data-placement="placement"
       :class="contentClasses"
       :style="style"

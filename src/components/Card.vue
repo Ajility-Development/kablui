@@ -18,6 +18,7 @@ const baseClasses = [
     :is="as"
     :class="baseClasses"
     data-slot="card"
+    data-testid="card"
   >
     <slot />
   </component>

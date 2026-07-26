@@ -8,6 +8,7 @@ export interface RadioGroupContext {
   register: (el: HTMLInputElement) => void
   unregister: (el: HTMLInputElement) => void
   focusRelative: (current: HTMLInputElement, delta: number) => void
+  testIdBase: ComputedRef<string>
 }
 
 export const RADIO_GROUP_KEY: InjectionKey<RadioGroupContext> = Symbol('kablui-radio-group')

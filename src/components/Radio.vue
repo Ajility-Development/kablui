@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, onMounted, ref, useAttrs } from 'vue'
+import { omitDataTestId, sanitizeTestIdValue, valueTestId } from '../utils/testId'
 import { RADIO_GROUP_KEY } from './radioContext'
 
 export interface RadioProps {
@@ -25,6 +26,12 @@ if (!group) {
 const isDisabled = computed(() => props.disabled || !!group?.disabled.value)
 const isChecked = computed(() => group?.model.value === props.value)
 const isInvalid = computed(() => !!group?.invalid.value)
+const testId = computed(() =>
+  group
+    ? valueTestId(group.testIdBase.value, 'radio', props.value)
+    : `radio-${sanitizeTestIdValue(props.value)}`,
+)
+const bindAttrs = computed(() => omitDataTestId(attrs))
 
 onMounted(() => {
   if (inputRef.value) group?.register(inputRef.value)
@@ -75,7 +82,8 @@ function onKeydown(event: KeyboardEvent) {
     :disabled="isDisabled"
     :aria-invalid="isInvalid ? 'true' : undefined"
     :class="classes"
-    v-bind="attrs"
+    :data-testid="testId"
+    v-bind="bindAttrs"
     @change="onChange"
     @keydown="onKeydown"
   />

@@ -14,6 +14,7 @@ describe('Stack', () => {
     const classes = wrapper.classes()
 
     expect(wrapper.element.tagName).toBe('DIV')
+    expect(wrapper.attributes('data-testid')).toBe('stack')
     expect(classes).toContain('flex')
     expect(classes).toContain('flex-col')
     expect(classes).toContain('gap-4')

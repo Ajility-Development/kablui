@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, ref, useAttrs, type ComponentPublicInstance } from 'vue'
 import { useFloating } from '../composables/useFloating'
+import { omitDataTestId, resolveTestId } from '../utils/testId'
 import { POPOVER_KEY } from './popoverContext'
 
 /** No props — placement and open state come from Popover. */
@@ -9,6 +10,7 @@ export type PopoverContentProps = Record<string, never>
 defineOptions({ inheritAttrs: false })
 
 const attrs = useAttrs()
+const testId = computed(() => resolveTestId(attrs, 'popover-content'))
 const popover = inject(POPOVER_KEY, null)
 
 if (!popover) {
@@ -55,10 +57,11 @@ const classes = [
       role="dialog"
       tabindex="-1"
       data-slot="popover-content"
+      :data-testid="testId"
       :data-placement="placement"
       :class="classes"
       :style="style"
-      v-bind="attrs"
+      v-bind="omitDataTestId(attrs)"
       @pointerdown.stop
     >
       <slot />

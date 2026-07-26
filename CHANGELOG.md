@@ -19,6 +19,7 @@ See [Releasing](docs/guides/releasing.md) for versioning policy and publish step
 - Toast `action` object prop (`{ label, onClick }` via `useToast` / presentational `{ label }` on `Toast`).
 - Select teleports its listbox; public `SelectOption` type for the `options` prop.
 - Docs IA: Patterns section; Menu and Toast under Overlays; RadioGroup at `/components/radio-group`.
+- Components expose default kebab-case `data-testid` attributes (with derived ids for composites such as Select options and Pagination pages) for browser testing.
 
 ### Changed
 

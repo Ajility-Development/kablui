@@ -8,6 +8,7 @@ export interface AccordionContext {
   registerTrigger: (value: string, el: HTMLButtonElement | null, disabled: boolean) => void
   unregisterTrigger: (value: string) => void
   focusRelative: (currentValue: string, delta: number) => void
+  testIdBase: ComputedRef<string>
 }
 
 export interface AccordionItemContext {

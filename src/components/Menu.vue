@@ -127,7 +127,7 @@ provide(MENU_KEY, {
 </script>
 
 <template>
-  <div ref="rootRef" class="relative inline-flex" data-slot="menu">
+  <div ref="rootRef" class="relative inline-flex" data-slot="menu" data-testid="menu">
     <slot />
   </div>
 </template>

@@ -44,6 +44,14 @@ describe('Textarea', () => {
     expect(el.attributes('disabled')).toBeDefined()
   })
 
+  it('emits default data-testid and allows override', () => {
+    const def = mount(Textarea)
+    expect(def.find('textarea').attributes('data-testid')).toBe('textarea')
+
+    const custom = mount(Textarea, { attrs: { 'data-testid': 'notes' } })
+    expect(custom.find('textarea').attributes('data-testid')).toBe('notes')
+  })
+
   it('inherits Field wiring', async () => {
     const wrapper = mount(
       defineComponent({

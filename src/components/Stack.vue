@@ -30,6 +30,7 @@ const alignClasses: Record<NonNullable<StackProps['align']>, string> = {
   <component
     :is="as"
     :class="['flex flex-col', gapClasses[gap], alignClasses[align]]"
+    data-testid="stack"
   >
     <slot />
   </component>

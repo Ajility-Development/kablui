@@ -26,6 +26,7 @@ const shapeClasses: Record<'rect' | 'circle', string> = {
 <template>
   <div
     aria-hidden="true"
+    data-testid="skeleton"
     :class="[
       baseClasses,
       shapeClasses[circle ? 'circle' : 'rect'],

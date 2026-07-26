@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { computed, useAttrs } from 'vue'
 import { useId } from '../composables/useId'
 import type { Tone } from '../types/tone'
+import { omitDataTestId, partTestId, resolveTestId } from '../utils/testId'
 import { SURFACE_TONE_CLASSES } from '../utils/tones'
 import DismissButton from './DismissButton.vue'
 
@@ -18,6 +20,8 @@ export interface ToastProps {
   exiting?: boolean
 }
 
+defineOptions({ inheritAttrs: false })
+
 withDefaults(defineProps<ToastProps>(), {
   tone: 'neutral',
   exiting: false,
@@ -27,6 +31,9 @@ const emit = defineEmits<{
   dismiss: []
   action: []
 }>()
+
+const attrs = useAttrs()
+const testIdBase = computed(() => resolveTestId(attrs, 'toast'))
 
 const titleId = useId('toast-title')
 const descriptionId = useId('toast-description')
@@ -57,10 +64,12 @@ function onAction() {
 
 <template>
   <div
+    v-bind="omitDataTestId(attrs)"
     :role="tone === 'danger' ? 'alert' : 'status'"
     :aria-labelledby="titleId"
     :aria-describedby="description ? descriptionId : undefined"
     :class="[baseClasses, SURFACE_TONE_CLASSES[tone], exiting ? exitingClasses : undefined]"
+    :data-testid="testIdBase"
     data-kablui-toast
     :data-exiting="exiting ? '' : undefined"
   >
@@ -89,6 +98,7 @@ function onAction() {
     </div>
     <DismissButton
       class="-mr-1 -mt-0.5"
+      :data-testid="partTestId(testIdBase, 'dismiss')"
       @click="onDismiss"
     />
   </div>

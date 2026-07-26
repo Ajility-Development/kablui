@@ -32,6 +32,7 @@ function onDismiss() {
 <template>
   <div
     :role="tone === 'danger' ? 'alert' : 'status'"
+    data-testid="alert"
     :class="[baseClasses, SURFACE_TONE_CLASSES[tone]]"
   >
     <div class="min-w-0 flex-1">

@@ -9,6 +9,7 @@ describe('Separator', () => {
     const wrapper = mount(Separator)
     const classes = wrapper.classes()
 
+    expect(wrapper.attributes('data-testid')).toBe('separator')
     expect(classes).toContain('border-kablui-border')
     expect(classes).toContain('w-full')
     expect(classes).toContain('border-t')

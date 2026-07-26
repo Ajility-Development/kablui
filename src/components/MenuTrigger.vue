@@ -76,6 +76,7 @@ const classes = computed(() => [base, variantClasses[props.variant], sizeClasses
     :ref="setTriggerRef"
     type="button"
     data-slot="menu-trigger"
+    data-testid="menu-trigger"
     :class="classes"
     aria-haspopup="menu"
     :aria-expanded="isOpen ? 'true' : 'false'"

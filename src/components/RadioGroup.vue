@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, provide } from 'vue'
+import { computed, provide, useAttrs } from 'vue'
 import { useFieldControlAttrs } from '../composables/useField'
+import { resolveTestId } from '../utils/testId'
 import { RADIO_GROUP_KEY } from './radioContext'
 
 export interface RadioGroupProps {
@@ -20,6 +21,9 @@ const props = withDefaults(defineProps<RadioGroupProps>(), {
 })
 
 const model = defineModel<string>()
+
+const attrs = useAttrs()
+const testIdBase = computed(() => resolveTestId(attrs, 'radio-group'))
 
 const fieldAttrs = useFieldControlAttrs({
   id: () => props.id,
@@ -59,6 +63,7 @@ provide(RADIO_GROUP_KEY, {
   register,
   unregister,
   focusRelative,
+  testIdBase,
 })
 
 const orientationClasses: Record<NonNullable<RadioGroupProps['orientation']>, string> = {
@@ -77,6 +82,7 @@ const orientationClasses: Record<NonNullable<RadioGroupProps['orientation']>, st
     :aria-disabled="disabled || undefined"
     :class="['flex', orientationClasses[orientation]]"
     data-slot="radio-group"
+    :data-testid="testIdBase"
   >
     <slot />
   </div>

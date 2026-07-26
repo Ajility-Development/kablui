@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue'
 import { useFieldControlAttrs } from '../composables/useField'
+import { omitDataTestId, resolveTestId } from '../utils/testId'
 
 export interface InputProps {
   type?: string
@@ -24,6 +25,8 @@ const props = withDefaults(defineProps<InputProps>(), {
 const model = defineModel<string>({ default: '' })
 
 const attrs = useAttrs()
+const testId = computed(() => resolveTestId(attrs, 'input'))
+const bindAttrs = computed(() => omitDataTestId(attrs))
 const fieldAttrs = useFieldControlAttrs({
   id: () => props.id,
   invalid: () => props.invalid,
@@ -61,7 +64,8 @@ const classes = computed(() => [
     :aria-invalid="fieldAttrs.ariaInvalid.value"
     :aria-describedby="fieldAttrs.describedBy.value"
     :class="classes"
-    v-bind="attrs"
+    :data-testid="testId"
+    v-bind="bindAttrs"
     @input="model = ($event.target as HTMLInputElement).value"
   />
 </template>

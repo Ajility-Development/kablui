@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, provide, ref } from 'vue'
+import { computed, provide, ref, useAttrs } from 'vue'
 import { useId } from '../composables/useId'
+import { omitDataTestId, resolveTestId } from '../utils/testId'
 import { TABS_KEY, type TabRegistration } from './tabsContext'
 
 export interface TabsProps {
@@ -8,11 +9,17 @@ export interface TabsProps {
   orientation?: 'horizontal' | 'vertical'
 }
 
+defineOptions({ inheritAttrs: false })
+
 const props = withDefaults(defineProps<TabsProps>(), {
   orientation: 'horizontal',
 })
 
 const model = defineModel<string>()
+
+const attrs = useAttrs()
+const testIdBase = computed(() => resolveTestId(attrs, 'tabs'))
+const bindAttrs = computed(() => omitDataTestId(attrs))
 
 const baseId = useId('tabs')
 const tabs = ref<TabRegistration[]>([])
@@ -106,6 +113,7 @@ provide(TABS_KEY, {
   focusLast,
   isSelected,
   isTabbable,
+  testIdBase,
 })
 
 const orientationClasses: Record<NonNullable<TabsProps['orientation']>, string> = {
@@ -117,8 +125,10 @@ const orientationClasses: Record<NonNullable<TabsProps['orientation']>, string> 
 <template>
   <div
     data-slot="tabs"
+    :data-testid="testIdBase"
     :class="['flex gap-0', orientationClasses[orientation]]"
     :data-orientation="orientation"
+    v-bind="bindAttrs"
   >
     <slot />
   </div>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, provide } from 'vue'
 import { useId } from '../composables/useId'
+import { valueTestId } from '../utils/testId'
 import { ACCORDION_ITEM_KEY, ACCORDION_KEY } from './accordionContext'
 
 export interface AccordionItemProps {
@@ -25,6 +26,9 @@ const contentId = useId('accordion-content')
 const itemValue = computed(() => props.value)
 const isDisabled = computed(() => props.disabled)
 const isOpen = computed(() => !!accordion?.isOpen(props.value))
+const testId = computed(() =>
+  valueTestId(accordion?.testIdBase.value ?? 'accordion', 'item', props.value),
+)
 
 function toggle() {
   if (!accordion || isDisabled.value) return
@@ -44,6 +48,7 @@ provide(ACCORDION_ITEM_KEY, {
 <template>
   <div
     data-slot="accordion-item"
+    :data-testid="testId"
     :data-state="isOpen ? 'open' : 'closed'"
     :data-disabled="disabled || undefined"
     class="border-b border-kablui-border"

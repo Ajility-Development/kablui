@@ -111,6 +111,28 @@ describe('Field composition', () => {
     expect(wrapper.attributes('class')).not.toContain('gap-1.5')
   })
 
+  it('emits default data-testid on field parts', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h(Field, null, () => [
+              h(FieldLabel, null, () => 'Email'),
+              h(Input, { 'modelValue': '', 'onUpdate:modelValue': () => {} }),
+              h(FieldHint, null, () => 'Work email'),
+              h(FieldError, null, () => 'Required'),
+            ])
+        },
+      }),
+    )
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-testid="field"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="field-label"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="field-hint"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="field-error"]').exists()).toBe(true)
+  })
+
   it('uses semantic kablui token classes and no hex colors in Field SFCs', () => {
     for (const file of [
       'Field.vue',

@@ -10,9 +10,10 @@ describe('Link', () => {
       props: { href: '/docs' },
       slots: { default: 'Docs' },
     })
-    const anchor = wrapper.find('a')
+    const anchor = wrapper.find('[data-testid="link"]')
 
     expect(anchor.exists()).toBe(true)
+    expect(anchor.element.tagName).toBe('A')
     expect(anchor.attributes('href')).toBe('/docs')
     expect(anchor.text()).toBe('Docs')
   })

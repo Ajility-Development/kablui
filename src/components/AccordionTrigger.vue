@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, watch, type ComponentPublicInstance } from 'vue'
+import { partTestId } from '../utils/testId'
 import { ACCORDION_ITEM_KEY, ACCORDION_KEY } from './accordionContext'
 
 export type AccordionHeading = 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
@@ -23,6 +24,9 @@ if (!accordion || !item) {
 const isOpen = computed(() => !!item?.isOpen.value)
 const isDisabled = computed(() => !!item?.disabled.value)
 const itemValue = computed(() => item?.value.value ?? '')
+const testId = computed(() =>
+  partTestId(accordion?.testIdBase.value ?? 'accordion', 'trigger'),
+)
 
 let triggerEl: HTMLButtonElement | null = null
 
@@ -92,6 +96,7 @@ const chevronClasses = computed(() =>
       :ref="setTriggerRef"
       type="button"
       data-slot="accordion-trigger"
+      :data-testid="testId"
       :id="item?.triggerId"
       :class="classes"
       :disabled="isDisabled"

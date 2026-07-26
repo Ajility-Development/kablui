@@ -63,6 +63,17 @@ describe('Tooltip', () => {
     expect(button.attributes('aria-describedby')).toBe(tip?.id)
   })
 
+  it('exposes default data-testid on root and content', async () => {
+    mountTooltip({ delay: 0 })
+    expect(wrapper!.find('[data-testid="tooltip"]').exists()).toBe(true)
+
+    await wrapper!.find('button').trigger('focusin')
+    await vi.advanceTimersByTimeAsync(0)
+    await nextTick()
+
+    expect(document.querySelector('[data-testid="tooltip-content"]')).not.toBeNull()
+  })
+
   it('hides on blur and clears aria-describedby', async () => {
     mountTooltip()
     const button = wrapper!.find('button')

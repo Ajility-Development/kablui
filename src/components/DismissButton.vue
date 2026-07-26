@@ -1,7 +1,15 @@
 <script setup lang="ts">
+import { computed, useAttrs } from 'vue'
+import { omitDataTestId, resolveTestId } from '../utils/testId'
+
+defineOptions({ inheritAttrs: false })
+
 const emit = defineEmits<{
   click: [event: MouseEvent]
 }>()
+
+const attrs = useAttrs()
+const testId = computed(() => resolveTestId(attrs, 'dismiss'))
 
 const classes = [
   'inline-flex size-7 shrink-0 items-center justify-center',
@@ -17,7 +25,9 @@ function onClick(event: MouseEvent) {
 <template>
   <button
     type="button"
+    v-bind="omitDataTestId(attrs)"
     :class="classes"
+    :data-testid="testId"
     aria-label="Dismiss"
     @click="onClick"
   >

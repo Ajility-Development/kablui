@@ -25,6 +25,7 @@ export interface SelectContext {
   selectValue: (value: string) => void
   setActiveValue: (value: string) => void
   disabled: ComputedRef<boolean>
+  testIdBase: ComputedRef<string>
 }
 
 export const SELECT_KEY: InjectionKey<SelectContext> = Symbol('kablui-select')

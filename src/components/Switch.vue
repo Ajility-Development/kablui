@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue'
 import { useFieldControlAttrs } from '../composables/useField'
+import { omitDataTestId, resolveTestId } from '../utils/testId'
 
 export interface SwitchProps {
   disabled?: boolean
@@ -22,6 +23,8 @@ const props = withDefaults(defineProps<SwitchProps>(), {
 const model = defineModel<boolean>({ default: false })
 
 const attrs = useAttrs()
+const testId = computed(() => resolveTestId(attrs, 'switch'))
+const bindAttrs = computed(() => omitDataTestId(attrs))
 const fieldAttrs = useFieldControlAttrs({
   id: () => props.id,
   invalid: () => props.invalid,
@@ -69,7 +72,8 @@ function onKeydown(event: KeyboardEvent) {
     :aria-invalid="fieldAttrs.ariaInvalid.value"
     :aria-describedby="fieldAttrs.describedBy.value"
     :class="trackClasses"
-    v-bind="attrs"
+    :data-testid="testId"
+    v-bind="bindAttrs"
     @click="toggle"
     @keydown="onKeydown"
   >

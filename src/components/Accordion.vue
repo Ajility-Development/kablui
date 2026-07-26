@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, provide } from 'vue'
+import { computed, provide, useAttrs } from 'vue'
+import { omitDataTestId, resolveTestId } from '../utils/testId'
 import { ACCORDION_KEY } from './accordionContext'
 
 export interface AccordionProps {
@@ -9,12 +10,18 @@ export interface AccordionProps {
   collapsible?: boolean
 }
 
+defineOptions({ inheritAttrs: false })
+
 const props = withDefaults(defineProps<AccordionProps>(), {
   type: 'single',
   collapsible: true,
 })
 
 const model = defineModel<string | string[] | undefined>()
+
+const attrs = useAttrs()
+const testIdBase = computed(() => resolveTestId(attrs, 'accordion'))
+const bindAttrs = computed(() => omitDataTestId(attrs))
 
 interface TriggerEntry {
   el: HTMLButtonElement | null
@@ -88,11 +95,12 @@ provide(ACCORDION_KEY, {
   registerTrigger,
   unregisterTrigger,
   focusRelative,
+  testIdBase,
 })
 </script>
 
 <template>
-  <div data-slot="accordion">
+  <div data-slot="accordion" :data-testid="testIdBase" v-bind="bindAttrs">
     <slot />
   </div>
 </template>

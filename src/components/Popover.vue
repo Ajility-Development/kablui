@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, nextTick, provide, ref, watch } from 'vue'
+import { computed, nextTick, provide, ref, useAttrs, watch } from 'vue'
 import type { FloatingPlacement } from '../composables/useFloating'
 import { useDismissible } from '../composables/useDismissible'
 import { useId } from '../composables/useId'
 import { useOverlayStack } from '../composables/useOverlayStack'
 import type { OpenReason } from '../types/overlay'
+import { omitDataTestId, resolveTestId } from '../utils/testId'
 import { POPOVER_KEY } from './popoverContext'
 
 export interface PopoverProps {
@@ -12,11 +13,16 @@ export interface PopoverProps {
   placement?: FloatingPlacement
 }
 
+defineOptions({ inheritAttrs: false })
+
 const props = withDefaults(defineProps<PopoverProps>(), {
   placement: 'bottom-start',
 })
 
 const open = defineModel<boolean>('open', { default: false })
+
+const attrs = useAttrs()
+const testId = computed(() => resolveTestId(attrs, 'popover'))
 
 const rootRef = ref<HTMLElement | null>(null)
 const triggerRef = ref<HTMLElement | null>(null)
@@ -91,7 +97,13 @@ provide(POPOVER_KEY, {
 </script>
 
 <template>
-  <div ref="rootRef" class="relative inline-flex" data-slot="popover">
+  <div
+    ref="rootRef"
+    v-bind="omitDataTestId(attrs)"
+    class="relative inline-flex"
+    data-slot="popover"
+    :data-testid="testId"
+  >
     <slot />
   </div>
 </template>

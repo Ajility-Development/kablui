@@ -9,6 +9,7 @@ describe('Skeleton', () => {
     const wrapper = mount(Skeleton)
 
     expect(wrapper.attributes('aria-hidden')).toBe('true')
+    expect(wrapper.attributes('data-testid')).toBe('skeleton')
   })
 
   it('applies muted token and pulse animation by default', () => {

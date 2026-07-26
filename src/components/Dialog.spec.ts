@@ -92,6 +92,26 @@ describe('Dialog', () => {
     )
   })
 
+  it('exposes default data-testid parts on shell, backdrop, panel, title, description, and dismiss', async () => {
+    wrapper = mount(Dialog, {
+      props: { open: true, showDismiss: true },
+      slots: {
+        title: 'Title',
+        description: 'Desc',
+        default: 'Body',
+      },
+      attachTo: document.body,
+    })
+    await nextTick()
+
+    expect(document.querySelector('[data-testid="dialog"]')).not.toBeNull()
+    expect(document.querySelector('[data-testid="dialog-backdrop"]')).not.toBeNull()
+    expect(document.querySelector('[data-testid="dialog-panel"]')).not.toBeNull()
+    expect(document.querySelector('[data-testid="dialog-title"]')).not.toBeNull()
+    expect(document.querySelector('[data-testid="dialog-description"]')).not.toBeNull()
+    expect(document.querySelector('[data-testid="dialog-dismiss"]')).not.toBeNull()
+  })
+
   it('emits update:open false when closed via dismiss button', async () => {
     wrapper = mount(Dialog, {
       props: { open: true, showDismiss: true },

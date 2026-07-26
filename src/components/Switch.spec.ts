@@ -60,6 +60,14 @@ describe('Switch', () => {
     expect(hidden.attributes('value')).toBe('yes')
   })
 
+  it('emits default data-testid and allows override', () => {
+    const def = mount(Switch)
+    expect(def.find('button[role="switch"]').attributes('data-testid')).toBe('switch')
+
+    const custom = mount(Switch, { attrs: { 'data-testid': 'notify' } })
+    expect(custom.find('button[role="switch"]').attributes('data-testid')).toBe('notify')
+  })
+
   it('does not toggle when disabled', async () => {
     const value = ref(false)
     const wrapper = mount(

@@ -26,7 +26,10 @@ const sizeClasses: Record<NonNullable<BadgeProps['size']>, string> = {
 </script>
 
 <template>
-  <span :class="[baseClasses, BADGE_TONE_CLASSES[tone], sizeClasses[size]]">
+  <span
+    data-testid="badge"
+    :class="[baseClasses, BADGE_TONE_CLASSES[tone], sizeClasses[size]]"
+  >
     <slot />
   </span>
 </template>

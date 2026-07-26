@@ -8,6 +8,7 @@ const classes = 'flex flex-col gap-1 px-4 pt-4 pb-2 text-kablui-fg'
   <div
     :class="classes"
     data-slot="card-header"
+    data-testid="card-header"
   >
     <slot />
   </div>

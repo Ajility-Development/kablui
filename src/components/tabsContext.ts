@@ -21,6 +21,7 @@ export interface TabsContext {
   isSelected: (value: string) => boolean
   /** Roving tabindex: selected tab, or first enabled when nothing selected. */
   isTabbable: (value: string) => boolean
+  testIdBase: ComputedRef<string>
 }
 
 export const TABS_KEY: InjectionKey<TabsContext> = Symbol('kablui-tabs')

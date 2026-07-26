@@ -9,6 +9,7 @@ describe('Text', () => {
     const wrapper = mount(Text, { slots: { default: 'Hello' } })
 
     expect(wrapper.text()).toBe('Hello')
+    expect(wrapper.attributes('data-testid')).toBe('text')
   })
 
   it('defaults to a paragraph element', () => {

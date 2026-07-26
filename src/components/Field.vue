@@ -19,7 +19,7 @@ provideField({
 </script>
 
 <template>
-  <div class="flex flex-col gap-2" data-slot="field">
+  <div class="flex flex-col gap-2" data-slot="field" data-testid="field">
     <slot />
   </div>
 </template>

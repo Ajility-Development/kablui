@@ -15,5 +15,10 @@ const classes = 'my-1 h-px w-full shrink-0 border-0 border-t border-solid border
 </script>
 
 <template>
-  <div role="separator" data-slot="menu-separator" :class="classes" />
+  <div
+    role="separator"
+    data-slot="menu-separator"
+    data-testid="menu-separator"
+    :class="classes"
+  />
 </template>

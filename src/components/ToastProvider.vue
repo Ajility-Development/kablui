@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, onScopeDispose, provide, ref } from 'vue'
+import { computed, onScopeDispose, provide, ref, useAttrs } from 'vue'
 import { useId } from '../composables/useId'
 import { useOverlayStack } from '../composables/useOverlayStack'
+import { omitDataTestId, resolveTestId } from '../utils/testId'
 import Stack from './Stack.vue'
 import Toast from './Toast.vue'
 import {
@@ -20,11 +21,16 @@ export interface ToastProviderProps {
   to?: string | HTMLElement
 }
 
+defineOptions({ inheritAttrs: false })
+
 const props = withDefaults(defineProps<ToastProviderProps>(), {
   placement: 'bottom-end',
   maxVisible: 3,
   to: 'body',
 })
+
+const attrs = useAttrs()
+const regionTestId = computed(() => resolveTestId(attrs, 'toast-region'))
 
 defineSlots<{
   default?: () => unknown
@@ -156,8 +162,10 @@ const orderedVisible = computed(() =>
   <Teleport :to="to">
     <div
       v-if="hasVisible"
+      v-bind="omitDataTestId(attrs)"
       :class="regionClasses"
       :style="{ zIndex }"
+      :data-testid="regionTestId"
       data-kablui-toast-region
       :data-placement="placement"
     >

@@ -24,6 +24,7 @@ const forId = computed(() => props.for || field?.controlId.value)
     :for="forId"
     class="inline-flex items-center gap-1 text-kablui-sm font-kablui-medium text-kablui-fg"
     data-slot="field-label"
+    data-testid="field-label"
     v-bind="attrs"
   >
     <slot />

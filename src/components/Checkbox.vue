@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, useAttrs, watch } from 'vue'
 import { useFieldControlAttrs } from '../composables/useField'
+import { omitDataTestId, resolveTestId } from '../utils/testId'
 
 export interface CheckboxProps {
   indeterminate?: boolean
@@ -23,6 +24,8 @@ const props = withDefaults(defineProps<CheckboxProps>(), {
 const model = defineModel<boolean>({ default: false })
 
 const attrs = useAttrs()
+const testId = computed(() => resolveTestId(attrs, 'checkbox'))
+const bindAttrs = computed(() => omitDataTestId(attrs))
 const inputRef = ref<HTMLInputElement | null>(null)
 const fieldAttrs = useFieldControlAttrs({
   id: () => props.id,
@@ -76,7 +79,8 @@ function onChange(event: Event) {
       :aria-describedby="fieldAttrs.describedBy.value"
       :aria-checked="indeterminate ? 'mixed' : model ? 'true' : 'false'"
       :class="classes"
-      v-bind="attrs"
+      :data-testid="testId"
+      v-bind="bindAttrs"
       @change="onChange"
     />
     <!-- Marks use text-kablui-fg / currentColor so they match label text -->

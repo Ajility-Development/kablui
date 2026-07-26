@@ -37,6 +37,7 @@ function onKeydown(event: KeyboardEvent) {
     :rel="external ? 'noopener noreferrer' : undefined"
     :aria-disabled="disabled || undefined"
     :tabindex="disabled ? -1 : undefined"
+    data-testid="link"
     :class="baseClasses"
     @click="onClick"
     @keydown="onKeydown"

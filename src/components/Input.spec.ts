@@ -55,6 +55,14 @@ describe('Input', () => {
     expect(wrapper.find('input').classes()).toContain('disabled:opacity-50')
   })
 
+  it('emits default data-testid and allows override', () => {
+    const def = mount(Input)
+    expect(def.find('input').attributes('data-testid')).toBe('input')
+
+    const custom = mount(Input, { attrs: { 'data-testid': 'username' } })
+    expect(custom.find('input').attributes('data-testid')).toBe('username')
+  })
+
   it('includes focus-visible ring contract with semantic focus token', () => {
     const wrapper = mount(Input)
     const className = wrapper.find('input').attributes('class') ?? ''

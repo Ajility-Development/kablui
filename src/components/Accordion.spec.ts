@@ -67,6 +67,45 @@ function mountAccordion(options: {
 }
 
 describe('Accordion', () => {
+  it('exposes default and value-based data-testid attributes', () => {
+    mountAccordion()
+
+    expect(wrapper!.find('[data-testid="accordion"]').exists()).toBe(true)
+    expect(wrapper!.find('[data-testid="accordion-item-a"]').exists()).toBe(true)
+    expect(wrapper!.find('[data-testid="accordion-item-b"]').exists()).toBe(true)
+    expect(wrapper!.find('[data-testid="accordion-item-c"]').exists()).toBe(true)
+    expect(wrapper!.findAll('[data-testid="accordion-trigger"]')).toHaveLength(3)
+    expect(wrapper!.findAll('[data-testid="accordion-content"]')).toHaveLength(3)
+  })
+
+  it('derives child data-testid values from a consumer override on Accordion', async () => {
+    const model = ref<string | undefined>()
+    const Host = defineComponent({
+      setup() {
+        return () =>
+          h(
+            Accordion,
+            {
+              type: 'single',
+              modelValue: model.value,
+              'onUpdate:modelValue': (value: string | string[] | undefined) => {
+                model.value = value as string | undefined
+              },
+              'data-testid': 'faq',
+            },
+            () => [item('intro', 'Intro', 'Intro body')],
+          )
+      },
+    })
+    wrapper = mount(Host, { attachTo: document.body })
+    await nextTick()
+
+    expect(wrapper.find('[data-testid="faq"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="faq-item-intro"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="faq-trigger"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="faq-content"]').exists()).toBe(true)
+  })
+
   it('expands and collapses via trigger click (single)', async () => {
     const { model } = mountAccordion()
     const triggers = wrapper!.findAll('[data-slot="accordion-trigger"]')

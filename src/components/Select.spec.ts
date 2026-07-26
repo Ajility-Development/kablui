@@ -232,6 +232,67 @@ describe('Select', () => {
     expect(className).toMatch(/focus-visible:ring-offset-kablui-bg/)
   })
 
+  it('emits default data-testid on trigger, listbox, and options', async () => {
+    const countryOptions = [
+      { value: 'US', label: 'United States' },
+      { value: 'CA', label: 'Canada' },
+    ]
+    wrapper = mount(Select, {
+      props: { options: countryOptions },
+      attachTo: document.body,
+    })
+
+    expect(wrapper.find('[data-testid="select"]').exists()).toBe(true)
+
+    await wrapper.find('button').trigger('click')
+    await nextTick()
+
+    expect(document.querySelector('[data-testid="select-listbox"]')).not.toBeNull()
+    expect(document.querySelector('[data-testid="select-option-us"]')).not.toBeNull()
+    expect(document.querySelector('[data-testid="select-option-ca"]')).not.toBeNull()
+  })
+
+  it('derives listbox and option testids from consumer data-testid base', async () => {
+    const countryOptions = [
+      { value: 'US', label: 'United States' },
+      { value: 'CA', label: 'Canada' },
+    ]
+    wrapper = mount(Select, {
+      props: { options: countryOptions },
+      attrs: { 'data-testid': 'country' },
+      attachTo: document.body,
+    })
+
+    expect(wrapper.find('[data-testid="country"]').exists()).toBe(true)
+
+    await wrapper.find('button').trigger('click')
+    await nextTick()
+
+    expect(document.querySelector('[data-testid="country-listbox"]')).not.toBeNull()
+    expect(document.querySelector('[data-testid="country-option-us"]')).not.toBeNull()
+  })
+
+  it('emits option data-testid for SelectItem children', async () => {
+    wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h(Select, null, () => [
+              h(SelectItem, { value: 'US' }, () => 'United States'),
+              h(SelectItem, { value: 'CA' }, () => 'Canada'),
+            ])
+        },
+      }),
+      { attachTo: document.body },
+    )
+
+    await wrapper.find('button').trigger('click')
+    await nextTick()
+
+    expect(document.querySelector('[data-testid="select-option-us"]')).not.toBeNull()
+    expect(document.querySelector('[data-testid="select-option-ca"]')).not.toBeNull()
+  })
+
   it('uses semantic kablui token classes and no hex colors in SFCs', () => {
     for (const file of ['Select.vue', 'SelectItem.vue', '../utils/listItemClasses.ts']) {
       const source = readFileSync(resolve(__dirname, file), 'utf8')

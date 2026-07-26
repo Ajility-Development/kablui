@@ -152,6 +152,25 @@ describe('RadioGroup / Radio', () => {
     expect(group.attributes('aria-orientation')).toBe('horizontal')
   })
 
+  it('emits default data-testid on group and radios, and derives from override', () => {
+    const def = mount(RadioGroup, {
+      slots: { default: '<Radio value="free" /><Radio value="pro" />' },
+      global: { components: { Radio } },
+    })
+    expect(def.find('[data-testid="radio-group"]').exists()).toBe(true)
+    expect(def.find('[data-testid="radio-group-radio-free"]').exists()).toBe(true)
+    expect(def.find('[data-testid="radio-group-radio-pro"]').exists()).toBe(true)
+
+    const custom = mount(RadioGroup, {
+      attrs: { 'data-testid': 'plan' },
+      slots: { default: '<Radio value="free" /><Radio value="pro" />' },
+      global: { components: { Radio } },
+    })
+    expect(custom.find('[data-testid="plan"]').exists()).toBe(true)
+    expect(custom.find('[data-testid="plan-radio-free"]').exists()).toBe(true)
+    expect(custom.find('[data-testid="plan-radio-pro"]').exists()).toBe(true)
+  })
+
   it('marks invalid from Field and shares name', async () => {
     const wrapper = mount(
       defineComponent({

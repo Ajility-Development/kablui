@@ -13,7 +13,7 @@ const rootClasses = [
 </script>
 
 <template>
-  <div :class="rootClasses">
+  <div data-testid="empty" :class="rootClasses">
     <div v-if="$slots.icon" class="text-kablui-muted-fg">
       <slot name="icon" />
     </div>

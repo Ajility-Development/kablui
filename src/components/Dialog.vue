@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, useSlots, watch } from 'vue'
+import { computed, ref, useAttrs, useSlots, watch } from 'vue'
 import type { ComputedRef, Slots } from 'vue'
 import { useDismissible } from '../composables/useDismissible'
 import { useFocusTrap } from '../composables/useFocusTrap'
 import { useId } from '../composables/useId'
 import { useOverlayStack } from '../composables/useOverlayStack'
 import { useScrollLock } from '../composables/useScrollLock'
+import { omitDataTestId, partTestId, resolveTestId } from '../utils/testId'
 import DismissButton from './DismissButton.vue'
 
 export interface DialogProps {
@@ -17,6 +18,8 @@ export interface DialogProps {
   to?: string | HTMLElement
 }
 
+defineOptions({ inheritAttrs: false })
+
 const props = withDefaults(defineProps<DialogProps>(), {
   dismissible: true,
   showDismiss: false,
@@ -24,6 +27,9 @@ const props = withDefaults(defineProps<DialogProps>(), {
 })
 
 const open = defineModel<boolean>('open', { default: false })
+
+const attrs = useAttrs()
+const testIdBase = computed(() => resolveTestId(attrs, 'dialog'))
 
 const slots: Slots = useSlots()
 const panelRef = ref<HTMLElement | null>(null)
@@ -95,12 +101,15 @@ const footerClasses =
   <Teleport :to="to">
     <div
       v-if="open"
+      v-bind="omitDataTestId(attrs)"
       :class="shellClasses"
+      :data-testid="testIdBase"
       data-kablui-dialog
     >
       <div
         :class="backdropClasses"
         aria-hidden="true"
+        :data-testid="partTestId(testIdBase, 'backdrop')"
         data-kablui-dialog-backdrop
       />
       <div
@@ -111,6 +120,7 @@ const footerClasses =
         :aria-describedby="hasDescription ? descriptionId : undefined"
         :class="panelClasses"
         tabindex="-1"
+        :data-testid="partTestId(testIdBase, 'panel')"
         data-kablui-dialog-panel
       >
         <div
@@ -122,6 +132,7 @@ const footerClasses =
               v-if="hasTitle"
               :id="titleId"
               :class="titleClasses"
+              :data-testid="partTestId(testIdBase, 'title')"
             >
               <slot name="title" />
             </h2>
@@ -129,6 +140,7 @@ const footerClasses =
               v-if="hasDescription"
               :id="descriptionId"
               :class="[descriptionClasses, hasTitle ? undefined : 'mt-0']"
+              :data-testid="partTestId(testIdBase, 'description')"
             >
               <slot name="description" />
             </p>
@@ -136,6 +148,7 @@ const footerClasses =
           <DismissButton
             v-if="showDismiss"
             class="ml-auto -mr-1 -mt-0.5"
+            :data-testid="partTestId(testIdBase, 'dismiss')"
             @click="close"
           />
         </div>

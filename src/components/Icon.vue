@@ -31,6 +31,7 @@ const isDecorative = computed(() => !props.label)
 
 <template>
   <span
+    data-testid="icon"
     :class="[baseClasses, sizeClasses[size]]"
     :role="isDecorative ? undefined : 'img'"
     :aria-hidden="isDecorative ? true : undefined"

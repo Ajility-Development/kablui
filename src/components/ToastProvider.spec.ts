@@ -71,6 +71,22 @@ describe('ToastProvider', () => {
     expect(region?.textContent).toContain('Hello')
   })
 
+  it('exposes default data-testid on region, toast root, and dismiss', async () => {
+    wrapper = mountWithToast(() => {
+      const { toast } = useToast()
+      return {
+        onTrigger: () => toast({ title: 'Hello', duration: 0 }),
+      }
+    })
+
+    await wrapper.find('[data-trigger]').trigger('click')
+    await nextTick()
+
+    expect(document.querySelector('[data-testid="toast-region"]')).not.toBeNull()
+    expect(document.querySelector('[data-testid="toast"]')).not.toBeNull()
+    expect(document.querySelector('[data-testid="toast-dismiss"]')).not.toBeNull()
+  })
+
   it('honors placement prop', async () => {
     wrapper = mountWithToast(
       () => {

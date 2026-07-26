@@ -32,6 +32,7 @@ const weightClasses: Record<NonNullable<TextProps['weight']>, string> = {
 <template>
   <component
     :is="as"
+    data-testid="text"
     :class="[sizeClasses[size], weightClasses[weight], TEXT_TONE_CLASSES[tone]]"
   >
     <slot />

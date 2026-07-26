@@ -8,6 +8,7 @@ const classes = 'px-4 py-3 text-kablui-md text-kablui-fg'
   <div
     :class="classes"
     data-slot="card-content"
+    data-testid="card-content"
   >
     <slot />
   </div>

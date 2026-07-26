@@ -14,6 +14,7 @@ describe('Container', () => {
     const classes = wrapper.classes()
 
     expect(wrapper.element.tagName).toBe('DIV')
+    expect(wrapper.attributes('data-testid')).toBe('container')
     expect(classes).toContain('mx-auto')
     expect(classes).toContain('w-full')
     expect(classes).toContain('max-w-screen-md')

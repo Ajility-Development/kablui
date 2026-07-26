@@ -14,6 +14,7 @@ describe('Cluster', () => {
     const classes = wrapper.classes()
 
     expect(wrapper.element.tagName).toBe('DIV')
+    expect(wrapper.attributes('data-testid')).toBe('cluster')
     expect(classes).toContain('flex')
     expect(classes).toContain('flex-wrap')
     expect(classes).toContain('gap-4')

@@ -16,6 +16,7 @@ import { useFloating } from '../composables/useFloating'
 import { useId } from '../composables/useId'
 import { useOverlayStack } from '../composables/useOverlayStack'
 import { listItemBase, listItemState } from '../utils/listItemClasses'
+import { omitDataTestId, partTestId, resolveTestId, valueTestId } from '../utils/testId'
 import {
   SELECT_KEY,
   type RegisteredSelectOption,
@@ -47,6 +48,8 @@ const props = withDefaults(defineProps<SelectProps>(), {
 const model = defineModel<string>()
 
 const attrs = useAttrs()
+const testIdBase = computed(() => resolveTestId(attrs, 'select'))
+const triggerAttrs = computed(() => omitDataTestId(attrs))
 const slots = useSlots()
 const fieldAttrs = useFieldControlAttrs({
   id: () => props.id,
@@ -325,6 +328,7 @@ provide(SELECT_KEY, {
   selectValue,
   setActiveValue,
   disabled: computed(() => props.disabled),
+  testIdBase,
 })
 
 const triggerBase = [
@@ -387,7 +391,8 @@ const listboxAriaLabel = computed(() =>
       :aria-invalid="fieldAttrs.ariaInvalid.value"
       :aria-describedby="fieldAttrs.describedBy.value"
       :class="triggerClasses"
-      v-bind="attrs"
+      :data-testid="testIdBase"
+      v-bind="triggerAttrs"
       @click="toggleListbox"
       @keydown="onTriggerKeydown"
     >
@@ -416,6 +421,7 @@ const listboxAriaLabel = computed(() =>
         :aria-activedescendant="activeDescendant"
         :class="listboxClasses"
         :style="listboxStyle"
+        :data-testid="partTestId(testIdBase, 'listbox')"
         @pointerdown.stop
         @keydown="onListboxKeydown"
       >
@@ -428,6 +434,7 @@ const listboxAriaLabel = computed(() =>
             :aria-selected="model === option.value ? 'true' : 'false'"
             :aria-disabled="option.disabled || undefined"
             :data-value="option.value"
+            :data-testid="valueTestId(testIdBase, 'option', option.value)"
             :class="optionClasses(option)"
             @click="selectValue(option.value)"
             @mouseenter="!option.disabled && setActiveValue(option.value)"

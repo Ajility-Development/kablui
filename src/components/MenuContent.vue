@@ -78,6 +78,7 @@ const classes = [
       role="menu"
       tabindex="-1"
       data-slot="menu-content"
+      data-testid="menu-content"
       :data-placement="placement"
       :class="classes"
       :style="style"

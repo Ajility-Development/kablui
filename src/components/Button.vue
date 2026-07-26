@@ -45,6 +45,7 @@ function onClick(event: MouseEvent) {
     :type="type"
     :disabled="isDisabled"
     :aria-busy="loading || undefined"
+    data-testid="button"
     :class="[base, variantClasses[variant], sizeClasses[size]]"
     @click="onClick"
   >

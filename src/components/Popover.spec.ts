@@ -66,6 +66,15 @@ describe('Popover', () => {
     expect(document.querySelector('[data-slot="popover-content"]')).not.toBeNull()
   })
 
+  it('exposes default data-testid matching data-slot names', async () => {
+    mountPopover({ open: true })
+    await nextTick()
+
+    expect(wrapper!.find('[data-testid="popover"]').exists()).toBe(true)
+    expect(wrapper!.find('[data-testid="popover-trigger"]').exists()).toBe(true)
+    expect(document.querySelector('[data-testid="popover-content"]')).not.toBeNull()
+  })
+
   it('dismisses on Escape', async () => {
     const { open } = mountPopover({ open: true })
     await nextTick()

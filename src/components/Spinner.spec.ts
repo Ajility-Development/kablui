@@ -9,6 +9,7 @@ describe('Spinner', () => {
     const wrapper = mount(Spinner)
 
     expect(wrapper.attributes('role')).toBe('status')
+    expect(wrapper.attributes('data-testid')).toBe('spinner')
   })
 
   it('applies default md size classes on the spinner glyph', () => {

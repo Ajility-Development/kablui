@@ -11,6 +11,7 @@ describe('Empty', () => {
       slots: { default: 'Try another search.' },
     })
 
+    expect(wrapper.attributes('data-testid')).toBe('empty')
     expect(wrapper.text()).toContain('No results')
     expect(wrapper.text()).toContain('Try another search.')
   })

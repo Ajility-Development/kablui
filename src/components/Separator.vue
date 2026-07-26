@@ -31,6 +31,7 @@ const orientationClasses: Record<NonNullable<SeparatorProps['orientation']>, str
     :role="decorative ? undefined : 'separator'"
     :aria-hidden="decorative ? true : undefined"
     :aria-orientation="!decorative && orientation === 'vertical' ? 'vertical' : undefined"
+    data-testid="separator"
     :class="[
       baseClasses,
       borderClasses[decorative ? 'decorative' : 'emphasized'],

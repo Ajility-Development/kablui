@@ -46,6 +46,14 @@ describe('Checkbox', () => {
     expect(disabled.find('input').attributes('disabled')).toBeDefined()
   })
 
+  it('emits default data-testid and allows override', () => {
+    const def = mount(Checkbox)
+    expect(def.find('input').attributes('data-testid')).toBe('checkbox')
+
+    const custom = mount(Checkbox, { attrs: { 'data-testid': 'terms' } })
+    expect(custom.find('input').attributes('data-testid')).toBe('terms')
+  })
+
   it('includes focus-visible ring contract', () => {
     const className = mount(Checkbox).find('input').attributes('class') ?? ''
     expect(className).toMatch(/focus-visible:ring-kablui-focus/)

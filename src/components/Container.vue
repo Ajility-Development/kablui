@@ -20,6 +20,7 @@ const sizeClasses: Record<NonNullable<ContainerProps['size']>, string> = {
   <component
     :is="as"
     :class="['mx-auto w-full', sizeClasses[size]]"
+    data-testid="container"
   >
     <slot />
   </component>

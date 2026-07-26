@@ -10,6 +10,7 @@ describe('Icon', () => {
   it('renders default slot', () => {
     const wrapper = mount(Icon, { slots: { default: slotSvg } })
 
+    expect(wrapper.attributes('data-testid')).toBe('icon')
     expect(wrapper.find('[data-testid="glyph"]').exists()).toBe(true)
   })
 

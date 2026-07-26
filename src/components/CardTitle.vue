@@ -15,6 +15,7 @@ const classes = 'font-kablui-semibold text-kablui-lg text-kablui-fg'
     :is="as"
     :class="classes"
     data-slot="card-title"
+    data-testid="card-title"
   >
     <slot />
   </component>

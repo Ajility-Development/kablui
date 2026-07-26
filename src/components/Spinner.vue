@@ -24,6 +24,7 @@ const sizeClasses: Record<NonNullable<SpinnerProps['size']>, string> = {
 <template>
   <span
     role="status"
+    data-testid="spinner"
     :aria-busy="label ? true : undefined"
     :aria-label="label || undefined"
     class="inline-flex items-center"

@@ -25,6 +25,7 @@ describe('Card', () => {
 
     expect(wrapper.text()).toContain('Plain content')
     expect(wrapper.attributes('data-slot')).toBe('card')
+    expect(wrapper.attributes('data-testid')).toBe('card')
   })
 
   it('composes header, title, description, content, and footer slots', () => {
@@ -61,6 +62,17 @@ describe('Card', () => {
       'Details go here',
     )
     expect(wrapper.find('[data-slot="card-footer"]').text()).toBe('Actions')
+
+    expect(wrapper.find('[data-testid="card"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="card-header"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="card-title"]').text()).toBe('Plan')
+    expect(wrapper.find('[data-testid="card-description"]').text()).toBe(
+      'Monthly billing',
+    )
+    expect(wrapper.find('[data-testid="card-content"]').text()).toBe(
+      'Details go here',
+    )
+    expect(wrapper.find('[data-testid="card-footer"]').text()).toBe('Actions')
   })
 
   it('applies shell token classes by default', () => {

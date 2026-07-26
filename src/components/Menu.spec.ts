@@ -96,6 +96,17 @@ async function flushFocus() {
 }
 
 describe('Menu', () => {
+  it('exposes default data-testid attributes matching data-slot', async () => {
+    mountMenu({ open: true })
+    await nextTick()
+
+    expect(wrapper!.find('[data-testid="menu"]').exists()).toBe(true)
+    expect(wrapper!.find('[data-testid="menu-trigger"]').exists()).toBe(true)
+    expect(document.querySelector('[data-testid="menu-content"]')).not.toBeNull()
+    expect(document.querySelectorAll('[data-testid="menu-item"]')).toHaveLength(3)
+    expect(document.querySelector('[data-testid="menu-separator"]')).not.toBeNull()
+  })
+
   it('toggles open via trigger click and exposes menu ARIA', async () => {
     const { open } = mountMenu()
     const trigger = wrapper!.find('[data-slot="menu-trigger"]')

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, useAttrs, watch } from 'vue'
+import { omitDataTestId, partTestId, resolveTestId, valueTestId } from '../utils/testId'
 import Button from './Button.vue'
 
 export interface PaginationProps {
@@ -10,6 +11,8 @@ export interface PaginationProps {
   label?: string
 }
 
+defineOptions({ inheritAttrs: false })
+
 const props = withDefaults(defineProps<PaginationProps>(), {
   siblingCount: 1,
   disabled: false,
@@ -17,6 +20,10 @@ const props = withDefaults(defineProps<PaginationProps>(), {
 })
 
 const page = defineModel<number>('page', { default: 1 })
+
+const attrs = useAttrs()
+const testIdBase = computed(() => resolveTestId(attrs, 'pagination'))
+const bindAttrs = computed(() => omitDataTestId(attrs))
 
 type PageItem = number | 'ellipsis'
 
@@ -87,6 +94,21 @@ const items = computed<PageItem[]>(() => {
   ]
 })
 
+const ellipsisCount = computed(
+  () => items.value.filter((item) => item === 'ellipsis').length,
+)
+
+function ellipsisTestId(itemIndex: number): string {
+  const base = partTestId(testIdBase.value, 'ellipsis')
+  if (ellipsisCount.value <= 1) return base
+
+  let n = 0
+  for (let i = 0; i <= itemIndex; i++) {
+    if (items.value[i] === 'ellipsis') n++
+  }
+  return `${base}-${n - 1}`
+}
+
 const atStart = computed(() => effectivePage.value <= 1)
 const atEnd = computed(() => {
   const pageCount = normalizedPageCount.value
@@ -115,13 +137,16 @@ function next() {
   <nav
     :aria-label="label"
     :aria-disabled="disabled || undefined"
+    :data-testid="testIdBase"
     class="inline-flex items-center gap-1 text-kablui-fg"
+    v-bind="bindAttrs"
   >
     <Button
       variant="outline"
       size="sm"
       :disabled="disabled || atStart"
       aria-label="Previous page"
+      :data-testid="partTestId(testIdBase, 'prev')"
       @click="prev"
     >
       Previous
@@ -132,6 +157,7 @@ function next() {
         v-if="item === 'ellipsis'"
         class="inline-flex min-w-8 items-center justify-center px-1 text-kablui-muted-fg"
         aria-hidden="true"
+        :data-testid="ellipsisTestId(index)"
       >
         …
       </span>
@@ -142,6 +168,7 @@ function next() {
         :disabled="disabled"
         :aria-label="`Page ${item}`"
         :aria-current="item === effectivePage ? 'page' : undefined"
+        :data-testid="valueTestId(testIdBase, 'page', String(item))"
         @click="goTo(item)"
       >
         {{ item }}
@@ -153,6 +180,7 @@ function next() {
       size="sm"
       :disabled="disabled || atEnd"
       aria-label="Next page"
+      :data-testid="partTestId(testIdBase, 'next')"
       @click="next"
     >
       Next

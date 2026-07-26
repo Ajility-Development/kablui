@@ -53,7 +53,7 @@ const indeterminateClasses = [
 </script>
 
 <template>
-  <div class="flex w-full flex-col gap-1">
+  <div data-testid="progress" class="flex w-full flex-col gap-1">
     <div
       v-if="caption"
       class="text-kablui-sm text-kablui-muted-fg"

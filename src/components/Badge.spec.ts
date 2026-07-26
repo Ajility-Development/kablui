@@ -9,6 +9,7 @@ describe('Badge', () => {
     const wrapper = mount(Badge, { slots: { default: 'New' } })
 
     expect(wrapper.text()).toBe('New')
+    expect(wrapper.attributes('data-testid')).toBe('badge')
   })
 
   it('applies default tone and size classes', () => {

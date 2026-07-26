@@ -34,6 +34,7 @@ onBeforeUnmount(() => {
     role="alert"
     class="text-kablui-sm text-kablui-danger"
     data-slot="field-error"
+    data-testid="field-error"
   >
     <slot />
   </p>

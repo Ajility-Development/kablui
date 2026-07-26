@@ -10,6 +10,7 @@ describe('Alert', () => {
   it('renders default slot content', () => {
     const wrapper = mount(Alert, { slots: { default: 'Something happened' } })
 
+    expect(wrapper.attributes('data-testid')).toBe('alert')
     expect(wrapper.text()).toContain('Something happened')
   })
 

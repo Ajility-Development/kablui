@@ -48,6 +48,57 @@ function mountTabs(options?: {
 }
 
 describe('Tabs', () => {
+  it('exposes default and value-based data-testid attributes', async () => {
+    const { wrapper } = mountTabs({ modelValue: 'a' })
+    await nextTick()
+
+    expect(wrapper.find('[data-testid="tabs"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="tabs-tab-list"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="tabs-tab-a"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="tabs-tab-b"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="tabs-tab-c"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="tabs-tab-panel-a"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="tabs-tab-panel-b"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="tabs-tab-panel-c"]').exists()).toBe(true)
+  })
+
+  it('derives child data-testid values from a consumer override on Tabs', async () => {
+    const value = ref('a')
+    const Host = defineComponent({
+      setup() {
+        return () =>
+          h(
+            Tabs,
+            {
+              modelValue: value.value,
+              'onUpdate:modelValue': (v: string | undefined) => {
+                if (v !== undefined) value.value = v
+              },
+              'data-testid': 'settings',
+            },
+            () => [
+              h(TabList, null, () => [
+                h(Tab, { value: 'account' }, () => 'Account'),
+                h(Tab, { value: 'billing' }, () => 'Billing'),
+              ]),
+              h(TabPanel, { value: 'account' }, () => 'Account panel'),
+              h(TabPanel, { value: 'billing' }, () => 'Billing panel'),
+            ],
+          )
+      },
+    })
+    const wrapper = mount(Host, { attachTo: document.body })
+    await nextTick()
+
+    expect(wrapper.find('[data-testid="settings"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="settings-tab-list"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="settings-tab-account"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="settings-tab-panel-billing"]').exists()).toBe(
+      true,
+    )
+    wrapper.unmount()
+  })
+
   it('updates model when a tab is clicked', async () => {
     const { wrapper, value } = mountTabs({ modelValue: 'a' })
     await nextTick()

@@ -7,8 +7,10 @@ import Progress from './Progress.vue'
 describe('Progress', () => {
   it('exposes progressbar role with aria value attributes when determinate', () => {
     const wrapper = mount(Progress, { props: { value: 40, max: 100 } })
+    const root = wrapper.find('[data-testid="progress"]')
     const bar = wrapper.find('[role="progressbar"]')
 
+    expect(root.exists()).toBe(true)
     expect(bar.exists()).toBe(true)
     expect(bar.attributes('aria-valuemin')).toBe('0')
     expect(bar.attributes('aria-valuemax')).toBe('100')

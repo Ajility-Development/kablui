@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { valueTestId } from '../utils/testId'
 import { TABS_KEY } from './tabsContext'
 
 export interface TabProps {
@@ -23,6 +24,9 @@ const tabId = computed(() => tabs?.getTabId(props.value))
 const panelId = computed(() => tabs?.getPanelId(props.value))
 const orientation = computed(() => tabs?.orientation.value ?? 'horizontal')
 const tabindex = computed(() => (tabs?.isTabbable(props.value) ? 0 : -1))
+const testId = computed(() =>
+  valueTestId(tabs?.testIdBase.value ?? 'tabs', 'tab', props.value),
+)
 
 onMounted(() => {
   if (!tabs || !buttonRef.value) return
@@ -119,6 +123,7 @@ const selectedClasses = computed(() => {
     type="button"
     role="tab"
     data-slot="tab"
+    :data-testid="testId"
     :id="tabId"
     :disabled="disabled || undefined"
     :aria-selected="isSelected ? 'true' : 'false'"

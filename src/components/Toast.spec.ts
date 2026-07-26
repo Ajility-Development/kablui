@@ -14,6 +14,13 @@ describe('Toast', () => {
     expect(wrapper.text()).toContain('Your changes were stored.')
   })
 
+  it('exposes default data-testid on root and dismiss', () => {
+    const wrapper = mount(Toast, { props: { title: 'Saved' } })
+
+    expect(wrapper.attributes('data-testid')).toBe('toast')
+    expect(wrapper.find('[data-testid="toast-dismiss"]').exists()).toBe(true)
+  })
+
   it('uses role="status" for non-danger tones and role="alert" for danger', () => {
     const status = mount(Toast, { props: { title: 'Ok', tone: 'success' } })
     const alert = mount(Toast, { props: { title: 'Fail', tone: 'danger' } })

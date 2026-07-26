@@ -11,6 +11,7 @@ const classes = [
   <div
     :class="classes"
     data-slot="card-footer"
+    data-testid="card-footer"
   >
     <slot />
   </div>

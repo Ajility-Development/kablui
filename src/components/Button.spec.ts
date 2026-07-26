@@ -9,9 +9,10 @@ import Button from './Button.vue'
 describe('Button', () => {
   it('renders default slot inside a native button', () => {
     const wrapper = mount(Button, { slots: { default: 'Save' } })
-    const button = wrapper.find('button')
+    const button = wrapper.find('[data-testid="button"]')
 
     expect(button.exists()).toBe(true)
+    expect(button.element.tagName).toBe('BUTTON')
     expect(button.text()).toBe('Save')
   })
 

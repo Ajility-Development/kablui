@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
+import { valueTestId } from '../utils/testId'
 import { TABS_KEY } from './tabsContext'
 
 export interface TabPanelProps {
@@ -17,12 +18,16 @@ if (!tabs) {
 const isSelected = computed(() => !!tabs?.isSelected(props.value))
 const panelId = computed(() => tabs?.getPanelId(props.value))
 const tabId = computed(() => tabs?.getTabId(props.value))
+const testId = computed(() =>
+  valueTestId(tabs?.testIdBase.value ?? 'tabs', 'tab-panel', props.value),
+)
 </script>
 
 <template>
   <div
     role="tabpanel"
     data-slot="tab-panel"
+    :data-testid="testId"
     :id="panelId"
     :aria-labelledby="tabId"
     :hidden="!isSelected"

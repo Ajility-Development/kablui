@@ -26,6 +26,49 @@ describe('Pagination', () => {
     expect(nav.attributes('aria-label')).toBe('Pagination')
   })
 
+  it('exposes default and dynamic data-testid attributes', () => {
+    const wrapper = mount(Pagination, {
+      props: { pageCount: 5, page: 2 },
+    })
+
+    expect(wrapper.find('[data-testid="pagination"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="pagination-prev"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="pagination-next"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="pagination-page-1"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="pagination-page-2"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="pagination-page-5"]').exists()).toBe(true)
+  })
+
+  it('indexes ellipsis data-testid when multiple ellipses are present', () => {
+    const wrapper = mount(Pagination, {
+      props: { pageCount: 10, page: 5, siblingCount: 1 },
+    })
+
+    expect(wrapper.find('[data-testid="pagination-ellipsis-0"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="pagination-ellipsis-1"]').exists()).toBe(true)
+  })
+
+  it('uses a single ellipsis data-testid when only one ellipsis is present', () => {
+    const wrapper = mount(Pagination, {
+      props: { pageCount: 10, page: 2, siblingCount: 1 },
+    })
+
+    expect(wrapper.find('[data-testid="pagination-ellipsis"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="pagination-ellipsis-0"]').exists()).toBe(false)
+  })
+
+  it('derives child data-testid values from a consumer override', () => {
+    const wrapper = mount(Pagination, {
+      props: { pageCount: 3, page: 1 },
+      attrs: { 'data-testid': 'results' },
+    })
+
+    expect(wrapper.find('[data-testid="results"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="results-prev"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="results-next"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="results-page-1"]').exists()).toBe(true)
+  })
+
   it('uses a custom label when provided', () => {
     const wrapper = mount(Pagination, {
       props: { pageCount: 3, page: 1, label: 'Results pages' },

@@ -46,6 +46,7 @@ const justifyClasses: Record<NonNullable<ClusterProps['justify']>, string> = {
       alignClasses[align],
       justifyClasses[justify],
     ]"
+    data-testid="cluster"
   >
     <slot />
   </component>

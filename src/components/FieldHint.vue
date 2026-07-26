@@ -33,6 +33,7 @@ onBeforeUnmount(() => {
     :id="field?.hintId"
     class="text-kablui-sm text-kablui-muted-fg"
     data-slot="field-hint"
+    data-testid="field-hint"
   >
     <slot />
   </p>

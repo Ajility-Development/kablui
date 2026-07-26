@@ -2,6 +2,7 @@
 import { computed, inject, onBeforeUnmount, onMounted, onUpdated, ref } from 'vue'
 import { useId } from '../composables/useId'
 import { listItemBase, listItemState } from '../utils/listItemClasses'
+import { valueTestId } from '../utils/testId'
 import { SELECT_KEY, type RegisteredSelectOption } from './selectContext'
 
 export interface SelectItemProps {
@@ -50,6 +51,9 @@ onBeforeUnmount(() => {
 
 const isSelected = computed(() => select?.model.value === props.value)
 const isActive = computed(() => select?.activeValue.value === props.value)
+const testId = computed(() =>
+  select ? valueTestId(select.testIdBase.value, 'option', props.value) : undefined,
+)
 
 const classes = computed(() =>
   [
@@ -79,6 +83,7 @@ function onSelect() {
     :aria-selected="isSelected ? 'true' : 'false'"
     :aria-disabled="disabled || undefined"
     :data-value="value"
+    :data-testid="testId"
     :class="classes"
     @click="onSelect"
     @mouseenter="!disabled && select?.setActiveValue(value)"
