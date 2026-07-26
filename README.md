@@ -150,48 +150,7 @@ Add a component under `src/components/`, export it from `src/components/index.ts
 
 ## Status
 
-All planned phases are complete. The library shipped as **`0.1.0`**. Ongoing work is iterative (fixes, polish, new components) rather than a phased rollout. How the surface was built:
-
-### 1. Foundations
-
-- Design tokens (color, type, space, radius, elevation) in Tailwind `@theme` / CSS variables, with light/dark and consumer overrides.
-- Component conventions: Composition API + `<script setup>`, Tailwind utilities, prop/event naming, slots, and public TypeScript types.
-- Accessibility baselines (focus visibility, keyboard expectations, ARIA patterns) and CSS tree-shake via Tailwind content scanning + the Vite library build (`kablui/style.css`).
-- Package API shape: named exports, style entry (`kablui/style.css`), and playground as the local source of truth.
-
-### 2. Core primitives
-
-- Visual building blocks (Button, Text, Icon, Link, Badge, Separator) with consistent variants and sizes expressed as Tailwind class maps.
-- Token/theming proven end-to-end in the playground.
-
-### 3. Forms & interactive controls
-
-- Form controls (Input, Textarea, Checkbox, RadioGroup/Radio, Switch, Select) with `v-model`, disabled/invalid states, and Field labeling helpers (`FieldLabel`, `FieldHint`, `FieldError`).
-- Keyboard behavior, focus management, and labeling aligned across controls.
-
-### 4. Layout, overlays & feedback
-
-- Layout helpers (Stack, Cluster, Container) and feedback surfaces (Alert, Spinner, Progress, Empty, Skeleton).
-- Overlay patterns (Dialog, Popover, Tooltip, Toast, Menu) with focus traps, dismiss behavior, and stacking/portal rules.
-
-### 5. Patterns
-
-- Higher-level patterns (Card regions, Tabs, Accordion, Pagination) composed from primitives.
-- Playground demos document recommended composition when a full component is not warranted.
-
-### 6. Documentation & developer experience
-
-- VitePress site under [`docs/`](docs/) with consumer guides (install, theming, Tailwind composition, tree-shaking).
-- Component API pages (examples, props tables, accessibility) from SFCs + playground demos.
-- Public Props types exported for compound parts; TypeScript surfaces support editor autocomplete.
-
-Run `npm run docs:dev` for the docs site; playground remains the live sandbox (`npm run dev`).
-
-### 7. Hardening & release
-
-- Unit/component tests for critical behavior, visual regression coverage where it pays off, and automated a11y checks on key components.
-- Versioning, changelog, and release process (semver, breaking-change policy)—see [`CHANGELOG.md`](CHANGELOG.md) and [Releasing](docs/guides/releasing.md).
-- First public release (`0.1.0`) with foundations, primitives, forms, docs, and quality gates in place.
+**0.1.0** has shipped. Ongoing work is iterative (fixes, polish, new components). See [`CHANGELOG.md`](CHANGELOG.md) for release history.
 
 ## Publish
 
