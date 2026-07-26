@@ -8,7 +8,7 @@ import {
 } from 'vue'
 import { __claimOverlayIsTop } from './useOverlayStack'
 
-export interface UseDismissableOptions {
+export interface UseDismissibleOptions {
   active: MaybeRefOrGetter<boolean>
   onDismiss: () => void
   /** Handle Escape key. Defaults to `true`. */
@@ -48,9 +48,9 @@ function topOutsideEntry(): DismissEntry | undefined {
  * Only the topmost stacked overlay handles Escape (via `useOverlayStack` `isTop`
  * when both are used in the same setup; otherwise a LIFO dismiss stack).
  */
-export function useDismissable(
+export function useDismissible(
   rootRef: Ref<HTMLElement | null | undefined>,
-  options: UseDismissableOptions,
+  options: UseDismissibleOptions,
 ): void {
   const id = ++nextDismissId
   const instance = getCurrentInstance()
@@ -148,7 +148,7 @@ export function useDismissable(
 }
 
 /** @internal — reset between tests */
-export function __resetDismissableStack(): void {
+export function __resetDismissibleStack(): void {
   dismissStack.length = 0
   nextDismissId = 0
 }

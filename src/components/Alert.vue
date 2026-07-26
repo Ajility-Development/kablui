@@ -1,6 +1,10 @@
 <script setup lang="ts">
+import type { Tone } from '../types/tone'
+import { SURFACE_TONE_CLASSES } from '../utils/tones'
+import DismissButton from './DismissButton.vue'
+
 export interface AlertProps {
-  tone?: 'neutral' | 'accent' | 'danger' | 'success' | 'warning'
+  tone?: Tone
   title?: string
   /** Shows a dismiss control and emits `dismiss` when activated. */
   dismissible?: boolean
@@ -20,20 +24,6 @@ const baseClasses = [
   'text-kablui-md',
 ].join(' ')
 
-const toneClasses: Record<NonNullable<AlertProps['tone']>, string> = {
-  neutral: 'border-kablui-border bg-kablui-muted text-kablui-fg',
-  accent: 'border-kablui-accent bg-kablui-accent text-kablui-accent-fg',
-  danger: 'border-kablui-danger bg-kablui-danger text-kablui-danger-fg',
-  success: 'border-kablui-success bg-kablui-success text-kablui-success-fg',
-  warning: 'border-kablui-warning bg-kablui-warning text-kablui-warning-fg',
-}
-
-const dismissClasses = [
-  'ml-auto shrink-0 -mr-1 -mt-0.5 inline-flex size-6 items-center justify-center',
-  'rounded-kablui-sm text-current opacity-70 hover:opacity-100',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kablui-focus focus-visible:ring-offset-2 focus-visible:ring-offset-kablui-bg',
-].join(' ')
-
 function onDismiss() {
   emit('dismiss')
 }
@@ -42,7 +32,7 @@ function onDismiss() {
 <template>
   <div
     :role="tone === 'danger' ? 'alert' : 'status'"
-    :class="[baseClasses, toneClasses[tone]]"
+    :class="[baseClasses, SURFACE_TONE_CLASSES[tone]]"
   >
     <div class="min-w-0 flex-1">
       <div v-if="title" class="font-kablui-semibold">
@@ -52,14 +42,10 @@ function onDismiss() {
         <slot />
       </div>
     </div>
-    <button
+    <DismissButton
       v-if="dismissible"
-      type="button"
-      :class="dismissClasses"
-      aria-label="Dismiss"
+      class="ml-auto -mr-1 -mt-0.5"
       @click="onDismiss"
-    >
-      <span aria-hidden="true">&times;</span>
-    </button>
+    />
   </div>
 </template>

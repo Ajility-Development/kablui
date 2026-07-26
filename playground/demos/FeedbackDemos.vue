@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import {
   Alert,
+  Badge,
   Button,
   Empty,
   Icon,
@@ -10,14 +11,26 @@ import {
   Spinner,
   Stack,
   Text,
+  useToast,
 } from '../../src'
 
 const alertVisible = ref(true)
 const progress = ref(42)
+const itemCreated = ref(false)
+const { toast } = useToast()
+
+function createItem() {
+  itemCreated.value = true
+  toast({
+    tone: 'success',
+    title: 'Item created',
+    description: 'Empty state is hidden while content exists.',
+  })
+}
 </script>
 
 <template>
-  <section class="space-y-8">
+  <section id="feedback" class="space-y-8">
     <div class="space-y-2">
       <Text as="h2" size="lg" weight="semibold">Feedback</Text>
       <Text tone="muted" size="sm">
@@ -49,6 +62,17 @@ const progress = ref(42)
     </div>
 
     <div class="space-y-3">
+      <Text as="h3" weight="semibold">Badge tones</Text>
+      <div class="flex flex-wrap items-center gap-2">
+        <Badge tone="neutral">Neutral</Badge>
+        <Badge tone="accent">Accent</Badge>
+        <Badge tone="success">Success</Badge>
+        <Badge tone="warning">Warning</Badge>
+        <Badge tone="danger">Danger</Badge>
+      </div>
+    </div>
+
+    <div class="space-y-3">
       <Text as="h3" weight="semibold">Spinner</Text>
       <div class="flex flex-wrap items-center gap-4 text-kablui-fg">
         <Spinner size="sm" label="Loading small" />
@@ -60,7 +84,7 @@ const progress = ref(42)
     <div class="space-y-3">
       <Text as="h3" weight="semibold">Progress</Text>
       <Stack gap="sm" class="max-w-md">
-        <Progress :value="progress" :label="`${progress}% complete`" />
+        <Progress :value="progress" :caption="`${progress}% complete`" />
         <div class="flex flex-wrap gap-2">
           <Button size="sm" variant="outline" @click="progress = Math.max(0, progress - 10)">
             −10
@@ -69,7 +93,7 @@ const progress = ref(42)
             +10
           </Button>
         </div>
-        <Progress indeterminate label="Working…" />
+        <Progress indeterminate caption="Working…" />
       </Stack>
     </div>
 
@@ -87,7 +111,7 @@ const progress = ref(42)
     <div class="space-y-3">
       <Text as="h3" weight="semibold">Empty</Text>
       <div class="rounded-kablui-md border border-kablui-border">
-        <Empty title="No results">
+        <Empty v-if="!itemCreated" title="No results">
           <template #icon>
             <Icon size="lg" label="Empty inbox">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -98,9 +122,14 @@ const progress = ref(42)
           </template>
           Try a different filter or create something new.
           <template #action>
-            <Button size="sm" variant="outline">Create item</Button>
+            <Button size="sm" variant="outline" @click="createItem">Create item</Button>
           </template>
         </Empty>
+        <div v-else class="space-y-3 p-4">
+          <Text weight="semibold">Created item</Text>
+          <Text size="sm" tone="muted">Your first item is ready. Reset to see Empty again.</Text>
+          <Button size="sm" variant="outline" @click="itemCreated = false">Reset empty</Button>
+        </div>
       </div>
     </div>
   </section>

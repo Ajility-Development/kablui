@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { defineComponent } from 'vue'
 import { mount } from '@vue/test-utils'
 import Card from './Card.vue'
-import CardBody from './CardBody.vue'
+import CardContent from './CardContent.vue'
 import CardDescription from './CardDescription.vue'
 import CardFooter from './CardFooter.vue'
 import CardHeader from './CardHeader.vue'
@@ -15,7 +15,7 @@ const cardSources = [
   'CardHeader.vue',
   'CardTitle.vue',
   'CardDescription.vue',
-  'CardBody.vue',
+  'CardContent.vue',
   'CardFooter.vue',
 ] as const
 
@@ -27,14 +27,14 @@ describe('Card', () => {
     expect(wrapper.attributes('data-slot')).toBe('card')
   })
 
-  it('composes header, title, description, body, and footer slots', () => {
+  it('composes header, title, description, content, and footer slots', () => {
     const Demo = defineComponent({
       components: {
         Card,
         CardHeader,
         CardTitle,
         CardDescription,
-        CardBody,
+        CardContent,
         CardFooter,
       },
       template: `
@@ -43,7 +43,7 @@ describe('Card', () => {
             <CardTitle>Plan</CardTitle>
             <CardDescription>Monthly billing</CardDescription>
           </CardHeader>
-          <CardBody>Details go here</CardBody>
+          <CardContent>Details go here</CardContent>
           <CardFooter>Actions</CardFooter>
         </Card>
       `,
@@ -57,7 +57,9 @@ describe('Card', () => {
     expect(wrapper.find('[data-slot="card-description"]').text()).toBe(
       'Monthly billing',
     )
-    expect(wrapper.find('[data-slot="card-body"]').text()).toBe('Details go here')
+    expect(wrapper.find('[data-slot="card-content"]').text()).toBe(
+      'Details go here',
+    )
     expect(wrapper.find('[data-slot="card-footer"]').text()).toBe('Actions')
   })
 
@@ -71,31 +73,7 @@ describe('Card', () => {
     expect(classes).toContain('shadow-kablui-sm')
   })
 
-  it('maps each padding exclusively', () => {
-    const none = mount(Card, {
-      props: { padding: 'none' },
-      slots: { default: 'N' },
-    })
-    const sm = mount(Card, {
-      props: { padding: 'sm' },
-      slots: { default: 'S' },
-    })
-    const md = mount(Card, {
-      props: { padding: 'md' },
-      slots: { default: 'M' },
-    })
-
-    expect(none.classes()).not.toContain('p-3')
-    expect(none.classes()).not.toContain('p-4')
-
-    expect(sm.classes()).toContain('p-3')
-    expect(sm.classes()).not.toContain('p-4')
-
-    expect(md.classes()).toContain('p-4')
-    expect(md.classes()).not.toContain('p-3')
-  })
-
-  it('defaults padding to none', () => {
+  it('does not apply root padding classes', () => {
     const wrapper = mount(Card, { slots: { default: 'Default' } })
     const classes = wrapper.classes()
 
@@ -132,13 +110,13 @@ describe('Card', () => {
 
   it('applies region padding and muted description styles', () => {
     const header = mount(CardHeader, { slots: { default: 'H' } })
-    const body = mount(CardBody, { slots: { default: 'B' } })
+    const content = mount(CardContent, { slots: { default: 'B' } })
     const footer = mount(CardFooter, { slots: { default: 'F' } })
     const description = mount(CardDescription, { slots: { default: 'Muted' } })
     const title = mount(CardTitle, { slots: { default: 'Title' } })
 
     expect(header.classes()).toContain('px-4')
-    expect(body.classes()).toContain('px-4')
+    expect(content.classes()).toContain('px-4')
     expect(footer.classes()).toContain('px-4')
     expect(footer.classes()).toContain('border-kablui-border')
 
@@ -155,7 +133,7 @@ describe('Card', () => {
     expect(components.CardHeader).toBeDefined()
     expect(components.CardTitle).toBeDefined()
     expect(components.CardDescription).toBeDefined()
-    expect(components.CardBody).toBeDefined()
+    expect(components.CardContent).toBeDefined()
     expect(components.CardFooter).toBeDefined()
 
     const pkg = await import('../index')
@@ -163,7 +141,7 @@ describe('Card', () => {
     expect(pkg.CardHeader).toBe(components.CardHeader)
     expect(pkg.CardTitle).toBe(components.CardTitle)
     expect(pkg.CardDescription).toBe(components.CardDescription)
-    expect(pkg.CardBody).toBe(components.CardBody)
+    expect(pkg.CardContent).toBe(components.CardContent)
     expect(pkg.CardFooter).toBe(components.CardFooter)
   })
 

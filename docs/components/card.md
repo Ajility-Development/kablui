@@ -2,7 +2,7 @@
 
 ## Overview
 
-Surface for grouping related content. Card is **slot-region composition only**—there is no provide/inject context. Nest `CardHeader`, `CardTitle`, `CardDescription`, `CardBody`, and `CardFooter` as ordinary children for consistent padding and structure.
+Surface for grouping related content. Card is **slot-region composition only**—there is no provide/inject context. Nest `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, and `CardFooter` as ordinary children for consistent padding and structure. Regions own their padding; `Card` itself has no `padding` prop.
 
 ## Usage
 
@@ -11,12 +11,20 @@ Surface for grouping related content. Card is **slot-region composition only**�
 import {
   Button,
   Card,
-  CardBody,
+  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from 'kablui'
+
+function onCancel() {
+  // Optional: close a drawer, reset form state, etc.
+}
+
+function onUpgrade() {
+  // Optional: start checkout or open a confirm dialog.
+}
 </script>
 
 <template>
@@ -25,12 +33,12 @@ import {
       <CardTitle>Team plan</CardTitle>
       <CardDescription>Shared workspace for up to 10 people.</CardDescription>
     </CardHeader>
-    <CardBody>
+    <CardContent>
       Includes projects, comments, and role-based access.
-    </CardBody>
+    </CardContent>
     <CardFooter>
-      <Button variant="ghost">Cancel</Button>
-      <Button>Upgrade</Button>
+      <Button variant="ghost" @click="onCancel">Cancel</Button>
+      <Button @click="onUpgrade">Upgrade</Button>
     </CardFooter>
   </Card>
 </template>
@@ -43,13 +51,11 @@ Card
 ├── CardHeader
 │   ├── CardTitle
 │   └── CardDescription
-├── CardBody
+├── CardContent
 └── CardFooter
 ```
 
-Parts are independent styled wrappers. You can omit regions or use `Card` alone with custom children. Prefer the region components when you want the built-in header/body/footer spacing.
-
-With `padding="sm"` or `padding="md"` on `Card`, apply padding on the root instead of (or in addition to) region padding—regions always keep their own horizontal/vertical spacing.
+Parts are independent styled wrappers. You can omit regions or use `Card` alone with custom children. Prefer the region components when you want the built-in header/content/footer spacing.
 
 ## Props / Models / Emits / Slots
 
@@ -58,20 +64,19 @@ With `padding="sm"` or `padding="md"` on `Card`, apply padding on the root inste
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `as` | `'div' \| 'article' \| 'section'` | `'div'` | Root element |
-| `padding` | `'none' \| 'sm' \| 'md'` | `'none'` | Root padding (`sm` → `p-3`, `md` → `p-4`) |
 
 | Slot | Description |
 | --- | --- |
 | `default` | Card contents (typically region components) |
 
-### CardHeader / CardBody / CardFooter / CardDescription
+### CardHeader / CardContent / CardFooter / CardDescription
 
 No props. Default slot only.
 
 | Part | Element | Role |
 | --- | --- | --- |
 | `CardHeader` | `div` | Top cluster (title + description) |
-| `CardBody` | `div` | Main content |
+| `CardContent` | `div` | Main content |
 | `CardFooter` | `div` | Actions row with top border |
 | `CardDescription` | `p` | Muted supporting text |
 
@@ -96,6 +101,6 @@ None on Card or its regions.
 
 ## Related
 
-- [Stack](/components/stack) / [Cluster](/components/cluster) — layout inside body/footer
+- [Stack](/components/stack) / [Cluster](/components/cluster) — layout inside content/footer
 - [Button](/components/button) — footer actions
-- [Text](/components/text) — typography outside Card regions
+- [Text](/components/text) — text outside Card regions

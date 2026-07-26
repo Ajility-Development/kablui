@@ -9,6 +9,10 @@
 ```vue
 <script setup lang="ts">
 import { Button, Empty, Icon } from 'kablui'
+
+function onCreate() {
+  // Optional: navigate, open a dialog, or show a toast.
+}
 </script>
 
 <template>
@@ -23,7 +27,7 @@ import { Button, Empty, Icon } from 'kablui'
     </template>
     Try a different filter or create something new.
     <template #action>
-      <Button size="sm" variant="outline">Create item</Button>
+      <Button size="sm" variant="outline" @click="onCreate">Create item</Button>
     </template>
   </Empty>
 </template>

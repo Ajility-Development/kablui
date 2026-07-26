@@ -1,9 +1,23 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, type ComponentPublicInstance } from 'vue'
+import {
+  base,
+  sizeClasses,
+  variantClasses,
+  type ButtonSize,
+  type ButtonVariant,
+} from '../utils/buttonClasses'
 import { MENU_KEY } from './menuContext'
 
-/** No props — trigger content comes from the default slot. */
-export type MenuTriggerProps = Record<string, never>
+export interface MenuTriggerProps {
+  variant?: ButtonVariant
+  size?: ButtonSize
+}
+
+const props = withDefaults(defineProps<MenuTriggerProps>(), {
+  variant: 'outline',
+  size: 'md',
+})
 
 const menu = inject(MENU_KEY, null)
 
@@ -54,10 +68,7 @@ function onKeydown(event: KeyboardEvent) {
   }
 }
 
-const classes = [
-  'inline-flex items-center justify-center',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kablui-focus focus-visible:ring-offset-2 focus-visible:ring-offset-kablui-bg',
-].join(' ')
+const classes = computed(() => [base, variantClasses[props.variant], sizeClasses[props.size]])
 </script>
 
 <template>

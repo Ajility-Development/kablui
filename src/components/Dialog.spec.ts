@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { defineComponent, nextTick, ref } from 'vue'
 import { mount, type VueWrapper } from '@vue/test-utils'
 import { expectNoA11yViolations } from '../test/a11y'
-import { __resetDismissableStack } from '../composables/useDismissable'
+import { __resetDismissibleStack } from '../composables/useDismissible'
 import { __resetIdCounter } from '../composables/useId'
 import { __resetOverlayStack } from '../composables/useOverlayStack'
 import { __resetScrollLock } from '../composables/useScrollLock'
@@ -39,7 +39,7 @@ function backdrop(): HTMLElement | null {
 }
 
 beforeEach(() => {
-  __resetDismissableStack()
+  __resetDismissibleStack()
   __resetOverlayStack()
   __resetScrollLock()
   __resetIdCounter()
@@ -52,7 +52,7 @@ afterEach(() => {
   wrapper = undefined
   document.body.innerHTML = ''
   document.body.style.overflow = ''
-  __resetDismissableStack()
+  __resetDismissibleStack()
   __resetOverlayStack()
   __resetScrollLock()
 })
@@ -92,19 +92,19 @@ describe('Dialog', () => {
     )
   })
 
-  it('emits update:open false when closed via close button', async () => {
+  it('emits update:open false when closed via dismiss button', async () => {
     wrapper = mount(Dialog, {
-      props: { open: true, showClose: true },
+      props: { open: true, showDismiss: true },
       slots: { title: 'Close me', default: 'Body' },
       attachTo: document.body,
     })
     await nextTick()
 
-    const closeBtn = document.querySelector(
-      'button[aria-label="Close"]',
+    const dismissBtn = document.querySelector(
+      'button[aria-label="Dismiss"]',
     ) as HTMLButtonElement | null
-    expect(closeBtn).not.toBeNull()
-    closeBtn!.click()
+    expect(dismissBtn).not.toBeNull()
+    dismissBtn!.click()
     await nextTick()
 
     expect(wrapper!.emitted('update:open')).toEqual([[false]])
@@ -224,7 +224,7 @@ describe('Dialog', () => {
     expect(el.hasAttribute('aria-describedby')).toBe(false)
   })
 
-  it('applies modal elevation and overlay token classes', async () => {
+  it('applies dialog elevation and overlay token classes', async () => {
     wrapper = mount(Dialog, {
       props: { open: true },
       slots: { default: 'Styled' },
@@ -233,7 +233,7 @@ describe('Dialog', () => {
     await nextTick()
 
     const shell = document.querySelector('[data-kablui-dialog]')!
-    expect(shell.className).toContain('z-kablui-modal')
+    expect(shell.className).toContain('z-kablui-dialog')
     expect(backdrop()!.className).toContain('bg-kablui-overlay')
     expect(panel()!.className).toContain('shadow-kablui-lg')
   })
@@ -314,18 +314,18 @@ describe('Dialog', () => {
     expect(target.textContent).toContain('Custom target')
   })
 
-  it('hides close button by default and shows when showClose', async () => {
+  it('hides dismiss button by default and shows when showDismiss', async () => {
     wrapper = mount(Dialog, {
       props: { open: true },
       slots: { title: 'No close', default: 'Body' },
       attachTo: document.body,
     })
     await nextTick()
-    expect(document.querySelector('button[aria-label="Close"]')).toBeNull()
+    expect(document.querySelector('button[aria-label="Dismiss"]')).toBeNull()
 
-    await wrapper.setProps({ showClose: true })
+    await wrapper.setProps({ showDismiss: true })
     await nextTick()
-    expect(document.querySelector('button[aria-label="Close"]')).not.toBeNull()
+    expect(document.querySelector('button[aria-label="Dismiss"]')).not.toBeNull()
   })
 
   it('uses semantic kablui token classes and no hex colors in the SFC', () => {

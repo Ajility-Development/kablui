@@ -63,7 +63,7 @@ function onKeydown(event: KeyboardEvent) {
 }
 
 const classes = [
-  'z-kablui-dropdown min-w-40 rounded-kablui-md border border-kablui-border bg-kablui-bg',
+  'z-kablui-menu min-w-40 rounded-kablui-md border border-kablui-border bg-kablui-bg',
   'py-1 text-kablui-md text-kablui-fg shadow-kablui-md',
   'focus:outline-none',
 ].join(' ')

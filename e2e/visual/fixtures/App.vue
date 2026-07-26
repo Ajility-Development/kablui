@@ -6,8 +6,8 @@ import {
   Dialog,
   Field,
   FieldError,
+  FieldLabel,
   Input,
-  Label,
 } from '../../../src'
 
 const route = ref(window.location.hash.replace(/^#\/?/, '') || 'button')
@@ -85,7 +85,7 @@ const view = computed(() => route.value)
       data-testid="field-invalid"
     >
       <Field invalid id="email-invalid">
-        <Label required>Email</Label>
+        <FieldLabel required>Email</FieldLabel>
         <Input model-value="not-an-email" type="email" placeholder="you@example.com" />
         <FieldError>Enter a valid email address.</FieldError>
       </Field>

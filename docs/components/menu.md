@@ -4,6 +4,8 @@
 
 Action menu built as a provide/inject compound. `Menu` owns open state and placement; nest `MenuTrigger` and `MenuContent`, then put `MenuItem` / `MenuSeparator` inside the content. Selecting an item closes the menu and restores focus to the trigger.
 
+Use **Menu** for action lists (edit, delete, share). Do not use [Popover](./popover.md) for action menus.
+
 ## Usage
 
 ```vue
@@ -80,7 +82,12 @@ Optional controlled open and placement:
 
 ### MenuTrigger
 
-No props. Default slot is the trigger label.
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `'solid' \| 'outline' \| 'ghost'` | `'outline'` | Button-aligned visual variant |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Button-aligned size |
+
+Default slot is the trigger label.
 
 Renders `<button type="button">` with `aria-haspopup="menu"`, `aria-expanded`, and `aria-controls`.
 
@@ -88,7 +95,7 @@ Renders `<button type="button">` with `aria-haspopup="menu"`, `aria-expanded`, a
 
 No props. Default slot holds items/separators.
 
-Teleports to `body` with `role="menu"` and `tabindex="-1"`.
+Teleports to `body` with `role="menu"` and `tabindex="-1"`. Uses `z-kablui-menu` stacking.
 
 ### MenuItem
 
@@ -117,11 +124,11 @@ No props, no slots. Renders `role="separator"`.
 - Opening (pointer or keyboard) focuses the first enabled item. Closing restores focus to the previously focused element or the trigger.
 - Trigger keyboard: `ArrowDown`, `ArrowUp`, `Enter`, or `Space` open; when open, `Enter` / `Space` close, `ArrowDown` focuses first item, `ArrowUp` focuses last; `Escape` closes.
 - Content keyboard: `ArrowDown` / `ArrowUp` move among enabled items; `Home` / `End` jump to edges. Item `Enter` / `Space` activates (`select` + close).
-- Escape and outside click dismiss via the dismissable layer (`dropdown` stack).
+- Escape and outside click dismiss via the dismissible layer (`menu` stack).
 - Disabled items use native `disabled` and `aria-disabled="true"` and are skipped by focus navigation.
 
 ## Related
 
-- [Popover](/components/popover) — generic floating panel without menuitem semantics
+- [Popover](/components/popover) — non-action floating content (not for action menus)
 - [Dialog](/components/dialog) — modal overlay
 - [Button](/components/button) — standalone actions

@@ -2,27 +2,28 @@
 import { computed, useAttrs } from 'vue'
 import { useField } from '../composables/useField'
 
-export interface LabelProps {
+export interface FieldLabelProps {
   required?: boolean
   for?: string
 }
 
 defineOptions({ inheritAttrs: false })
 
-const props = withDefaults(defineProps<LabelProps>(), {
+const props = withDefaults(defineProps<FieldLabelProps>(), {
   required: false,
 })
 
 const attrs = useAttrs()
 const field = useField()
 
-const forId = computed(() => props.for || field?.controlId)
+const forId = computed(() => props.for || field?.controlId.value)
 </script>
 
 <template>
   <label
     :for="forId"
     class="inline-flex items-center gap-1 text-kablui-sm font-kablui-medium text-kablui-fg"
+    data-slot="field-label"
     v-bind="attrs"
   >
     <slot />

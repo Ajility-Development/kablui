@@ -16,9 +16,8 @@ describe('useOverlayStack', () => {
     const Host = defineComponent({
       setup() {
         const expected: Record<OverlayLayer, number> = {
-          dropdown: 1000,
-          overlay: 1200,
-          modal: 1300,
+          menu: 1000,
+          dialog: 1300,
           toast: 1400,
           tooltip: 1500,
         }
@@ -34,7 +33,7 @@ describe('useOverlayStack', () => {
   it('isTop is false until register', async () => {
     const Host = defineComponent({
       setup() {
-        const stack = useOverlayStack('modal')
+        const stack = useOverlayStack('dialog')
         return () =>
           h('div', {
             'data-top': String(stack.isTop.value),
@@ -52,8 +51,8 @@ describe('useOverlayStack', () => {
   it('nested register makes the newest entry top', async () => {
     const Host = defineComponent({
       setup() {
-        const outer = useOverlayStack('modal')
-        const inner = useOverlayStack('dropdown')
+        const outer = useOverlayStack('dialog')
+        const inner = useOverlayStack('menu')
         outer.register()
         inner.register()
         return () =>
@@ -76,8 +75,8 @@ describe('useOverlayStack', () => {
   it('unregister restores the previous entry as top', async () => {
     const Host = defineComponent({
       setup() {
-        const outer = useOverlayStack('modal')
-        const inner = useOverlayStack('modal')
+        const outer = useOverlayStack('dialog')
+        const inner = useOverlayStack('dialog')
         outer.register()
         inner.register()
         inner.unregister()
@@ -122,7 +121,7 @@ describe('useOverlayStack', () => {
   it('cleans up on unmount so the remaining entry becomes top', async () => {
     const Outer = defineComponent({
       setup() {
-        const outer = useOverlayStack('modal')
+        const outer = useOverlayStack('dialog')
         outer.register()
         return () =>
           h('div', {
@@ -134,7 +133,7 @@ describe('useOverlayStack', () => {
 
     const Inner = defineComponent({
       setup() {
-        const inner = useOverlayStack('modal')
+        const inner = useOverlayStack('dialog')
         inner.register()
         return () => h('div', { id: 'inner' })
       },

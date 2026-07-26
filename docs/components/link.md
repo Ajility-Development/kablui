@@ -12,9 +12,9 @@ import { Link } from 'kablui'
 </script>
 
 <template>
-  <Link href="#primitives">In-page link</Link>
+  <Link href="#usage">In-page link</Link>
   <Link href="https://example.com" external>External</Link>
-  <Link href="#disabled" disabled>Disabled</Link>
+  <Link href="#props" disabled>Disabled</Link>
 </template>
 ```
 

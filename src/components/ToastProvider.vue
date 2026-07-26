@@ -152,7 +152,7 @@ const orderedVisible = computed(() =>
           :tone="item.tone"
           :title="item.title"
           :description="item.description"
-          :action-label="item.action?.label"
+          :action="item.action ? { label: item.action.label } : undefined"
           @dismiss="dismiss(item.id)"
           @action="onAction(item)"
         />

@@ -2,29 +2,54 @@
 
 ## Overview
 
-Compound floating panel for lightweight dropdown-style UI. `Popover` provides open state and placement; nest `PopoverTrigger` and `PopoverContent` as children. Content teleports to `body` and dismisses on Escape or outside click.
+Compound floating panel for lightweight non-action content (details, filters, short forms). `Popover` provides open state and placement; nest `PopoverTrigger` and `PopoverContent` as children. Content teleports to `body` and dismisses on Escape or outside click.
+
+**Popover is not for action menus.** Use [Menu](./menu.md) when the panel is a list of actions (edit, delete, share, etc.).
 
 ## Usage
 
 ```vue
 <script setup lang="ts">
-import { Button, Popover, PopoverContent, PopoverTrigger, Stack } from 'kablui'
+import { Popover, PopoverContent, PopoverTrigger, Stack, Text } from 'kablui'
 </script>
 
 <template>
   <Popover>
-    <PopoverTrigger>Actions</PopoverTrigger>
-    <PopoverContent>
-      <Stack gap="sm" as="ul" class="m-0 min-w-40 list-none p-0">
-        <li>
-          <Button variant="ghost" size="sm" class="w-full justify-start">Edit</Button>
-        </li>
-        <li>
-          <Button variant="ghost" size="sm" class="w-full justify-start">Duplicate</Button>
-        </li>
-        <li>
-          <Button variant="ghost" size="sm" class="w-full justify-start">Archive</Button>
-        </li>
+    <PopoverTrigger>Details</PopoverTrigger>
+    <PopoverContent aria-label="Account details">
+      <Stack gap="sm">
+        <Text size="sm">Signed in as ada@example.com</Text>
+        <Text size="sm" tone="muted">Plan renews on August 1.</Text>
+      </Stack>
+    </PopoverContent>
+  </Popover>
+</template>
+```
+
+### Controlled open and close on action
+
+Use `v-model:open` when an in-panel control should close the popover (filters, short forms). Do not use Popover for lists of actions—that is [Menu](./menu.md).
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { Button, Popover, PopoverContent, PopoverTrigger, Stack, Text } from 'kablui'
+
+const open = ref(false)
+
+function applyFilters() {
+  // Apply filter state, then close.
+  open.value = false
+}
+</script>
+
+<template>
+  <Popover v-model:open="open" placement="bottom-end">
+    <PopoverTrigger>Filters</PopoverTrigger>
+    <PopoverContent aria-label="Filters">
+      <Stack gap="sm">
+        <Text size="sm">Narrow results by status or owner.</Text>
+        <Button size="sm" variant="solid" @click="applyFilters">Apply</Button>
       </Stack>
     </PopoverContent>
   </Popover>
@@ -40,16 +65,6 @@ Popover
 ```
 
 `PopoverTrigger` and `PopoverContent` must be used inside `Popover`. Outside that tree they warn in the console and do not function.
-
-Optional controlled open:
-
-```vue
-<Popover v-model:open="open" placement="bottom-end">
-  <PopoverTrigger>More</PopoverTrigger>
-  <PopoverContent><!-- … --></PopoverContent>
-</Popover>
-```
-
 ## Props / Models / Emits / Slots
 
 ### Popover
@@ -68,7 +83,12 @@ Optional controlled open:
 
 ### PopoverTrigger
 
-No props. Default slot is the trigger label.
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `'solid' \| 'outline' \| 'ghost'` | `'outline'` | Button-aligned visual variant |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Button-aligned size |
+
+Default slot is the trigger label.
 
 Renders a `<button type="button">` with `aria-haspopup="dialog"`, `aria-expanded`, and `aria-controls` pointing at the content id.
 
@@ -76,14 +96,14 @@ Renders a `<button type="button">` with `aria-haspopup="dialog"`, `aria-expanded
 
 No props. Default slot is the floating panel body.
 
-Teleports to `body` with `role="dialog"` and `tabindex="-1"`. Placement comes from the parent `Popover`.
+Teleports to `body` with `role="dialog"` and `tabindex="-1"`. Placement comes from the parent `Popover`. Uses `z-kablui-menu` stacking.
 
 ## Accessibility
 
 - Trigger exposes `aria-haspopup="dialog"`, `aria-expanded`, and `aria-controls`.
 - Content uses `role="dialog"` (not modal; no focus trap or scroll lock).
 - Click toggles open. Keyboard: `Enter`, `Space`, or `ArrowDown` open (keyboard open focuses the content); `Enter` / `Space` also close when already open; `Escape` closes.
-- Outside pointer and Escape dismiss via the overlay dismissable layer (`dropdown` stack).
+- Outside pointer and Escape dismiss via the dismissible layer (`menu` stack).
 - On close, focus returns to the previously focused element or the trigger.
 
 ## Related

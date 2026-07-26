@@ -13,9 +13,7 @@ if (!item) {
 
 const isOpen = computed(() => !!item?.isOpen.value)
 
-const classes = [
-  'px-1 pb-3 text-kablui-md text-kablui-muted-fg',
-].join(' ')
+const classes = ['px-1 py-3 text-kablui-md text-kablui-fg'].join(' ')
 </script>
 
 <template>

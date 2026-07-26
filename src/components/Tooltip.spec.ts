@@ -1,9 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount, type VueWrapper } from '@vue/test-utils'
-import { defineComponent, h, nextTick } from 'vue'
+import { defineComponent, h, nextTick, ref } from 'vue'
 import { expectNoA11yViolations } from '../test/a11y'
 import type { FloatingPlacement } from '../composables/useFloating'
 import { __resetIdCounter } from '../composables/useId'
+import Field from './Field.vue'
+import FieldError from './FieldError.vue'
+import FieldHint from './FieldHint.vue'
+import Input from './Input.vue'
 import Tooltip from './Tooltip.vue'
 
 let wrapper: VueWrapper | undefined
@@ -22,6 +26,7 @@ afterEach(() => {
 
 function mountTooltip(
   props: { content?: string; delay?: number; placement?: FloatingPlacement } = {},
+  triggerAttrs: Record<string, string> = {},
 ) {
   const Host = defineComponent({
     setup() {
@@ -33,7 +38,7 @@ function mountTooltip(
             delay: props.delay ?? 300,
             placement: props.placement ?? 'top',
           },
-          () => h('button', { type: 'button' }, 'Hover me'),
+          () => h('button', { type: 'button', ...triggerAttrs }, 'Hover me'),
         )
     },
   })
@@ -74,6 +79,118 @@ describe('Tooltip', () => {
 
     expect(document.querySelector('[role="tooltip"]')).toBeNull()
     expect(button.attributes('aria-describedby')).toBeUndefined()
+  })
+
+  it('merges tooltip id with pre-existing aria-describedby and removes only tooltip id on hide', async () => {
+    mountTooltip({}, { 'aria-describedby': 'hint-id error-id' })
+    const button = wrapper!.find('button')
+    const el = button.element as HTMLElement
+
+    await button.trigger('focusin')
+    await vi.advanceTimersByTimeAsync(300)
+    await nextTick()
+
+    const tip = document.querySelector('[role="tooltip"]')
+    expect(tip).not.toBeNull()
+    const describedBy = el.getAttribute('aria-describedby') ?? ''
+    const tokens = describedBy.split(/\s+/).filter(Boolean)
+    expect(tokens).toContain('hint-id')
+    expect(tokens).toContain('error-id')
+    expect(tokens).toContain(tip!.id)
+
+    await button.trigger('focusout')
+    await vi.advanceTimersByTimeAsync(0)
+    await nextTick()
+
+    expect(el.getAttribute('aria-describedby')).toBe('hint-id error-id')
+  })
+
+  it('re-merges tooltip id after Vue patches aria-describedby while open', async () => {
+    mountTooltip({ delay: 0 }, { 'aria-describedby': 'hint-id' })
+    const button = wrapper!.find('button')
+    const el = button.element as HTMLElement
+
+    await button.trigger('focusin')
+    await vi.advanceTimersByTimeAsync(0)
+    await nextTick()
+
+    const tip = document.querySelector('[role="tooltip"]')
+    expect(tip).not.toBeNull()
+    expect(el.getAttribute('aria-describedby')?.split(/\s+/)).toContain(tip!.id)
+
+    // Simulate Vue / Field rewriting the attribute without the tooltip token.
+    el.setAttribute('aria-describedby', 'hint-id error-id')
+    await nextTick()
+    await Promise.resolve()
+
+    const tokens = (el.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(Boolean)
+    expect(tokens).toContain('hint-id')
+    expect(tokens).toContain('error-id')
+    expect(tokens).toContain(tip!.id)
+  })
+
+  it('preserves Field hint/error ids while Tooltip is open on Input', async () => {
+    const Host = defineComponent({
+      setup() {
+        const value = ref('')
+        return () =>
+          h(Field, { invalid: true, id: 'email' }, () => [
+            h(
+              Tooltip,
+              { content: 'More about email', delay: 0 },
+              () =>
+                h(Input, {
+                  'modelValue': value.value,
+                  'onUpdate:modelValue': (v: string) => {
+                    value.value = v
+                  },
+                }),
+            ),
+            h(FieldHint, null, () => 'Work email'),
+            h(FieldError, null, () => 'Required'),
+          ])
+      },
+    })
+
+    wrapper = mount(Host, { attachTo: document.body })
+    await nextTick()
+
+    const input = wrapper.find('input')
+    const hint = wrapper.find('[data-slot="field-hint"]')
+    const error = wrapper.find('[data-slot="field-error"]')
+    const hintId = hint.attributes('id')!
+    const errorId = error.attributes('id')!
+
+    expect(input.attributes('aria-describedby')).toContain(hintId)
+    expect(input.attributes('aria-describedby')).toContain(errorId)
+
+    await input.trigger('focusin')
+    await vi.advanceTimersByTimeAsync(0)
+    await nextTick()
+
+    const tip = document.querySelector('[role="tooltip"]')
+    expect(tip).not.toBeNull()
+
+    const describedBy = input.attributes('aria-describedby') ?? ''
+    expect(describedBy).toContain(hintId)
+    expect(describedBy).toContain(errorId)
+    expect(describedBy).toContain(tip!.id)
+
+    // Field may re-patch describedby; tooltip token must survive.
+    await nextTick()
+    const afterPatch = input.attributes('aria-describedby') ?? ''
+    expect(afterPatch).toContain(hintId)
+    expect(afterPatch).toContain(errorId)
+    expect(afterPatch).toContain(tip!.id)
+
+    await input.trigger('focusout')
+    await vi.advanceTimersByTimeAsync(0)
+    await nextTick()
+
+    const afterHide = input.attributes('aria-describedby') ?? ''
+    expect(afterHide).toContain(hintId)
+    expect(afterHide).toContain(errorId)
+    expect(afterHide).not.toContain(tip!.id)
   })
 
   it('shows on pointerenter after delay when hover is available', async () => {

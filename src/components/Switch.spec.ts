@@ -6,7 +6,7 @@ import { defineComponent, h, nextTick, ref } from 'vue'
 import { expectNoA11yViolations } from '../test/a11y'
 import Switch from './Switch.vue'
 import Field from './Field.vue'
-import Label from './Label.vue'
+import FieldLabel from './FieldLabel.vue'
 
 describe('Switch', () => {
   it('toggles aria-checked and v-model on click', async () => {
@@ -83,9 +83,12 @@ describe('Switch', () => {
   })
 
   it('includes focus-visible ring contract', () => {
-    const className = mount(Switch).find('button').attributes('class') ?? ''
+    const wrapper = mount(Switch)
+    const className = wrapper.find('button').attributes('class') ?? ''
     expect(className).toMatch(/focus-visible:ring-kablui-focus/)
     expect(className).toMatch(/focus-visible:ring-offset-kablui-bg/)
+    expect(className).toMatch(/rounded-kablui-full/)
+    expect(wrapper.find('span').attributes('class')).toMatch(/rounded-kablui-full/)
   })
 
   it('inherits Field wiring', async () => {
@@ -95,7 +98,7 @@ describe('Switch', () => {
           return () =>
             h(Field, { id: 'alerts', invalid: true }, () => [
               h(Switch),
-              h(Label, null, () => 'Alerts'),
+              h(FieldLabel, null, () => 'Alerts'),
             ])
         },
       }),
@@ -115,6 +118,8 @@ describe('Switch', () => {
   it('uses semantic kablui token classes and no hex colors in the SFC', () => {
     const source = readFileSync(resolve(__dirname, 'Switch.vue'), 'utf8')
     expect(source).toMatch(/kablui-/)
+    expect(source).toMatch(/rounded-kablui-full/)
+    expect(source).not.toMatch(/\brounded-full\b/)
     expect(source).not.toMatch(/#[0-9a-fA-F]{3,8}\b/)
     expect(source).not.toMatch(/kablui-neutral-\d+/)
   })
@@ -129,7 +134,7 @@ describe('a11y', () => {
             h('main', null, [
               h(Field, { id: 'alerts' }, () => [
                 h(Switch),
-                h(Label, null, () => 'Alerts'),
+                h(FieldLabel, null, () => 'Alerts'),
               ]),
             ])
         },

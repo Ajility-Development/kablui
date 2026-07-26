@@ -25,11 +25,12 @@ describe('Progress', () => {
     expect(bar.attributes('aria-busy')).toBe('true')
   })
 
-  it('renders an indeterminate fill with pulse animation and no width style', () => {
+  it('renders an indeterminate fill with slide shimmer and no width style', () => {
     const wrapper = mount(Progress, { props: { indeterminate: true } })
     const fill = wrapper.find('[role="progressbar"] > div')
 
-    expect(fill.classes()).toContain('animate-pulse')
+    expect(fill.classes()).toContain('kablui-progress-indeterminate')
+    expect(fill.classes()).not.toContain('animate-pulse')
     expect(fill.classes()).toContain('absolute')
     expect(fill.attributes('style') ?? '').not.toMatch(/width/)
   })
@@ -68,14 +69,37 @@ describe('Progress', () => {
     expect(fill.attributes('style')).toMatch(/width:\s*100%/)
   })
 
-  it('renders optional label and wires aria-label', () => {
+  it('renders caption visually and wires aria-label from caption when label omitted', () => {
     const wrapper = mount(Progress, {
-      props: { value: 25, label: 'Upload' },
+      props: { value: 25, caption: 'Upload' },
     })
 
     expect(wrapper.text()).toContain('Upload')
     expect(wrapper.find('[role="progressbar"]').attributes('aria-label')).toBe(
       'Upload',
+    )
+  })
+
+  it('uses label for aria only and prefers label over caption for aria-label', () => {
+    const wrapper = mount(Progress, {
+      props: { value: 25, caption: 'Visible', label: 'Accessible name' },
+    })
+
+    expect(wrapper.text()).toContain('Visible')
+    expect(wrapper.text()).not.toContain('Accessible name')
+    expect(wrapper.find('[role="progressbar"]').attributes('aria-label')).toBe(
+      'Accessible name',
+    )
+  })
+
+  it('does not render label as visible text', () => {
+    const wrapper = mount(Progress, {
+      props: { value: 10, label: 'Screen reader only' },
+    })
+
+    expect(wrapper.text()).not.toContain('Screen reader only')
+    expect(wrapper.find('[role="progressbar"]').attributes('aria-label')).toBe(
+      'Screen reader only',
     )
   })
 

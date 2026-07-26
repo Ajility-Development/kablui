@@ -88,6 +88,21 @@ describe('Button', () => {
     expect(wrapper.emitted('click')).toBeUndefined()
   })
 
+  it('sets aria-busy and disables when loading', async () => {
+    const wrapper = mount(Button, {
+      props: { loading: true },
+      slots: { default: 'Saving' },
+    })
+
+    const button = wrapper.find('button')
+    expect(button.attributes('disabled')).toBeDefined()
+    expect(button.attributes('aria-busy')).toBe('true')
+    expect(button.find('[role="status"]').exists()).toBe(true)
+
+    await button.trigger('click')
+    expect(wrapper.emitted('click')).toBeUndefined()
+  })
+
   it('passes type="submit" through to the button element', () => {
     const wrapper = mount(Button, {
       props: { type: 'submit' },
@@ -120,8 +135,11 @@ describe('Button', () => {
     expect(pkg.Button).toBe(components.Button)
   })
 
-  it('uses semantic kablui token classes and no hex colors in the SFC', () => {
-    const source = readFileSync(resolve(__dirname, 'Button.vue'), 'utf8')
+  it('uses semantic kablui token classes and no hex colors in buttonClasses', () => {
+    const source = readFileSync(
+      resolve(__dirname, '../utils/buttonClasses.ts'),
+      'utf8',
+    )
 
     expect(source).toMatch(/kablui-/)
     expect(source).not.toMatch(/#[0-9a-fA-F]{3,8}\b/)
@@ -149,6 +167,18 @@ describe('a11y', () => {
         setup() {
           return () =>
             h('main', null, [h(Button, { disabled: true }, () => 'Save')])
+        },
+      }),
+    )
+    await expectNoA11yViolations(wrapper.element)
+  })
+
+  it('has no axe violations for loading button', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [h(Button, { loading: true }, () => 'Save')])
         },
       }),
     )

@@ -22,6 +22,7 @@ if (!accordion) {
 const triggerId = useId('accordion-trigger')
 const contentId = useId('accordion-content')
 
+const itemValue = computed(() => props.value)
 const isDisabled = computed(() => props.disabled)
 const isOpen = computed(() => !!accordion?.isOpen(props.value))
 
@@ -31,7 +32,7 @@ function toggle() {
 }
 
 provide(ACCORDION_ITEM_KEY, {
-  value: props.value,
+  value: itemValue,
   disabled: isDisabled,
   triggerId,
   contentId,

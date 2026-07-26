@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, nextTick, provide, ref, watch } from 'vue'
 import type { FloatingPlacement } from '../composables/useFloating'
-import { useDismissable } from '../composables/useDismissable'
+import { useDismissible } from '../composables/useDismissible'
 import { useId } from '../composables/useId'
 import { useOverlayStack } from '../composables/useOverlayStack'
-import { POPOVER_KEY, type PopoverOpenReason } from './popoverContext'
+import type { OpenReason } from '../types/overlay'
+import { POPOVER_KEY } from './popoverContext'
 
 export interface PopoverProps {
   /** Floating placement relative to the trigger. */
@@ -24,29 +25,22 @@ const contentId = useId('popover')
 const openedByKeyboard = ref(false)
 const previouslyFocused = ref<HTMLElement | null>(null)
 
-const { register, unregister } = useOverlayStack('dropdown')
+const { register, unregister } = useOverlayStack('menu')
 
-function setOpen(value: boolean, reason?: PopoverOpenReason) {
+function setOpen(value: boolean, reason?: OpenReason) {
   if (value) {
     openedByKeyboard.value = reason === 'keyboard'
   }
   open.value = value
 }
 
-function toggle(reason?: PopoverOpenReason) {
+function toggle(reason?: OpenReason) {
   setOpen(!open.value, reason)
 }
 
 function dismiss() {
   open.value = false
 }
-
-useDismissable(rootRef, {
-  active: open,
-  onDismiss: dismiss,
-  escape: true,
-  outside: true,
-})
 
 watch(
   open,
@@ -76,6 +70,14 @@ watch(
   },
   { immediate: true },
 )
+
+// Call after useOverlayStack so Escape ownership uses `isTop`.
+useDismissible(rootRef, {
+  active: open,
+  onDismiss: dismiss,
+  escape: true,
+  outside: true,
+})
 
 provide(POPOVER_KEY, {
   open,

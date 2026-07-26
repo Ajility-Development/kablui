@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount, type VueWrapper } from '@vue/test-utils'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import { expectNoA11yViolations } from '../test/a11y'
-import { __resetDismissableStack } from '../composables/useDismissable'
+import { __resetDismissibleStack } from '../composables/useDismissible'
 import type { FloatingPlacement } from '../composables/useFloating'
 import { __resetOverlayStack } from '../composables/useOverlayStack'
 import Menu from './Menu.vue'
@@ -16,7 +16,7 @@ import MenuTrigger from './MenuTrigger.vue'
 let wrapper: VueWrapper | undefined
 
 beforeEach(() => {
-  __resetDismissableStack()
+  __resetDismissibleStack()
   __resetOverlayStack()
 })
 
@@ -344,11 +344,11 @@ describe('Menu', () => {
     expect(document.querySelector('[data-slot="menu-content"]')).toBeNull()
   })
 
-  it('uses dropdown stacking classes', async () => {
+  it('uses menu stacking classes', async () => {
     mountMenu({ open: true })
     await nextTick()
     const content = document.querySelector('[data-slot="menu-content"]')
-    expect(content?.className).toContain('z-kablui-dropdown')
+    expect(content?.className).toContain('z-kablui-menu')
     expect(content?.className).toContain('shadow-kablui-md')
   })
 
@@ -379,35 +379,28 @@ describe('Menu', () => {
     warn.mockRestore()
   })
 
-  it('is available from component and package barrels', async () => {
-    const components = await import('./index')
-    expect(components.Menu).toBeDefined()
-    expect(components.MenuTrigger).toBeDefined()
-    expect(components.MenuContent).toBeDefined()
-    expect(components.MenuItem).toBeDefined()
-    expect(components.MenuSeparator).toBeDefined()
-
-    const pkg = await import('../index')
-    expect(pkg.Menu).toBe(components.Menu)
-    expect(pkg.MenuTrigger).toBe(components.MenuTrigger)
-    expect(pkg.MenuContent).toBe(components.MenuContent)
-    expect(pkg.MenuItem).toBe(components.MenuItem)
-    expect(pkg.MenuSeparator).toBe(components.MenuSeparator)
-  })
-
   it('uses semantic kablui token classes and no hex colors in SFCs', () => {
     for (const file of [
-      'MenuTrigger.vue',
+      'Menu.vue',
       'MenuContent.vue',
       'MenuItem.vue',
       'MenuSeparator.vue',
+      'MenuTrigger.vue',
+      '../utils/buttonClasses.ts',
+      '../utils/listItemClasses.ts',
     ]) {
       const source = readFileSync(resolve(__dirname, file), 'utf8')
-      expect(source).toMatch(/kablui-/)
       expect(source).not.toMatch(/#[0-9a-fA-F]{3,8}\b/)
       expect(source).not.toMatch(/kablui-neutral-\d+/)
       expect(source).not.toMatch(/kablui-accent-\d+/)
     }
+    expect(readFileSync(resolve(__dirname, 'MenuContent.vue'), 'utf8')).toMatch(/kablui-/)
+    expect(readFileSync(resolve(__dirname, '../utils/buttonClasses.ts'), 'utf8')).toMatch(
+      /kablui-/,
+    )
+    expect(readFileSync(resolve(__dirname, '../utils/listItemClasses.ts'), 'utf8')).toMatch(
+      /kablui-/,
+    )
   })
 })
 

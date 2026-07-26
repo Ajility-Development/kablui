@@ -1,8 +1,20 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import {
+  base,
+  sizeClasses,
+  variantClasses,
+  type ButtonSize,
+  type ButtonVariant,
+} from '../utils/buttonClasses'
+import Spinner from './Spinner.vue'
+
 export interface ButtonProps {
-  variant?: 'solid' | 'outline' | 'ghost'
-  size?: 'sm' | 'md' | 'lg'
+  variant?: ButtonVariant
+  size?: ButtonSize
   disabled?: boolean
+  /** Shows a leading spinner and disables the button while true. */
+  loading?: boolean
   type?: 'button' | 'submit' | 'reset'
 }
 
@@ -10,6 +22,7 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   variant: 'solid',
   size: 'md',
   disabled: false,
+  loading: false,
   type: 'button',
 })
 
@@ -17,28 +30,12 @@ const emit = defineEmits<{
   click: [event: MouseEvent]
 }>()
 
-const baseClasses = [
-  'inline-flex items-center justify-center gap-1.5 font-kablui-medium',
-  'rounded-kablui-md',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kablui-focus focus-visible:ring-offset-2 focus-visible:ring-offset-kablui-bg',
-  'disabled:opacity-50 disabled:pointer-events-none',
-].join(' ')
+const isDisabled = computed(() => props.disabled || props.loading)
 
-const variantClasses: Record<NonNullable<ButtonProps['variant']>, string> = {
-  solid: 'bg-kablui-accent text-kablui-accent-fg hover:opacity-90',
-  outline:
-    'border border-kablui-border-strong bg-transparent text-kablui-fg hover:bg-kablui-muted',
-  ghost: 'bg-transparent text-kablui-fg hover:bg-kablui-muted',
-}
-
-const sizeClasses: Record<NonNullable<ButtonProps['size']>, string> = {
-  sm: 'text-kablui-sm px-2 py-1',
-  md: 'text-kablui-md px-3 py-1.5',
-  lg: 'text-kablui-lg px-4 py-2',
-}
+const spinnerSize = computed(() => (props.size === 'lg' ? 'md' : 'sm'))
 
 function onClick(event: MouseEvent) {
-  if (props.disabled) return
+  if (isDisabled.value) return
   emit('click', event)
 }
 </script>
@@ -46,10 +43,18 @@ function onClick(event: MouseEvent) {
 <template>
   <button
     :type="type"
-    :disabled="disabled"
-    :class="[baseClasses, variantClasses[variant], sizeClasses[size]]"
+    :disabled="isDisabled"
+    :aria-busy="loading || undefined"
+    :class="[base, variantClasses[variant], sizeClasses[size]]"
     @click="onClick"
   >
+    <span
+      v-if="loading"
+      class="inline-flex"
+      aria-hidden="true"
+    >
+      <Spinner :size="spinnerSize" />
+    </span>
     <slot />
   </button>
 </template>

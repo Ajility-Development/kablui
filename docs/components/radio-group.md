@@ -1,24 +1,24 @@
-# Radio
+# RadioGroup
 
 Exclusive choice within a `RadioGroup`. Documented together as one compound pattern.
 
 ## Overview
 
-Wrap options in `RadioGroup` and nest `Radio` children (each with a `value`). The group holds `v-model` (selected value string), shared `name`, disabled/invalid state, and arrow-key focus movement. Use `Field` + `Label` on the group; label each option with a native `<label>` (or your own markup) around `Radio`.
+Wrap options in `RadioGroup` and nest `Radio` children (each with a `value`). The group holds `v-model` (selected value string), shared `name`, disabled/invalid state, and arrow-key focus movement. Use `Field` + `FieldLabel` on the group; label each option with a native `<label>` (or your own markup) around `Radio`.
 
 ## Usage
 
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Field, FieldError, Label, Radio, RadioGroup } from 'kablui'
+import { Field, FieldError, FieldLabel, Radio, RadioGroup } from 'kablui'
 
 const plan = ref('pro')
 </script>
 
 <template>
   <Field :invalid="!plan">
-    <Label>Plan</Label>
+    <FieldLabel>Plan</FieldLabel>
     <RadioGroup v-model="plan" name="plan" orientation="horizontal">
       <label class="inline-flex items-center gap-2">
         <Radio value="free" /> Free

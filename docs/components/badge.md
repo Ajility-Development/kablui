@@ -2,7 +2,7 @@
 
 ## Overview
 
-Compact status chip for short labels. Supports neutral, accent, and danger tones, plus small and medium sizes.
+Compact status label for short text. Supports the full status tone set (neutral, accent, danger, success, warning) and small, medium, and large sizes.
 
 ## Usage
 
@@ -15,7 +15,10 @@ import { Badge } from 'kablui'
   <Badge tone="neutral">Neutral</Badge>
   <Badge tone="accent">Accent</Badge>
   <Badge tone="danger">Danger</Badge>
+  <Badge tone="success">Success</Badge>
+  <Badge tone="warning">Warning</Badge>
   <Badge size="sm" tone="accent">sm accent</Badge>
+  <Badge size="lg" tone="accent">lg accent</Badge>
 </template>
 ```
 
@@ -25,8 +28,8 @@ import { Badge } from 'kablui'
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `tone` | `'neutral' \| 'accent' \| 'danger'` | `'neutral'` | Color treatment |
-| `size` | `'sm' \| 'md'` | `'md'` | Padding and text size |
+| `tone` | `'neutral' \| 'accent' \| 'danger' \| 'success' \| 'warning'` | `'neutral'` | Color treatment |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Padding and text size |
 
 ### Models
 

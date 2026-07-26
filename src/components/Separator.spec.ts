@@ -36,8 +36,8 @@ describe('Separator', () => {
     expect(el.getAttribute('aria-orientation')).toBeNull()
   })
 
-  it('opt-in semantic mode sets role=separator and stronger border', () => {
-    const wrapper = mount(Separator, { props: { semantic: true } })
+  it('decorative=false sets role=separator and stronger border', () => {
+    const wrapper = mount(Separator, { props: { decorative: false } })
 
     expect(wrapper.attributes('role')).toBe('separator')
     expect(wrapper.attributes('aria-hidden')).toBeUndefined()
@@ -46,9 +46,9 @@ describe('Separator', () => {
     expect(wrapper.classes()).not.toContain('border-kablui-border')
   })
 
-  it('sets aria-orientation=vertical when semantic and vertical', () => {
+  it('sets aria-orientation=vertical when semantic (decorative=false) and vertical', () => {
     const wrapper = mount(Separator, {
-      props: { semantic: true, orientation: 'vertical' },
+      props: { decorative: false, orientation: 'vertical' },
     })
 
     expect(wrapper.attributes('role')).toBe('separator')

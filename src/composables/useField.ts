@@ -11,7 +11,7 @@ import {
 import { __resetIdCounter, useId } from './useId'
 
 export interface FieldContext {
-  controlId: string
+  controlId: ComputedRef<string>
   hintId: string
   errorId: string
   invalid: ComputedRef<boolean>
@@ -29,11 +29,12 @@ export function __resetFieldIdCounter(): void {
 
 export interface ProvideFieldOptions {
   invalid?: MaybeRefOrGetter<boolean | undefined>
-  id?: string
+  id?: MaybeRefOrGetter<string | undefined>
 }
 
 export function provideField(options: ProvideFieldOptions = {}): FieldContext {
-  const controlId = options.id ?? useId('control')
+  const fallbackId = useId('control')
+  const controlId = computed(() => toValue(options.id) || fallbackId)
   const hintId = useId('hint')
   const errorId = useId('error')
   const hasHint = ref(false)
@@ -82,7 +83,7 @@ export function useFieldControlAttrs(options: {
 } {
   const field = useField()
 
-  const id = computed(() => toValue(options.id) || field?.controlId)
+  const id = computed(() => toValue(options.id) || field?.controlId.value)
   const invalid = computed(() => !!(toValue(options.invalid) || field?.invalid.value))
   const describedBy = computed(() => field?.describedBy.value)
   const ariaInvalid = computed(() => (invalid.value ? ('true' as const) : undefined))

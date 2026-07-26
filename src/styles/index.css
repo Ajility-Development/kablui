@@ -6,24 +6,24 @@
  * (and CSS variables) so consumers can override them later.
  *
  * Token layers:
- *   - Primitives (mode-stable palette) — authoring / advanced overrides only
- *   - Semantics (mode-aware roles) — components use these utilities only
+ *   - palette (mode-stable) — authoring / advanced overrides only
+ *   - roles (mode-aware) — components use these utilities only
  *     e.g. bg-kablui-bg, text-kablui-fg, ring-kablui-focus
  *
  * Consumer overrides (after `import 'kablui/style.css'`):
- *   Prefer overriding primitive steps when you want brand color in both modes:
+ *   Prefer overriding palette steps when you want brand color in both modes:
  *     :root {
  *       --color-kablui-accent-400: oklch(0.65 0.2 30);
  *       --color-kablui-accent-500: oklch(0.52 0.22 30);
  *     }
- *   Or re-declare semantics inside each theme selector (`:root`, dark media,
- *   `[data-theme=…]`) — dark rules reassign semantic vars and will overwrite a
+ *   Or re-declare roles inside each theme selector (`:root`, dark media,
+ *   `[data-theme=…]`) — dark rules reassign role vars and will overwrite a
  *   lone `:root { --color-kablui-accent: … }` in dark mode.
  *   Keep accent/danger/success/warning fg pairs ≥4.5:1 with their fills.
  *   Load app CSS after kablui/style.css.
  *
  * Light / dark:
- *   - Default: prefers-color-scheme reassigns semantic vars
+ *   - Default: prefers-color-scheme reassigns role vars
  *   - Forced: set data-theme="dark"|"light" on html / :root / :host
  *   - Forced light wins over OS dark
  */
@@ -34,7 +34,7 @@
 @source not '../**/*.{spec,test}.ts';
 
 @theme static {
-  /* ── Primitive colors (mode-stable) ── */
+  /* ── Palette colors (mode-stable) ── */
   --color-kablui-neutral-0: oklch(1 0 0);
   --color-kablui-neutral-50: oklch(0.985 0.002 247);
   --color-kablui-neutral-100: oklch(0.967 0.003 247);
@@ -68,7 +68,7 @@
   --color-kablui-warning-500: oklch(0.55 0.16 65);
   --color-kablui-warning-600: oklch(0.48 0.15 60);
 
-  /* ── Semantic colors (mode-aware; light defaults) ── */
+  /* ── Role colors (mode-aware; light defaults) ── */
   --color-kablui-bg: var(--color-kablui-neutral-0);
   --color-kablui-fg: var(--color-kablui-neutral-950);
   --color-kablui-muted: var(--color-kablui-neutral-100);
@@ -113,16 +113,15 @@
     0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -4px oklch(0 0 0 / 0.1);
 
   /* ── Z-index scale (utilities: z-kablui-*) ── */
-  --z-kablui-dropdown: 1000;
+  --z-kablui-menu: 1000;
   --z-kablui-sticky: 1100;
-  --z-kablui-overlay: 1200;
-  --z-kablui-modal: 1300;
+  --z-kablui-dialog: 1300;
   --z-kablui-toast: 1400;
   --z-kablui-tooltip: 1500;
 }
 
 /*
- * Mode reassignments — semantic variables only (primitives stay stable).
+ * Mode reassignments — role variables only (palette stays stable).
  * Placed in @layer theme so they participate with Tailwind theme cascade.
  */
 @layer theme {
@@ -213,4 +212,9 @@
     --shadow-kablui-lg:
       0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -4px oklch(0 0 0 / 0.1);
   }
+}
+
+/* Apply library font to slotted component roots */
+[data-slot] {
+  font-family: var(--font-kablui-sans);
 }

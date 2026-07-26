@@ -2,7 +2,7 @@
 
 ## Overview
 
-Short hint shown on hover or focus. Wrap a single interactive (or focusable) child; pass text via the `content` prop or the `content` slot. The tip teleports to `body` and is not dismissable as a modal—it hides when pointer/focus leave.
+Short hint shown on hover or focus. Wrap a single interactive (or focusable) child; pass text via the `content` prop or the `content` slot. The tip teleports to `body` and is not dismissible as a modal—it hides when pointer/focus leave.
 
 ## Usage
 

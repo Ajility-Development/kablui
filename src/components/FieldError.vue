@@ -2,9 +2,7 @@
 import { computed, onBeforeUnmount, useSlots, watchEffect, type VNode } from 'vue'
 import { useField } from '../composables/useField'
 
-export interface FieldErrorProps {}
-
-defineProps<FieldErrorProps>()
+export type FieldErrorProps = Record<string, never>
 
 const field = useField()
 const slots = useSlots()
@@ -18,10 +16,10 @@ const hasContent = computed(() => {
   })
 })
 
-const visible = computed(() => hasContent.value || !!field?.invalid.value)
+const visible = computed(() => hasContent.value)
 
 watchEffect(() => {
-  field?.setHasError(visible.value && hasContent.value)
+  field?.setHasError(visible.value)
 })
 
 onBeforeUnmount(() => {
@@ -31,7 +29,7 @@ onBeforeUnmount(() => {
 
 <template>
   <p
-    v-if="visible && hasContent"
+    v-if="visible"
     :id="field?.errorId"
     role="alert"
     class="text-kablui-sm text-kablui-danger"

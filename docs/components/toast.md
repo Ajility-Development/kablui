@@ -41,11 +41,14 @@ import { ToastProvider } from 'kablui'
 
 ```vue
 <script setup lang="ts">
+import { ref } from 'vue'
 import { Button, Cluster, useToast } from 'kablui'
+import type { ToastTone } from 'kablui'
 
-const { toast } = useToast()
+const { toast, dismiss } = useToast()
+const stickyId = ref<string | null>(null)
 
-function showToast(tone: 'neutral' | 'success' | 'danger' | 'warning') {
+function showToast(tone: ToastTone) {
   toast({
     tone,
     title:
@@ -55,28 +58,38 @@ function showToast(tone: 'neutral' | 'success' | 'danger' | 'warning') {
           ? 'Failed'
           : tone === 'warning'
             ? 'Heads up'
-            : 'Hello',
+            : tone === 'accent'
+              ? 'Note'
+              : 'Hello',
     description: 'Toast from useToast().',
   })
 }
 
 function showSticky() {
-  toast({
+  if (stickyId.value) dismiss(stickyId.value)
+  stickyId.value = toast({
     title: 'Sticky',
-    description: 'Won’t auto-dismiss.',
-    duration: 0, // sticky; use dismiss(id) with the returned id
+    description: 'Won’t auto-dismiss. Use Dismiss sticky or the × control.',
+    duration: 0,
   })
 }
 
-function showWithAction() {
-  toast({
+function dismissSticky() {
+  if (!stickyId.value) return
+  dismiss(stickyId.value)
+  stickyId.value = null
+}
+
+function showUndo() {
+  const id = toast({
     tone: 'warning',
-    title: 'Undo available',
+    title: 'Item deleted',
     description: 'Your change can be reverted.',
     action: {
       label: 'Undo',
       onClick: () => {
-        /* restore */
+        dismiss(id)
+        toast({ tone: 'success', title: 'Restored' })
       },
     },
   })
@@ -86,11 +99,15 @@ function showWithAction() {
 <template>
   <Cluster gap="sm">
     <Button size="sm" variant="outline" @click="showToast('neutral')">Neutral</Button>
+    <Button size="sm" variant="outline" @click="showToast('accent')">Accent</Button>
     <Button size="sm" variant="outline" @click="showToast('success')">Success</Button>
     <Button size="sm" variant="outline" @click="showToast('warning')">Warning</Button>
     <Button size="sm" variant="outline" @click="showToast('danger')">Danger</Button>
     <Button size="sm" variant="outline" @click="showSticky">Sticky</Button>
-    <Button size="sm" variant="outline" @click="showWithAction">With action</Button>
+    <Button size="sm" variant="outline" :disabled="!stickyId" @click="dismissSticky">
+      Dismiss sticky
+    </Button>
+    <Button size="sm" variant="outline" @click="showUndo">Undo action</Button>
   </Cluster>
 </template>
 ```
@@ -143,7 +160,7 @@ Rendered by the provider; useful if composing manually.
 | `tone` | `ToastTone` | `'neutral'` | Visual severity |
 | `title` | `string` | _(required)_ | Title text |
 | `description` | `string` | — | Supporting text |
-| `actionLabel` | `string` | — | Label for the action button |
+| `action` | `{ label: string }` | — | Presentational action button; click emits `action` |
 
 ### `Toast` emits
 

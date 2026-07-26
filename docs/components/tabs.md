@@ -34,6 +34,8 @@ const tab = ref('account')
 </template>
 ```
 
+A panel whose matching tab is `disabled` stays unreachable: keyboard and pointer selection skip that tab, so its panel never becomes selected while disabled. Keep the panel in the tree if you will enable the tab later; omit it if the view should not exist.
+
 Vertical orientation (arrow keys follow the axis):
 
 ```vue
@@ -118,7 +120,7 @@ None beyond the Tabs `v-model` update.
 - Tabs: `role="tab"`, `aria-selected`, `aria-controls`; panels: `role="tabpanel"`, `aria-labelledby`.
 - Roving tabindex: only the selected (or first enabled when none selected) tab is in the tab order.
 - Keyboard on a tab: `ArrowRight` / `ArrowLeft` (horizontal) or `ArrowDown` / `ArrowUp` (vertical) move selection and focus among enabled tabs; `Home` / `End` jump to first/last enabled. Selection updates as focus moves.
-- Disabled tabs are skipped and cannot be selected.
+- Disabled tabs are skipped and cannot be selected; their panels are unreachable while disabled.
 
 ## Related
 

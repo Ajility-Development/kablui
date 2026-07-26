@@ -5,10 +5,10 @@
 Import only what you use from the package root. The public API is named exports (components, composables, and types)—there is no default plugin install that registers everything globally.
 
 ```ts
-import { Button, Dialog, useToast } from 'kablui'
+import { Button, Dialog, ToastProvider, useToast } from 'kablui'
 ```
 
-Unused named imports are tree-shaken by modern bundlers when your app uses ESM.
+Unused named imports are tree-shaken by modern bundlers when your app uses ESM. For toasts, import `ToastProvider` at the app root and `useToast` in descendants—both are named exports and shake independently of unused overlay components.
 
 ## CSS and `sideEffects`
 
@@ -26,9 +26,9 @@ import 'kablui/style.css'
 
 The style entry is published as `kablui/style.css` → `dist/kablui.css`.
 
-## Root entry side-imports styles (current behavior)
+## Root entry side-imports styles
 
-The library’s root module (`src/index.ts`) currently side-imports the styles entry:
+The library’s root module (`src/index.ts`) side-imports the styles entry:
 
 ```ts
 import './styles/index.css'
@@ -36,7 +36,7 @@ import './styles/index.css'
 
 So importing anything from `kablui` may pull styles through that entry depending on how your bundler resolves the package build. **Documented recommendation for consumers:** still import `kablui/style.css` once in your app entry so styling does not depend on which JS modules you import or how the bundler splits chunks.
 
-This phase does not change CSS bundling strategy. Prefer the explicit stylesheet import for predictable results.
+Prefer the explicit stylesheet import for predictable results.
 
 ## Types
 

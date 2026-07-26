@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, onMounted, onUpdated, ref } from 'vue'
-import { SELECT_KEY, type SelectOption } from './selectContext'
+import { useId } from '../composables/useId'
+import { listItemBase, listItemState } from '../utils/listItemClasses'
+import { SELECT_KEY, type RegisteredSelectOption } from './selectContext'
 
 export interface SelectItemProps {
   value: string
@@ -15,23 +17,22 @@ const props = withDefaults(defineProps<SelectItemProps>(), {
 
 const select = inject(SELECT_KEY, null)
 const rootRef = ref<HTMLElement | null>(null)
+const optionId = useId('option')
 
 if (!select) {
   console.warn('[kablui] SelectItem must be used inside Select')
 }
 
-const optionId = computed(() => (select ? `${select.listboxId}-option-${props.value}` : undefined))
-
 function resolveLabel(): string {
   return props.label || rootRef.value?.textContent?.trim() || props.value
 }
 
-function toOption(): SelectOption {
+function toOption(): RegisteredSelectOption {
   return {
     value: props.value,
     label: resolveLabel(),
     disabled: props.disabled,
-    id: optionId.value ?? props.value,
+    id: optionId,
   }
 }
 
@@ -52,12 +53,16 @@ const isActive = computed(() => select?.activeValue.value === props.value)
 
 const classes = computed(() =>
   [
-    'flex w-full cursor-pointer items-center px-3 py-1.5 text-kablui-md text-kablui-fg',
-    'rounded-kablui-sm',
-    isActive.value ? 'bg-kablui-muted' : '',
-    isSelected.value ? 'font-kablui-medium' : '',
-    props.disabled ? 'opacity-50 pointer-events-none' : 'hover:bg-kablui-muted',
-  ].join(' '),
+    listItemBase,
+    listItemState({
+      active: isActive.value,
+      selected: isSelected.value,
+      disabled: props.disabled,
+      size: select?.size.value ?? 'md',
+    }),
+  ]
+    .filter(Boolean)
+    .join(' '),
 )
 
 function onSelect() {

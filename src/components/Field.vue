@@ -14,12 +14,12 @@ const props = withDefaults(defineProps<FieldProps>(), {
 
 provideField({
   invalid: toRef(props, 'invalid'),
-  id: props.id,
+  id: toRef(props, 'id'),
 })
 </script>
 
 <template>
-  <div class="flex flex-col gap-1.5" data-slot="field">
+  <div class="flex flex-col gap-2" data-slot="field">
     <slot />
   </div>
 </template>

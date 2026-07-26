@@ -121,6 +121,113 @@ describe('Pagination', () => {
     expect(wrapper.emitted('update:page')).toEqual([[2]])
   })
 
+  it('clamps the model when pageCount shrinks below the current page', async () => {
+    const Host = defineComponent({
+      components: { Pagination },
+      setup() {
+        const page = ref(5)
+        const pageCount = ref(5)
+        return { page, pageCount }
+      },
+      template: '<Pagination v-model:page="page" :page-count="pageCount" />',
+    })
+
+    const wrapper = mount(Host)
+    const pagination = wrapper.findComponent(Pagination)
+
+    wrapper.vm.pageCount = 3
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.page).toBe(3)
+    expect(pagination.emitted('update:page')).toEqual([[3]])
+  })
+
+  it('clamps when the parent sets page above pageCount', async () => {
+    const Host = defineComponent({
+      components: { Pagination },
+      setup() {
+        const page = ref(1)
+        return { page }
+      },
+      template: '<Pagination v-model:page="page" :page-count="4" />',
+    })
+
+    const wrapper = mount(Host)
+    const pagination = wrapper.findComponent(Pagination)
+
+    wrapper.vm.page = 10
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.page).toBe(4)
+    expect(pagination.emitted('update:page')).toEqual([[4]])
+  })
+
+  it('does not emit when page remains valid after pageCount shrinks', async () => {
+    const Host = defineComponent({
+      components: { Pagination },
+      setup() {
+        const page = ref(1)
+        const pageCount = ref(5)
+        return { page, pageCount }
+      },
+      template: '<Pagination v-model:page="page" :page-count="pageCount" />',
+    })
+
+    const wrapper = mount(Host)
+    const pagination = wrapper.findComponent(Pagination)
+
+    wrapper.vm.pageCount = 3
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.page).toBe(1)
+    expect(pagination.emitted('update:page')).toBeUndefined()
+  })
+
+  it('does not thrash when pageCount is below 1', async () => {
+    const Host = defineComponent({
+      components: { Pagination },
+      setup() {
+        const page = ref(2)
+        const pageCount = ref(0)
+        return { page, pageCount }
+      },
+      template: '<Pagination v-model:page="page" :page-count="pageCount" />',
+    })
+
+    const wrapper = mount(Host)
+    const pagination = wrapper.findComponent(Pagination)
+
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.page).toBe(2)
+    expect(pagination.emitted('update:page')).toBeUndefined()
+
+    wrapper.vm.pageCount = 0
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.page).toBe(2)
+    expect(pagination.emitted('update:page')).toBeUndefined()
+  })
+
+  it('reflects the clamped page in aria-current and disables Next', async () => {
+    const Host = defineComponent({
+      components: { Pagination },
+      setup() {
+        const page = ref(5)
+        const pageCount = ref(5)
+        return { page, pageCount }
+      },
+      template: '<Pagination v-model:page="page" :page-count="pageCount" />',
+    })
+
+    const wrapper = mount(Host)
+
+    wrapper.vm.pageCount = 3
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.page).toBe(3)
+    expect(buttonByLabel(wrapper, 'Page 3').attributes('aria-current')).toBe('page')
+    expect(buttonByLabel(wrapper, 'Next page').attributes('disabled')).toBeDefined()
+  })
+
   it('does not emit when next is clicked on the last page', async () => {
     const wrapper = mount(Pagination, {
       props: { pageCount: 3, page: 3 },

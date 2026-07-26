@@ -13,6 +13,8 @@ kablui is a Tailwind CSS–based UI component library for Vue 3. Components ship
 npm install kablui
 ```
 
+The npm package name is `kablui`. The UMD build exposes a global named `Kablui` (capital K)—use the package name for ESM/CJS imports.
+
 ## Import styles
 
 Import the built stylesheet once in your app entry (or root layout):
@@ -38,7 +40,7 @@ import {
   Badge,
   Separator,
   Field,
-  Label,
+  FieldLabel,
   FieldHint,
   FieldError,
   Input,
@@ -69,7 +71,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardBody,
+  CardContent,
   CardFooter,
   Accordion,
   AccordionItem,
@@ -99,6 +101,38 @@ import { Button } from 'kablui'
   <Button>Save</Button>
 </template>
 ```
+
+## Toasts: wrap with `ToastProvider` before `useToast`
+
+Mount **`ToastProvider`** near the app root **before** any descendant calls `useToast()`. Calling `useToast()` outside the provider throws.
+
+```vue
+<!-- App.vue -->
+<script setup lang="ts">
+import { ToastProvider } from 'kablui'
+</script>
+
+<template>
+  <ToastProvider>
+    <RouterView />
+  </ToastProvider>
+</template>
+```
+
+```vue
+<!-- A child under ToastProvider -->
+<script setup lang="ts">
+import { Button, useToast } from 'kablui'
+
+const { toast } = useToast()
+</script>
+
+<template>
+  <Button @click="toast({ title: 'Saved', tone: 'success' })">Save</Button>
+</template>
+```
+
+See [Toast](/components/toast) for placement, sticky toasts, and actions.
 
 ## TypeScript / Volar
 

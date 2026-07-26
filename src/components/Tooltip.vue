@@ -27,6 +27,7 @@ const tooltipId = useId('tooltip')
 let showTimer: ReturnType<typeof setTimeout> | null = null
 let hideTimer: ReturnType<typeof setTimeout> | null = null
 let describedEl: HTMLElement | null = null
+let describedByObserver: MutationObserver | null = null
 
 const { style } = useFloating(anchorRef, floatingRef, {
   open,
@@ -60,20 +61,66 @@ function resolveDescribedEl(): HTMLElement | null {
   return focusable ?? root
 }
 
+function parseDescribedByTokens(value: string | null): string[] {
+  if (!value) return []
+  return value.split(/\s+/).filter(Boolean)
+}
+
+function addDescribedByToken(el: HTMLElement, id: string) {
+  const tokens = parseDescribedByTokens(el.getAttribute('aria-describedby'))
+  if (tokens.includes(id)) return
+  tokens.push(id)
+  el.setAttribute('aria-describedby', tokens.join(' '))
+}
+
+function removeDescribedByToken(el: HTMLElement, id: string) {
+  const tokens = parseDescribedByTokens(el.getAttribute('aria-describedby')).filter(
+    (token) => token !== id,
+  )
+  if (tokens.length === 0) {
+    el.removeAttribute('aria-describedby')
+  } else {
+    el.setAttribute('aria-describedby', tokens.join(' '))
+  }
+}
+
+function stopDescribedByObserver() {
+  describedByObserver?.disconnect()
+  describedByObserver = null
+}
+
+function startDescribedByObserver(el: HTMLElement) {
+  stopDescribedByObserver()
+  if (typeof MutationObserver === 'undefined') return
+  describedByObserver = new MutationObserver(() => {
+    if (!open.value || describedEl !== el) return
+    addDescribedByToken(el, tooltipId)
+  })
+  describedByObserver.observe(el, {
+    attributes: true,
+    attributeFilter: ['aria-describedby'],
+  })
+}
+
+function clearDescribedBy(el: HTMLElement | null) {
+  if (!el) return
+  stopDescribedByObserver()
+  removeDescribedByToken(el, tooltipId)
+}
+
 function syncDescribedBy(isOpen: boolean) {
   const el = resolveDescribedEl()
   if (describedEl && describedEl !== el) {
-    if (describedEl.getAttribute('aria-describedby') === tooltipId) {
-      describedEl.removeAttribute('aria-describedby')
-    }
+    clearDescribedBy(describedEl)
     describedEl = null
   }
   if (!el) return
   describedEl = el
   if (isOpen) {
-    el.setAttribute('aria-describedby', tooltipId)
-  } else if (el.getAttribute('aria-describedby') === tooltipId) {
-    el.removeAttribute('aria-describedby')
+    addDescribedByToken(el, tooltipId)
+    startDescribedByObserver(el)
+  } else {
+    clearDescribedBy(el)
   }
 }
 
@@ -121,7 +168,8 @@ watch(open, async (isOpen) => {
 
 onBeforeUnmount(() => {
   clearTimers()
-  syncDescribedBy(false)
+  clearDescribedBy(describedEl)
+  describedEl = null
 })
 
 const contentClasses = [

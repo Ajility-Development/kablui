@@ -7,7 +7,7 @@ hero:
   tagline: Precompiled component styles, semantic tokens, and named exports you can tree-shake.
   actions:
     - theme: brand
-      text: Get started
+      text: Getting started
       link: /guides/getting-started
     - theme: alt
       text: Components
@@ -24,3 +24,8 @@ features:
   - title: Tailwind-friendly
     details: Use the published stylesheet as-is, or compose with your own Tailwind v4 setup and @source scanning.
 ---
+
+## For contributors
+
+- [Contributing](/guides/contributing) — local setup, tests, and pull requests
+- [Writing docs](/guides/writing-docs) — component page conventions

@@ -240,18 +240,45 @@ describe('Accordion', () => {
     expect(className).toMatch(/focus-visible:ring-kablui-focus/)
   })
 
-  it('is available from component and package barrels', async () => {
-    const components = await import('./index')
-    expect(components.Accordion).toBeDefined()
-    expect(components.AccordionItem).toBeDefined()
-    expect(components.AccordionTrigger).toBeDefined()
-    expect(components.AccordionContent).toBeDefined()
+  it('renders a chevron that rotates when open', async () => {
+    mountAccordion({ model: 'a' })
+    await nextTick()
+    const trigger = wrapper!.findAll('[data-slot="accordion-trigger"]')[0]!
+    const chevron = trigger.find('svg')
+    expect(chevron.exists()).toBe(true)
+    expect(chevron.classes()).toContain('rotate-180')
+  })
 
-    const pkg = await import('../index')
-    expect(pkg.Accordion).toBe(components.Accordion)
-    expect(pkg.AccordionItem).toBe(components.AccordionItem)
-    expect(pkg.AccordionTrigger).toBe(components.AccordionTrigger)
-    expect(pkg.AccordionContent).toBe(components.AccordionContent)
+  it('wraps the trigger in the requested heading level', async () => {
+    const Host = defineComponent({
+      setup() {
+        return () =>
+          h(Accordion, { type: 'single' }, () =>
+            h(AccordionItem, { value: 'a' }, () => [
+              h(AccordionTrigger, { heading: 'h2' }, () => 'Heading'),
+              h(AccordionContent, null, () => 'Body'),
+            ]),
+          )
+      },
+    })
+    wrapper = mount(Host)
+    await nextTick()
+    expect(wrapper.find('h2').exists()).toBe(true)
+    expect(wrapper.find('h3').exists()).toBe(false)
+  })
+
+  it('defaults the trigger heading to h3', () => {
+    mountAccordion()
+    expect(wrapper!.find('h3').exists()).toBe(true)
+  })
+
+  it('uses TabPanel-aligned content padding and foreground color', () => {
+    mountAccordion({ model: 'a' })
+    const className =
+      wrapper!.find('[data-slot="accordion-content"]').attributes('class') ?? ''
+    expect(className).toMatch(/px-1/)
+    expect(className).toMatch(/py-3/)
+    expect(className).toMatch(/text-kablui-fg/)
   })
 
   it('uses semantic kablui token classes and no hex colors in SFCs', () => {

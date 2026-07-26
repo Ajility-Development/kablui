@@ -1,6 +1,6 @@
 # Field
 
-Field owns labeling and description wiring for a single control. Nest `Label`, the control, `FieldHint`, and `FieldError` so ids, `aria-describedby`, and invalid state stay in sync.
+Field owns labeling and description wiring for a single control. Nest `FieldLabel`, the control, `FieldHint`, and `FieldError` so ids, `aria-describedby`, and invalid state stay in sync.
 
 ## Overview
 
@@ -11,14 +11,14 @@ Use `Field` as the wrapper around one form control (or a control group such as `
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Field, FieldError, FieldHint, Input, Label } from 'kablui'
+import { Field, FieldError, FieldHint, FieldLabel, Input } from 'kablui'
 
 const name = ref('')
 </script>
 
 <template>
   <Field :invalid="!name">
-    <Label required>Name</Label>
+    <FieldLabel required>Name</FieldLabel>
     <Input v-model="name" name="name" placeholder="Ada Lovelace" />
     <FieldHint>Used on invoices and receipts.</FieldHint>
     <FieldError v-if="!name">Name is required.</FieldError>
@@ -31,7 +31,7 @@ Checkbox / Switch with an adjacent label (same Field-owned id):
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Checkbox, Field, Label } from 'kablui'
+import { Checkbox, Field, FieldLabel } from 'kablui'
 
 const subscribe = ref(false)
 </script>
@@ -40,23 +40,23 @@ const subscribe = ref(false)
   <Field>
     <div class="flex items-center gap-2">
       <Checkbox v-model="subscribe" name="subscribe" />
-      <Label>Subscribe to product updates</Label>
+      <FieldLabel>Subscribe to product updates</FieldLabel>
     </div>
   </Field>
 </template>
 ```
 
-### Composition
+### Parts
 
 | Part | Role |
 | --- | --- |
 | `Field` | Provides context (`controlId`, hint/error ids, `invalid`) |
-| `Label` | Native `<label>`; `for` defaults to the Field control id |
+| `FieldLabel` | Native `<label>`; `for` defaults to the Field control id |
 | Control | `Input`, `Textarea`, `Checkbox`, `Switch`, `Select`, `RadioGroup`, etc. consume Field context |
 | `FieldHint` | Helper text; registers into `aria-describedby` |
 | `FieldError` | Error text with `role="alert"`; registers into `aria-describedby` when content is present |
 
-Pass a stable `id` on `Field` when you need a predictable control id. Override with `Label`’s `for` or the control’s `id` when composing outside the default wiring.
+Pass a stable `id` on `Field` when you need a predictable control id. Override with `FieldLabel`’s `for` or the control’s `id` when composing outside the default wiring.
 
 ## Props / Models / Emits / Slots
 
@@ -69,11 +69,11 @@ Pass a stable `id` on `Field` when you need a predictable control id. Override w
 
 | Slot | Description |
 | --- | --- |
-| `default` | Label, control, hint, and error |
+| `default` | FieldLabel, control, hint, and error |
 
 No models or emits.
 
-### Label
+### FieldLabel
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -114,15 +114,15 @@ Renders only when the default slot has content. When shown, uses `role="alert"` 
 
 - Field generates related ids and merges hint + error into `aria-describedby` for field-aware controls.
 - Nested controls that use Field context set `aria-invalid="true"` when Field (or the control) is invalid.
-- `Label` associates via native `for` / control `id`.
+- `FieldLabel` associates via native `for` / control `id`.
 - `FieldError` uses `role="alert"` when rendered.
-- Required indicator on `Label` is presentational (`aria-hidden="true"`).
+- Required indicator on `FieldLabel` is presentational (`aria-hidden="true"`).
 
 ## Related
 
 - [Input](./input.md)
 - [Textarea](./textarea.md)
 - [Checkbox](./checkbox.md)
-- [Radio](./radio.md)
+- [RadioGroup](./radio-group.md)
 - [Switch](./switch.md)
 - [Select](./select.md)

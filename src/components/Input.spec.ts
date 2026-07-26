@@ -6,7 +6,7 @@ import { defineComponent, h, ref } from 'vue'
 import { expectNoA11yViolations } from '../test/a11y'
 import Input from './Input.vue'
 import Field from './Field.vue'
-import Label from './Label.vue'
+import FieldLabel from './FieldLabel.vue'
 import FieldHint from './FieldHint.vue'
 
 describe('Input', () => {
@@ -68,7 +68,7 @@ describe('Input', () => {
         setup() {
           return () =>
             h(Field, { id: 'username' }, () => [
-              h(Label, null, () => 'Username'),
+              h(FieldLabel, null, () => 'Username'),
               h(Input),
               h(FieldHint, null, () => 'Public handle'),
             ])
@@ -109,7 +109,7 @@ describe('a11y', () => {
           return () =>
             h('main', null, [
               h(Field, { id: 'username' }, () => [
-                h(Label, null, () => 'Username'),
+                h(FieldLabel, null, () => 'Username'),
                 h(Input),
               ]),
             ])

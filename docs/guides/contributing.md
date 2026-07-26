@@ -23,10 +23,10 @@ npm install
 | `npm run docs:dev` | VitePress docs site |
 | `npm run typecheck` | TypeScript check (`vue-tsc --noEmit`) |
 | `npm test` | Unit / component tests (Vitest) |
-| `npm run test:visual` | Visual / regression checks (when available) |
+| `npm run test:visual` | Visual regression checks (Playwright) |
 | `npm run build` | Library build → `dist/` |
 
-Prefer `npm test` and `npm run typecheck` before opening a PR. For UI or a11y-sensitive changes, also run `npm test` (and `npm run test:visual` when that script is wired) so regressions surface early.
+Prefer `npm test` and `npm run typecheck` before opening a PR. For UI or a11y-sensitive changes, also run `npm run test:visual` so screenshot regressions surface early.
 
 Docs authors: see [Writing docs](./writing-docs.md). Release process: [Releasing](./releasing.md).
 
@@ -47,4 +47,4 @@ npm test           # unit / component / a11y-oriented coverage as configured
 npm run test:visual
 ```
 
-Even if `test:visual` lands in a later hardening wave, treat those commands as the expected local gates for UI work once present.
+Treat those commands as the local gates for UI work.

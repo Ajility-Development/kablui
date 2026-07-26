@@ -21,42 +21,46 @@ describe('Badge', () => {
   })
 
   it('maps each tone exclusively', () => {
-    const neutral = mount(Badge, {
-      props: { tone: 'neutral' },
-      slots: { default: 'N' },
-    })
-    const accent = mount(Badge, {
-      props: { tone: 'accent' },
-      slots: { default: 'A' },
-    })
-    const danger = mount(Badge, {
-      props: { tone: 'danger' },
-      slots: { default: 'D' },
-    })
+    const tones = ['neutral', 'accent', 'danger', 'success', 'warning'] as const
+    const tokenByTone = {
+      neutral: 'bg-kablui-muted',
+      accent: 'bg-kablui-accent',
+      danger: 'bg-kablui-danger',
+      success: 'bg-kablui-success',
+      warning: 'bg-kablui-warning',
+    } as const
 
-    expect(neutral.classes()).toContain('bg-kablui-muted')
-    expect(neutral.classes()).toContain('text-kablui-fg')
-    expect(neutral.classes()).not.toContain('bg-kablui-accent')
-    expect(neutral.classes()).not.toContain('bg-kablui-danger')
+    for (const tone of tones) {
+      const wrapper = mount(Badge, {
+        props: { tone },
+        slots: { default: tone },
+      })
+      const classes = wrapper.classes()
 
-    expect(accent.classes()).toContain('bg-kablui-accent')
-    expect(accent.classes()).not.toContain('bg-kablui-muted')
-    expect(accent.classes()).not.toContain('bg-kablui-danger')
-
-    expect(danger.classes()).toContain('bg-kablui-danger')
-    expect(danger.classes()).not.toContain('bg-kablui-muted')
-    expect(danger.classes()).not.toContain('bg-kablui-accent')
+      expect(classes).toContain(tokenByTone[tone])
+      for (const other of tones) {
+        if (other === tone) continue
+        expect(classes).not.toContain(tokenByTone[other])
+      }
+    }
   })
 
   it('maps each size exclusively', () => {
     const sm = mount(Badge, { props: { size: 'sm' }, slots: { default: 'S' } })
     const md = mount(Badge, { props: { size: 'md' }, slots: { default: 'M' } })
+    const lg = mount(Badge, { props: { size: 'lg' }, slots: { default: 'L' } })
 
     expect(sm.classes()).toContain('text-kablui-sm')
     expect(sm.classes()).not.toContain('text-kablui-md')
+    expect(sm.classes()).not.toContain('text-kablui-lg')
 
     expect(md.classes()).toContain('text-kablui-md')
     expect(md.classes()).not.toContain('text-kablui-sm')
+    expect(md.classes()).not.toContain('text-kablui-lg')
+
+    expect(lg.classes()).toContain('text-kablui-lg')
+    expect(lg.classes()).not.toContain('text-kablui-sm')
+    expect(lg.classes()).not.toContain('text-kablui-md')
   })
 
   it('is available from component and package barrels', async () => {

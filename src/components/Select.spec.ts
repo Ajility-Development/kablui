@@ -1,13 +1,15 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { describe, expect, it } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { mount, type VueWrapper } from '@vue/test-utils'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import { expectNoA11yViolations } from '../test/a11y'
+import { __resetDismissibleStack } from '../composables/useDismissible'
+import { __resetOverlayStack } from '../composables/useOverlayStack'
 import Select from './Select.vue'
 import SelectItem from './SelectItem.vue'
 import Field from './Field.vue'
-import Label from './Label.vue'
+import FieldLabel from './FieldLabel.vue'
 import FieldHint from './FieldHint.vue'
 
 const options = [
@@ -17,53 +19,80 @@ const options = [
   { value: 'mango', label: 'Mango' },
 ]
 
+let wrapper: VueWrapper | undefined
+
+beforeEach(() => {
+  __resetDismissibleStack()
+  __resetOverlayStack()
+})
+
+afterEach(() => {
+  wrapper?.unmount()
+  wrapper = undefined
+  document.body.innerHTML = ''
+})
+
+function listbox() {
+  return document.querySelector('[role="listbox"]') as HTMLElement | null
+}
+
 describe('Select', () => {
   it('opens and closes with aria-expanded', async () => {
-    const wrapper = mount(Select, { props: { options, placeholder: 'Pick' } })
+    wrapper = mount(Select, {
+      props: { options, placeholder: 'Pick' },
+      attachTo: document.body,
+    })
     const trigger = wrapper.find('button')
 
     expect(trigger.attributes('aria-expanded')).toBe('false')
     expect(trigger.attributes('aria-haspopup')).toBe('listbox')
 
     await trigger.trigger('click')
+    await nextTick()
     expect(trigger.attributes('aria-expanded')).toBe('true')
-    expect(wrapper.find('[role="listbox"]').isVisible()).toBe(true)
+    expect(listbox()?.hidden).toBeFalsy()
+    expect(getComputedStyle(listbox()!).display).not.toBe('none')
 
     await trigger.trigger('keydown', { key: 'Escape' })
+    await nextTick()
     expect(trigger.attributes('aria-expanded')).toBe('false')
   })
 
   it('selects via keyboard Enter and updates v-model', async () => {
-    const wrapper = mount(Select, {
+    wrapper = mount(Select, {
       props: { options, modelValue: '' },
+      attachTo: document.body,
     })
 
     const trigger = wrapper.find('button')
     await trigger.trigger('keydown', { key: 'ArrowDown' })
     await nextTick()
-    const listbox = wrapper.find('[role="listbox"]')
-    expect(listbox.isVisible()).toBe(true)
+    const box = listbox()!
+    expect(box).toBeTruthy()
 
-    await listbox.trigger('keydown', { key: 'ArrowDown' })
-    await listbox.trigger('keydown', { key: 'Enter' })
+    box.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }))
+    box.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
+    await nextTick()
 
     expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['banana'])
     expect(trigger.attributes('aria-expanded')).toBe('false')
   })
 
   it('marks selected option with aria-selected', async () => {
-    const wrapper = mount(Select, {
+    wrapper = mount(Select, {
       props: { options, modelValue: 'apple' },
+      attachTo: document.body,
     })
     await wrapper.find('button').trigger('click')
-    const selected = wrapper.find('[role="option"][aria-selected="true"]')
-    expect(selected.exists()).toBe(true)
-    expect(selected.text()).toBe('Apple')
+    await nextTick()
+    const selected = document.querySelector('[role="option"][aria-selected="true"]')
+    expect(selected).not.toBeNull()
+    expect(selected?.textContent?.trim()).toBe('Apple')
   })
 
   it('supports typeahead to move active option', async () => {
     const value = ref('')
-    const wrapper = mount(
+    wrapper = mount(
       defineComponent({
         setup() {
           return () =>
@@ -76,6 +105,7 @@ describe('Select', () => {
             })
         },
       }),
+      { attachTo: document.body },
     )
 
     const trigger = wrapper.find('button')
@@ -87,7 +117,7 @@ describe('Select', () => {
 
   it('works with SelectItem children', async () => {
     const value = ref('apple')
-    const wrapper = mount(
+    wrapper = mount(
       defineComponent({
         setup() {
           return () =>
@@ -106,18 +136,53 @@ describe('Select', () => {
             )
         },
       }),
+      { attachTo: document.body },
     )
 
     await wrapper.find('button').trigger('click')
     await nextTick()
-    const items = wrapper.findAll('[role="option"]')
+    const items = document.querySelectorAll('[role="option"]')
     expect(items.length).toBeGreaterThanOrEqual(2)
-    await items[1]!.trigger('click')
+    ;(items[1] as HTMLElement).click()
+    await nextTick()
     expect(value.value).toBe('banana')
   })
 
+  it('warns when both options prop and SelectItem children are provided', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h(Select, { options }, () => [h(SelectItem, { value: 'x' }, () => 'X')])
+        },
+      }),
+    )
+    await nextTick()
+    expect(
+      warn.mock.calls.some((c) =>
+        String(c[0]).includes('both `options` prop and SelectItem children'),
+      ),
+    ).toBe(true)
+    warn.mockRestore()
+  })
+
+  it('teleports listbox with menu stacking classes', async () => {
+    wrapper = mount(Select, {
+      props: { options },
+      attachTo: document.body,
+    })
+    await wrapper.find('button').trigger('click')
+    await nextTick()
+    const box = listbox()
+    expect(box).not.toBeNull()
+    expect(box?.parentElement).toBe(document.body)
+    expect(box?.className).toContain('z-kablui-menu')
+    expect(box?.className).toContain('shadow-kablui-md')
+  })
+
   it('renders hidden name input for form posts', () => {
-    const wrapper = mount(Select, {
+    wrapper = mount(Select, {
       props: { options, name: 'fruit', modelValue: 'apple' },
     })
     const hidden = wrapper.find('input[type="hidden"]')
@@ -126,17 +191,18 @@ describe('Select', () => {
   })
 
   it('applies invalid styles and Field aria wiring', async () => {
-    const wrapper = mount(
+    wrapper = mount(
       defineComponent({
         setup() {
           return () =>
             h(Field, { id: 'country', invalid: true }, () => [
-              h(Label, null, () => 'Country'),
+              h(FieldLabel, null, () => 'Country'),
               h(Select, { options }),
               h(FieldHint, null, () => 'Billing country'),
             ])
         },
       }),
+      { attachTo: document.body },
     )
     await nextTick()
     const trigger = wrapper.find('button')
@@ -146,39 +212,37 @@ describe('Select', () => {
     expect(trigger.attributes('aria-describedby')).toContain(
       wrapper.find('[data-slot="field-hint"]').attributes('id')!,
     )
-    expect(wrapper.find('[role="listbox"]').attributes('aria-labelledby')).toBe(
-      'country',
-    )
+    expect(listbox()?.getAttribute('aria-labelledby')).toBe('country')
   })
 
   it('names the listbox with placeholder aria-label when unlabeled', () => {
-    const wrapper = mount(Select, { props: { options, placeholder: 'Pick' } })
-    const listbox = wrapper.find('[role="listbox"]')
-    expect(listbox.attributes('aria-label')).toBe('Pick')
-    expect(listbox.attributes('aria-labelledby')).toBeUndefined()
+    wrapper = mount(Select, {
+      props: { options, placeholder: 'Pick' },
+      attachTo: document.body,
+    })
+    const box = listbox()
+    expect(box?.getAttribute('aria-label')).toBe('Pick')
+    expect(box?.getAttribute('aria-labelledby')).toBeNull()
   })
 
   it('includes focus-visible ring on trigger', () => {
-    const className = mount(Select, { props: { options } }).find('button').attributes('class') ?? ''
+    wrapper = mount(Select, { props: { options } })
+    const className = wrapper.find('button').attributes('class') ?? ''
     expect(className).toMatch(/focus-visible:ring-kablui-focus/)
     expect(className).toMatch(/focus-visible:ring-offset-kablui-bg/)
   })
 
-  it('is available from barrels', async () => {
-    const components = await import('./index')
-    const pkg = await import('../index')
-    expect(pkg.Select).toBe(components.Select)
-    expect(pkg.SelectItem).toBe(components.SelectItem)
-  })
-
   it('uses semantic kablui token classes and no hex colors in SFCs', () => {
-    for (const file of ['Select.vue', 'SelectItem.vue']) {
+    for (const file of ['Select.vue', 'SelectItem.vue', '../utils/listItemClasses.ts']) {
       const source = readFileSync(resolve(__dirname, file), 'utf8')
-      expect(source).toMatch(/kablui-/)
       expect(source).not.toMatch(/#[0-9a-fA-F]{3,8}\b/)
       expect(source).not.toMatch(/kablui-neutral-\d+/)
       expect(source).not.toMatch(/kablui-accent-\d+/)
     }
+    expect(readFileSync(resolve(__dirname, 'Select.vue'), 'utf8')).toMatch(/kablui-/)
+    expect(readFileSync(resolve(__dirname, '../utils/listItemClasses.ts'), 'utf8')).toMatch(
+      /kablui-/,
+    )
   })
 })
 
@@ -190,26 +254,32 @@ describe('a11y', () => {
           return () =>
             h('main', null, [
               h(Field, { id: 'fruit' }, () => [
-                h(Label, null, () => 'Fruit'),
+                h(FieldLabel, null, () => 'Fruit'),
                 h(Select, { options, placeholder: 'Pick' }),
               ]),
             ])
         },
       }),
+      { attachTo: document.body },
     )
   }
 
   it('has no axe violations when closed', async () => {
-    const wrapper = mountLabeledSelect()
+    wrapper = mountLabeledSelect()
     await nextTick()
     await expectNoA11yViolations(wrapper.element)
   })
 
   it('has no axe violations when open', async () => {
-    const wrapper = mountLabeledSelect()
+    wrapper = mountLabeledSelect()
     await nextTick()
     await wrapper.find('button').trigger('click')
     await nextTick()
-    await expectNoA11yViolations(wrapper.element)
+    const portal = listbox()
+    const landmark = document.querySelector('main')
+    expect(portal).not.toBeNull()
+    expect(landmark).not.toBeNull()
+    landmark!.appendChild(portal!)
+    await expectNoA11yViolations(document.body)
   })
 })

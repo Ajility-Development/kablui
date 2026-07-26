@@ -47,7 +47,7 @@ const disabledPage = ref(3)
 
 | Model | Type | Default | Description |
 | --- | --- | --- | --- |
-| `page` | `number` | `1` | Current page (`v-model:page`), 1-based |
+| `page` | `number` | `1` | Current page (`v-model:page`), 1-based. Pagination clamps `page` into `[1, pageCount]` when `pageCount >= 1`. |
 
 ### Emits
 

@@ -11,7 +11,7 @@ export interface AccordionContext {
 }
 
 export interface AccordionItemContext {
-  value: string
+  value: ComputedRef<string>
   disabled: ComputedRef<boolean>
   triggerId: string
   contentId: string

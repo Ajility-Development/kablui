@@ -35,7 +35,7 @@ onBeforeUnmount(() => {
 })
 
 const baseClasses = [
-  'size-4 shrink-0 appearance-none rounded-full border border-kablui-border bg-kablui-bg',
+  'size-4 shrink-0 appearance-none rounded-kablui-full border border-kablui-border bg-kablui-bg',
   'checked:border-kablui-accent checked:bg-kablui-accent',
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kablui-focus focus-visible:ring-offset-2 focus-visible:ring-offset-kablui-bg',
   'disabled:opacity-50 disabled:pointer-events-none',

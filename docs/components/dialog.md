@@ -2,7 +2,7 @@
 
 ## Overview
 
-Modal dialog teleported to the document body. Use it for confirmations and short focused tasks that need focus trapping, scroll lock, and dismiss via Escape, backdrop, or an optional close button.
+Modal dialog teleported to the document body. Use it for confirmations and short focused tasks that need focus trapping, scroll lock, and dismiss via Escape, backdrop, or an optional dismiss button.
 
 ## Usage
 
@@ -12,26 +12,31 @@ import { ref } from 'vue'
 import { Button, Dialog, Text } from 'kablui'
 
 const open = ref(false)
+
+function onConfirm() {
+  // Perform the confirmed action, then close.
+  open.value = false
+}
 </script>
 
 <template>
   <Button variant="solid" @click="open = true">Open dialog</Button>
 
-  <Dialog v-model:open="open" show-close>
+  <Dialog v-model:open="open" show-dismiss>
     <template #title>Confirm action</template>
     <template #description>
-      Escape, backdrop click, or the close button dismisses this dialog.
+      Escape, backdrop click, or the dismiss button closes this dialog.
     </template>
     <Text size="sm">Focus stays trapped while open; body scroll is locked.</Text>
     <template #footer>
       <Button variant="ghost" @click="open = false">Cancel</Button>
-      <Button variant="solid" @click="open = false">Confirm</Button>
+      <Button variant="solid" @click="onConfirm">Confirm</Button>
     </template>
   </Dialog>
 </template>
 ```
 
-Set `dismissible` to `false` when Escape and backdrop click should not close the dialog (the close button still works when `showClose` is set).
+Set `dismissible` to `false` when Escape and backdrop click should not close the dialog (the dismiss button still works when `showDismiss` is set).
 
 ## Props / Models / Emits / Slots
 
@@ -40,7 +45,7 @@ Set `dismissible` to `false` when Escape and backdrop click should not close the
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `dismissible` | `boolean` | `true` | Dismiss on Escape and backdrop click |
-| `showClose` | `boolean` | `false` | Show a close button in the header (`aria-label="Close"`) |
+| `showDismiss` | `boolean` | `false` | Show a dismiss button in the header (`aria-label="Dismiss"`) |
 | `to` | `string \| HTMLElement` | `'body'` | Teleport target |
 
 ### Models
@@ -68,7 +73,7 @@ None beyond the `open` model update.
 - When the `title` / `description` slots are used, the panel gets `aria-labelledby` / `aria-describedby`.
 - Focus is trapped inside the panel while open; body scroll is locked.
 - Escape and outside (backdrop) click dismiss when `dismissible` is `true`; ownership participates in the overlay stack (`modal`).
-- Optional close control is a native button with `aria-label="Close"`.
+- Optional dismiss control is a native button with `aria-label="Dismiss"`.
 
 ## Related
 

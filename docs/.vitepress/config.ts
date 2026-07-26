@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitepress'
 
 /**
- * Component page convention (Wave 1 authors):
+ * Component page convention:
  * Overview → Usage → Props/Models/Emits/Slots → Accessibility → Related
  * Examples import from `kablui`, not relative `src/` paths.
  * See docs/guides/writing-docs.md
@@ -52,7 +52,7 @@ export default defineConfig({
           { text: 'Input', link: '/components/input' },
           { text: 'Textarea', link: '/components/textarea' },
           { text: 'Checkbox', link: '/components/checkbox' },
-          { text: 'Radio', link: '/components/radio' },
+          { text: 'RadioGroup', link: '/components/radio-group' },
           { text: 'Switch', link: '/components/switch' },
           { text: 'Select', link: '/components/select' },
         ],
@@ -73,7 +73,6 @@ export default defineConfig({
           { text: 'Progress', link: '/components/progress' },
           { text: 'Skeleton', link: '/components/skeleton' },
           { text: 'Empty', link: '/components/empty' },
-          { text: 'Toast', link: '/components/toast' },
         ],
       },
       {
@@ -82,15 +81,16 @@ export default defineConfig({
           { text: 'Dialog', link: '/components/dialog' },
           { text: 'Popover', link: '/components/popover' },
           { text: 'Tooltip', link: '/components/tooltip' },
+          { text: 'Menu', link: '/components/menu' },
+          { text: 'Toast', link: '/components/toast' },
         ],
       },
       {
-        text: 'Composition',
+        text: 'Patterns',
         items: [
           { text: 'Card', link: '/components/card' },
           { text: 'Accordion', link: '/components/accordion' },
           { text: 'Tabs', link: '/components/tabs' },
-          { text: 'Menu', link: '/components/menu' },
           { text: 'Pagination', link: '/components/pagination' },
         ],
       },

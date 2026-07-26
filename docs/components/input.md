@@ -11,14 +11,14 @@ Use `Input` for short text values. Inside a `Field`, it picks up the shared cont
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Field, FieldError, FieldHint, Input, Label } from 'kablui'
+import { Field, FieldError, FieldHint, FieldLabel, Input } from 'kablui'
 
 const name = ref('')
 </script>
 
 <template>
   <Field :invalid="!name">
-    <Label required>Name</Label>
+    <FieldLabel required>Name</FieldLabel>
     <Input v-model="name" name="name" placeholder="Ada Lovelace" />
     <FieldHint>Used on invoices and receipts.</FieldHint>
     <FieldError v-if="!name">Name is required.</FieldError>

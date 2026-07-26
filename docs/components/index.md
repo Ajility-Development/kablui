@@ -7,21 +7,21 @@ API reference for kablui. Each page follows Overview → Usage → Props/Models/
 | Component | Description |
 | --- | --- |
 | [Button](/components/button) | Actions and CTAs |
-| [Text](/components/text) | Typography |
+| [Text](/components/text) | Text styles and hierarchy |
 | [Icon](/components/icon) | Icons |
 | [Link](/components/link) | Anchors / navigation |
-| [Badge](/components/badge) | Status chips |
+| [Badge](/components/badge) | Compact status labels |
 | [Separator](/components/separator) | Visual dividers |
 
 ## Forms
 
 | Component | Description |
 | --- | --- |
-| [Field](/components/field) | Label, hint, and error wiring (`Label`, `FieldHint`, `FieldError`) |
+| [Field](/components/field) | Label, hint, and error wiring (`FieldLabel`, `FieldHint`, `FieldError`) |
 | [Input](/components/input) | Text input |
 | [Textarea](/components/textarea) | Multiline input |
 | [Checkbox](/components/checkbox) | Boolean checkbox |
-| [Radio](/components/radio) | `RadioGroup` / `Radio` |
+| [RadioGroup](/components/radio-group) | `RadioGroup` / `Radio` |
 | [Switch](/components/switch) | Toggle switch |
 | [Select](/components/select) | `Select` / `SelectItem` |
 
@@ -42,7 +42,6 @@ API reference for kablui. Each page follows Overview → Usage → Props/Models/
 | [Progress](/components/progress) | Progress bar |
 | [Skeleton](/components/skeleton) | Placeholder shimmer |
 | [Empty](/components/empty) | Empty states |
-| [Toast](/components/toast) | `ToastProvider` + `useToast` |
 
 ## Overlays
 
@@ -51,13 +50,14 @@ API reference for kablui. Each page follows Overview → Usage → Props/Models/
 | [Dialog](/components/dialog) | Modal dialog |
 | [Popover](/components/popover) | Anchored popover |
 | [Tooltip](/components/tooltip) | Hover/focus tip |
+| [Menu](/components/menu) | Dropdown menu |
+| [Toast](/components/toast) | `ToastProvider` + `useToast` |
 
-## Composition
+## Patterns
 
 | Component | Description |
 | --- | --- |
 | [Card](/components/card) | Card regions |
 | [Accordion](/components/accordion) | Expandable sections |
 | [Tabs](/components/tabs) | Tabbed panels |
-| [Menu](/components/menu) | Dropdown menu |
 | [Pagination](/components/pagination) | Page controls |

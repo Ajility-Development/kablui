@@ -1,13 +1,13 @@
 import { defineComponent, h, nextTick, ref } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount, type VueWrapper } from '@vue/test-utils'
-import { __resetDismissableStack, useDismissable } from './useDismissable'
+import { __resetDismissibleStack, useDismissible } from './useDismissible'
 import { __resetOverlayStack, useOverlayStack } from './useOverlayStack'
 
 let wrapper: VueWrapper | undefined
 
 beforeEach(() => {
-  __resetDismissableStack()
+  __resetDismissibleStack()
   __resetOverlayStack()
 })
 
@@ -29,14 +29,14 @@ function dispatchPointerDown(target: EventTarget): void {
   )
 }
 
-describe('useDismissable', () => {
+describe('useDismissible', () => {
   it('calls onDismiss on Escape when active', async () => {
     const onDismiss = vi.fn()
 
     const Host = defineComponent({
       setup() {
         const rootRef = ref<HTMLElement | null>(null)
-        useDismissable(rootRef, { active: true, onDismiss })
+        useDismissible(rootRef, { active: true, onDismiss })
         return () => h('div', { ref: rootRef }, 'panel')
       },
     })
@@ -54,7 +54,7 @@ describe('useDismissable', () => {
     const Host = defineComponent({
       setup() {
         const rootRef = ref<HTMLElement | null>(null)
-        useDismissable(rootRef, { active: false, onDismiss })
+        useDismissible(rootRef, { active: false, onDismiss })
         return () => h('div', { ref: rootRef }, 'panel')
       },
     })
@@ -72,7 +72,7 @@ describe('useDismissable', () => {
     const Host = defineComponent({
       setup() {
         const rootRef = ref<HTMLElement | null>(null)
-        useDismissable(rootRef, { active: true, onDismiss, escape: false })
+        useDismissible(rootRef, { active: true, onDismiss, escape: false })
         return () => h('div', { ref: rootRef }, 'panel')
       },
     })
@@ -90,7 +90,7 @@ describe('useDismissable', () => {
     const Host = defineComponent({
       setup() {
         const rootRef = ref<HTMLElement | null>(null)
-        useDismissable(rootRef, { active: true, onDismiss, outside: true })
+        useDismissible(rootRef, { active: true, onDismiss, outside: true })
         return () => h('div', { ref: rootRef, id: 'panel' }, 'panel')
       },
     })
@@ -108,7 +108,7 @@ describe('useDismissable', () => {
     const Host = defineComponent({
       setup() {
         const rootRef = ref<HTMLElement | null>(null)
-        useDismissable(rootRef, { active: true, onDismiss, outside: true })
+        useDismissible(rootRef, { active: true, onDismiss, outside: true })
         return () =>
           h('div', { ref: rootRef, id: 'panel' }, [
             h('button', { id: 'inside' }, 'inside'),
@@ -129,7 +129,7 @@ describe('useDismissable', () => {
     const Host = defineComponent({
       setup() {
         const rootRef = ref<HTMLElement | null>(null)
-        useDismissable(rootRef, { active: true, onDismiss })
+        useDismissible(rootRef, { active: true, onDismiss })
         return () => h('div', { ref: rootRef }, 'panel')
       },
     })
@@ -141,7 +141,7 @@ describe('useDismissable', () => {
     expect(onDismiss).not.toHaveBeenCalled()
   })
 
-  it('only the topmost dismissable handles Escape', async () => {
+  it('only the topmost dismissible handles Escape', async () => {
     const outerDismiss = vi.fn()
     const innerDismiss = vi.fn()
 
@@ -149,8 +149,8 @@ describe('useDismissable', () => {
       setup() {
         const outerRef = ref<HTMLElement | null>(null)
         const innerRef = ref<HTMLElement | null>(null)
-        useDismissable(outerRef, { active: true, onDismiss: outerDismiss })
-        useDismissable(innerRef, { active: true, onDismiss: innerDismiss })
+        useDismissible(outerRef, { active: true, onDismiss: outerDismiss })
+        useDismissible(innerRef, { active: true, onDismiss: innerDismiss })
         return () =>
           h('div', { ref: outerRef }, [h('div', { ref: innerRef }, 'inner')])
       },
@@ -171,9 +171,9 @@ describe('useDismissable', () => {
     const Outer = defineComponent({
       setup() {
         const rootRef = ref<HTMLElement | null>(null)
-        const stack = useOverlayStack('modal')
+        const stack = useOverlayStack('dialog')
         stack.register()
-        useDismissable(rootRef, { active: true, onDismiss: outerDismiss })
+        useDismissible(rootRef, { active: true, onDismiss: outerDismiss })
         return () => h('div', { ref: rootRef, id: 'outer' }, 'outer')
       },
     })
@@ -181,9 +181,9 @@ describe('useDismissable', () => {
     const Inner = defineComponent({
       setup() {
         const rootRef = ref<HTMLElement | null>(null)
-        const stack = useOverlayStack('modal')
+        const stack = useOverlayStack('dialog')
         stack.register()
-        useDismissable(rootRef, { active: true, onDismiss: innerDismiss })
+        useDismissible(rootRef, { active: true, onDismiss: innerDismiss })
         return () => h('div', { ref: rootRef, id: 'inner' }, 'inner')
       },
     })
@@ -211,17 +211,17 @@ describe('useDismissable', () => {
       setup() {
         const outerRef = ref<HTMLElement | null>(null)
         const innerRef = ref<HTMLElement | null>(null)
-        const outer = useOverlayStack('modal')
-        const inner = useOverlayStack('modal')
+        const outer = useOverlayStack('dialog')
+        const inner = useOverlayStack('dialog')
 
         outer.register()
         inner.register()
 
-        useDismissable(outerRef, {
+        useDismissible(outerRef, {
           active: true,
           onDismiss: outerOnDismiss,
         })
-        useDismissable(innerRef, {
+        useDismissible(innerRef, {
           active: innerOpen,
           onDismiss: innerOnDismiss,
         })

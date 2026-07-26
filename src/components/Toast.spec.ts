@@ -52,7 +52,7 @@ describe('Toast', () => {
 
   it('renders action and emits action', async () => {
     const wrapper = mount(Toast, {
-      props: { title: 'Undoable', actionLabel: 'Undo' },
+      props: { title: 'Undoable', action: { label: 'Undo' } },
     })
 
     const action = wrapper.findAll('button').find((b) => b.text() === 'Undo')

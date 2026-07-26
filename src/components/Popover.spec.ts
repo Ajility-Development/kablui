@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount, type VueWrapper } from '@vue/test-utils'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import { expectNoA11yViolations } from '../test/a11y'
-import { __resetDismissableStack } from '../composables/useDismissable'
+import { __resetDismissibleStack } from '../composables/useDismissible'
 import type { FloatingPlacement } from '../composables/useFloating'
 import { __resetOverlayStack } from '../composables/useOverlayStack'
 import Popover from './Popover.vue'
@@ -12,7 +12,7 @@ import PopoverTrigger from './PopoverTrigger.vue'
 let wrapper: VueWrapper | undefined
 
 beforeEach(() => {
-  __resetDismissableStack()
+  __resetDismissibleStack()
   __resetOverlayStack()
 })
 
@@ -213,11 +213,11 @@ describe('Popover', () => {
     expect(document.querySelector('[data-slot="popover-content"]')).toBeNull()
   })
 
-  it('uses dropdown stacking classes', async () => {
+  it('uses menu stacking classes', async () => {
     mountPopover({ open: true })
     await nextTick()
     const content = document.querySelector('[data-slot="popover-content"]')
-    expect(content?.className).toContain('z-kablui-dropdown')
+    expect(content?.className).toContain('z-kablui-menu')
     expect(content?.className).toContain('shadow-kablui-md')
   })
 

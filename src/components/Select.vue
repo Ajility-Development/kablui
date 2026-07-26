@@ -3,23 +3,30 @@ import {
   computed,
   nextTick,
   onBeforeUnmount,
-  onMounted,
   provide,
   ref,
   useAttrs,
+  useSlots,
+  watch,
+  type CSSProperties,
 } from 'vue'
+import { useDismissible } from '../composables/useDismissible'
 import { useFieldControlAttrs } from '../composables/useField'
-import { SELECT_KEY, type SelectOption } from './selectContext'
+import { useFloating } from '../composables/useFloating'
+import { useId } from '../composables/useId'
+import { useOverlayStack } from '../composables/useOverlayStack'
+import { listItemBase, listItemState } from '../utils/listItemClasses'
+import {
+  SELECT_KEY,
+  type RegisteredSelectOption,
+  type SelectOption,
+} from './selectContext'
 
-export interface SelectOptionProp {
-  value: string
-  label: string
-  disabled?: boolean
-}
+export type { SelectOption }
 
 export interface SelectProps {
   /** Declarative options; omit when composing with `SelectItem` children instead. */
-  options?: SelectOptionProp[]
+  options?: SelectOption[]
   placeholder?: string
   disabled?: boolean
   invalid?: boolean
@@ -40,6 +47,7 @@ const props = withDefaults(defineProps<SelectProps>(), {
 const model = defineModel<string>()
 
 const attrs = useAttrs()
+const slots = useSlots()
 const fieldAttrs = useFieldControlAttrs({
   id: () => props.id,
   invalid: () => props.invalid,
@@ -51,18 +59,28 @@ const rootRef = ref<HTMLElement | null>(null)
 const listboxRef = ref<HTMLElement | null>(null)
 const triggerRef = ref<HTMLButtonElement | null>(null)
 
-const listboxId = `kablui-listbox-${Math.random().toString(36).slice(2, 9)}`
-const registered = ref<SelectOption[]>([])
+const listboxId = useId('listbox')
+const registered = ref<RegisteredSelectOption[]>([])
+const optionIdCache = new Map<string, string>()
 
 let typeaheadBuffer = ''
 let typeaheadTimer: ReturnType<typeof setTimeout> | null = null
 
-const propOptions = computed<SelectOption[]>(() =>
+function optionIdFor(value: string): string {
+  let id = optionIdCache.get(value)
+  if (!id) {
+    id = useId('option')
+    optionIdCache.set(value, id)
+  }
+  return id
+}
+
+const propOptions = computed<RegisteredSelectOption[]>(() =>
   (props.options ?? []).map((opt) => ({
     value: opt.value,
     label: opt.label,
     disabled: opt.disabled,
-    id: `${listboxId}-option-${opt.value}`,
+    id: optionIdFor(opt.value),
   })),
 )
 
@@ -84,7 +102,19 @@ const activeDescendant = computed(() => {
   return allOptions.value.find((o) => o.value === activeValue.value)?.id
 })
 
-function register(option: SelectOption) {
+watch(
+  () => [(props.options?.length ?? 0) > 0, !!slots.default] as const,
+  ([hasOptions, hasSlot]) => {
+    if (hasOptions && hasSlot) {
+      console.warn(
+        '[kablui] Select: both `options` prop and SelectItem children were provided; `options` takes precedence',
+      )
+    }
+  },
+  { immediate: true },
+)
+
+function register(option: RegisteredSelectOption) {
   const next = [...registered.value]
   const index = next.findIndex((o) => o.value === option.value)
   if (index === -1) next.push(option)
@@ -96,7 +126,7 @@ function unregister(value: string) {
   registered.value = registered.value.filter((o) => o.value !== value)
 }
 
-function update(value: string, option: SelectOption) {
+function update(value: string, option: RegisteredSelectOption) {
   const index = registered.value.findIndex((o) => o.value === value)
   if (index === -1) return
   const prev = registered.value[index]!
@@ -144,6 +174,11 @@ function openListbox() {
 }
 
 function closeListbox() {
+  open.value = false
+  nextTick(() => triggerRef.value?.focus())
+}
+
+function dismiss() {
   open.value = false
   nextTick(() => triggerRef.value?.focus())
 }
@@ -243,20 +278,38 @@ function onListboxKeydown(event: KeyboardEvent) {
   onTriggerKeydown(event)
 }
 
-function onDocumentPointerDown(event: PointerEvent) {
-  if (!open.value || !rootRef.value) return
-  const target = event.target as Node
-  if (!rootRef.value.contains(target)) {
-    open.value = false
-  }
-}
+const { register: registerOverlay, unregister: unregisterOverlay } = useOverlayStack('menu')
 
-onMounted(() => {
-  document.addEventListener('pointerdown', onDocumentPointerDown)
+const { style: floatingStyle } = useFloating(triggerRef, listboxRef, {
+  open,
+  placement: 'bottom-start',
+})
+
+const listboxStyle = computed<CSSProperties>(() => {
+  const width = triggerRef.value?.offsetWidth
+  return {
+    ...floatingStyle.value,
+    ...(width ? { width: `${width}px` } : {}),
+  }
+})
+
+watch(
+  open,
+  (isOpen) => {
+    if (isOpen) registerOverlay()
+    else unregisterOverlay()
+  },
+  { immediate: true },
+)
+
+useDismissible(rootRef, {
+  active: open,
+  onDismiss: dismiss,
+  escape: true,
+  outside: true,
 })
 
 onBeforeUnmount(() => {
-  document.removeEventListener('pointerdown', onDocumentPointerDown)
   if (typeaheadTimer) clearTimeout(typeaheadTimer)
 })
 
@@ -265,6 +318,7 @@ provide(SELECT_KEY, {
   model,
   activeValue,
   open,
+  size: computed(() => props.size),
   register,
   unregister,
   update,
@@ -292,6 +346,26 @@ const triggerClasses = computed(() => [
   fieldAttrs.invalid.value ? 'border-kablui-danger' : '',
   !displayLabel.value ? 'text-kablui-muted-fg' : '',
 ])
+
+const listboxClasses = [
+  'z-kablui-menu max-h-60 overflow-auto rounded-kablui-md border border-kablui-border bg-kablui-bg',
+  'p-1 text-kablui-md text-kablui-fg shadow-kablui-md',
+  'focus:outline-none',
+].join(' ')
+
+function optionClasses(option: RegisteredSelectOption) {
+  return [
+    listItemBase,
+    listItemState({
+      active: activeValue.value === option.value,
+      selected: model.value === option.value,
+      disabled: !!option.disabled,
+      size: props.size,
+    }),
+  ]
+    .filter(Boolean)
+    .join(' ')
+}
 
 /** Name the listbox via the trigger id (Field label) or placeholder fallback. */
 const listboxLabelledBy = computed(() => fieldAttrs.id.value)
@@ -330,41 +404,40 @@ const listboxAriaLabel = computed(() =>
       </svg>
     </button>
 
-    <div
-      v-show="open"
-      :id="listboxId"
-      ref="listboxRef"
-      role="listbox"
-      tabindex="-1"
-      :aria-labelledby="listboxLabelledBy"
-      :aria-label="listboxAriaLabel"
-      :aria-activedescendant="activeDescendant"
-      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-kablui-md border border-kablui-border bg-kablui-bg p-1 shadow-kablui-sm"
-      @keydown="onListboxKeydown"
-    >
-      <template v-if="propOptions.length">
-        <div
-          v-for="option in propOptions"
-          :id="option.id"
-          :key="option.value"
-          role="option"
-          :aria-selected="model === option.value ? 'true' : 'false'"
-          :aria-disabled="option.disabled || undefined"
-          :data-value="option.value"
-          :class="[
-            'flex w-full cursor-pointer items-center px-3 py-1.5 text-kablui-md text-kablui-fg rounded-kablui-sm',
-            activeValue === option.value ? 'bg-kablui-muted' : '',
-            model === option.value ? 'font-kablui-medium' : '',
-            option.disabled ? 'opacity-50 pointer-events-none' : 'hover:bg-kablui-muted',
-          ]"
-          @click="selectValue(option.value)"
-          @mouseenter="!option.disabled && setActiveValue(option.value)"
-        >
-          {{ option.label }}
-        </div>
-      </template>
-      <slot v-else />
-    </div>
+    <Teleport to="body">
+      <div
+        v-show="open"
+        :id="listboxId"
+        ref="listboxRef"
+        role="listbox"
+        tabindex="-1"
+        :aria-labelledby="listboxLabelledBy"
+        :aria-label="listboxAriaLabel"
+        :aria-activedescendant="activeDescendant"
+        :class="listboxClasses"
+        :style="listboxStyle"
+        @pointerdown.stop
+        @keydown="onListboxKeydown"
+      >
+        <template v-if="propOptions.length">
+          <div
+            v-for="option in propOptions"
+            :id="option.id"
+            :key="option.value"
+            role="option"
+            :aria-selected="model === option.value ? 'true' : 'false'"
+            :aria-disabled="option.disabled || undefined"
+            :data-value="option.value"
+            :class="optionClasses(option)"
+            @click="selectValue(option.value)"
+            @mouseenter="!option.disabled && setActiveValue(option.value)"
+          >
+            {{ option.label }}
+          </div>
+        </template>
+        <slot v-else />
+      </div>
+    </Teleport>
 
     <input v-if="name" type="hidden" :name="name" :value="model ?? ''" :disabled="disabled" />
   </div>

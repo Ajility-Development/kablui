@@ -76,8 +76,8 @@ describe('Tabs', () => {
     const selectedPanel = panels[0]!
     expect(selected.attributes('aria-controls')).toBe(selectedPanel.attributes('id'))
     expect(selectedPanel.attributes('aria-labelledby')).toBe(selected.attributes('id'))
-    expect(selected.attributes('id')).toMatch(/^kablui-tabs-\d+-tab-a$/)
-    expect(selectedPanel.attributes('id')).toMatch(/^kablui-tabs-\d+-panel-a$/)
+    expect(selected.attributes('id')).toMatch(/^kablui-tabs-.+-tab-a$/)
+    expect(selectedPanel.attributes('id')).toMatch(/^kablui-tabs-.+-panel-a$/)
   })
 
   it('sets aria-orientation for vertical tabs', async () => {
@@ -190,6 +190,18 @@ describe('Tabs', () => {
     expect(className).toMatch(/text-kablui-accent/)
   })
 
+  it('applies AccordionContent-aligned panel typography and padding', async () => {
+    const { wrapper } = mountTabs({ modelValue: 'a' })
+    await nextTick()
+
+    const panel = wrapper.find('[role="tabpanel"]')
+    const className = panel.attributes('class') ?? ''
+    expect(className).toMatch(/\bpx-1\b/)
+    expect(className).toMatch(/\bpy-3\b/)
+    expect(className).toMatch(/text-kablui-md/)
+    expect(className).toMatch(/text-kablui-fg/)
+  })
+
   it('includes focus-visible ring contract like Button', async () => {
     const { wrapper } = mountTabs({ modelValue: 'a' })
     await nextTick()
@@ -252,6 +264,8 @@ describe('Tabs', () => {
       const source = readFileSync(resolve(__dirname, file), 'utf8')
       expect(source).toMatch(/kablui-/)
     }
+    const panelSource = readFileSync(resolve(__dirname, 'TabPanel.vue'), 'utf8')
+    expect(panelSource).toMatch(/px-1 py-3 text-kablui-md text-kablui-fg/)
   })
 })
 

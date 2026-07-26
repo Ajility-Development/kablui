@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import type { TextTone } from '../types/tone'
+import { TEXT_TONE_CLASSES } from '../utils/tones'
+
 export interface TextProps {
   as?: 'p' | 'span' | 'div' | 'label' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
   size?: 'sm' | 'md' | 'lg'
   weight?: 'normal' | 'medium' | 'semibold'
-  tone?: 'default' | 'muted' | 'accent' | 'danger'
+  tone?: TextTone
 }
 
 withDefaults(defineProps<TextProps>(), {
@@ -24,19 +27,12 @@ const weightClasses: Record<NonNullable<TextProps['weight']>, string> = {
   medium: 'font-kablui-medium',
   semibold: 'font-kablui-semibold',
 }
-
-const toneClasses: Record<NonNullable<TextProps['tone']>, string> = {
-  default: 'text-kablui-fg',
-  muted: 'text-kablui-muted-fg',
-  accent: 'text-kablui-accent',
-  danger: 'text-kablui-danger',
-}
 </script>
 
 <template>
   <component
     :is="as"
-    :class="[sizeClasses[size], weightClasses[weight], toneClasses[tone]]"
+    :class="[sizeClasses[size], weightClasses[weight], TEXT_TONE_CLASSES[tone]]"
   >
     <slot />
   </component>

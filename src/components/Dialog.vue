@@ -1,24 +1,25 @@
 <script setup lang="ts">
 import { computed, ref, useSlots, watch } from 'vue'
 import type { ComputedRef, Slots } from 'vue'
-import { useDismissable } from '../composables/useDismissable'
+import { useDismissible } from '../composables/useDismissible'
 import { useFocusTrap } from '../composables/useFocusTrap'
 import { useId } from '../composables/useId'
 import { useOverlayStack } from '../composables/useOverlayStack'
 import { useScrollLock } from '../composables/useScrollLock'
+import DismissButton from './DismissButton.vue'
 
 export interface DialogProps {
   /** Dismiss on Escape and backdrop click. Defaults to `true`. */
   dismissible?: boolean
-  /** Show a close button in the header. Defaults to `false`. */
-  showClose?: boolean
+  /** Show a dismiss button in the header. Defaults to `false`. */
+  showDismiss?: boolean
   /** Teleport target. Defaults to `body`. */
   to?: string | HTMLElement
 }
 
 const props = withDefaults(defineProps<DialogProps>(), {
   dismissible: true,
-  showClose: false,
+  showDismiss: false,
   to: 'body',
 })
 
@@ -33,7 +34,7 @@ const descriptionId = useId('dialog-description')
 const hasTitle: ComputedRef<boolean> = computed(() => !!slots.title)
 const hasDescription: ComputedRef<boolean> = computed(() => !!slots.description)
 
-const { register, unregister } = useOverlayStack('modal')
+const { register, unregister } = useOverlayStack('dialog')
 
 watch(
   open,
@@ -56,8 +57,8 @@ function onDismiss() {
 useScrollLock(open)
 useFocusTrap(panelRef, { active: open })
 
-// Register overlay stack before dismissable so Escape ownership uses `isTop`.
-useDismissable(panelRef, {
+// Register overlay stack before dismissible so Escape ownership uses `isTop`.
+useDismissible(panelRef, {
   active: () => !!open.value && props.dismissible,
   onDismiss,
   escape: true,
@@ -65,7 +66,7 @@ useDismissable(panelRef, {
 })
 
 const shellClasses = [
-  'fixed inset-0 z-kablui-modal',
+  'fixed inset-0 z-kablui-dialog',
   'flex items-center justify-center p-4',
 ].join(' ')
 
@@ -88,12 +89,6 @@ const bodyClasses = 'px-4 py-3 text-kablui-md'
 
 const footerClasses =
   'flex flex-wrap items-center justify-end gap-2 border-t border-kablui-border px-4 py-3'
-
-const closeClasses = [
-  'ml-auto shrink-0 -mr-1 -mt-0.5 inline-flex size-7 items-center justify-center',
-  'rounded-kablui-sm text-kablui-muted-fg hover:bg-kablui-muted hover:text-kablui-fg',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kablui-focus focus-visible:ring-offset-2 focus-visible:ring-offset-kablui-bg',
-].join(' ')
 </script>
 
 <template>
@@ -119,7 +114,7 @@ const closeClasses = [
         data-kablui-dialog-panel
       >
         <div
-          v-if="hasTitle || hasDescription || showClose"
+          v-if="hasTitle || hasDescription || showDismiss"
           :class="headerClasses"
         >
           <div class="min-w-0 flex-1">
@@ -138,15 +133,11 @@ const closeClasses = [
               <slot name="description" />
             </p>
           </div>
-          <button
-            v-if="showClose"
-            type="button"
-            :class="closeClasses"
-            aria-label="Close"
+          <DismissButton
+            v-if="showDismiss"
+            class="ml-auto -mr-1 -mt-0.5"
             @click="close"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
+          />
         </div>
         <div
           v-if="$slots.default"

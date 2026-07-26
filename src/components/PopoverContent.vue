@@ -40,7 +40,7 @@ const { style } = useFloating(
 )
 
 const classes = [
-  'z-kablui-dropdown rounded-kablui-md border border-kablui-border bg-kablui-bg',
+  'z-kablui-menu rounded-kablui-md border border-kablui-border bg-kablui-bg',
   'p-3 text-kablui-md text-kablui-fg shadow-kablui-md',
   'focus:outline-none',
 ].join(' ')

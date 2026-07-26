@@ -2,7 +2,7 @@
 
 ## Overview
 
-Visual divider, horizontal by default. Decorative (`aria-hidden`) unless `semantic` is set, which applies `role="separator"`.
+Visual divider, horizontal by default. Decorative (`aria-hidden`) by default. Set `decorative` to `false` for a semantic separator with `role="separator"` and a stronger border.
 
 ## Usage
 
@@ -18,7 +18,7 @@ import { Separator, Text } from 'kablui'
   <Text size="sm" tone="muted">Vertical + semantic</Text>
   <div class="flex h-8 items-center gap-3">
     <Text size="sm">Left</Text>
-    <Separator orientation="vertical" semantic class="self-stretch" />
+    <Separator orientation="vertical" :decorative="false" class="self-stretch" />
     <Text size="sm">Right</Text>
   </div>
 </template>
@@ -33,7 +33,7 @@ For a vertical separator in a flex row, stretch height with a consumer class (e.
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Border axis (`border-t` vs `border-l`) |
-| `semantic` | `boolean` | `false` | When true, uses `role="separator"`; otherwise decorative (`aria-hidden`) |
+| `decorative` | `boolean` | `true` | When true, decorative (`aria-hidden`); when false, `role="separator"` with stronger border |
 
 ### Models
 
@@ -49,10 +49,10 @@ None. Self-closing; no content slot.
 
 ## Accessibility
 
-- Default (`semantic` false): no `role`, `aria-hidden="true"`.
-- When `semantic` is true: `role="separator"`.
-- When `semantic` is true and `orientation` is `'vertical'`: also sets `aria-orientation="vertical"`. Horizontal semantic separators do not set `aria-orientation`.
-- Semantic separators use a stronger border token than decorative ones.
+- Default (`decorative` true): no `role`, `aria-hidden="true"`.
+- When `decorative` is false: `role="separator"`.
+- When `decorative` is false and `orientation` is `'vertical'`: also sets `aria-orientation="vertical"`. Horizontal semantic separators do not set `aria-orientation`.
+- Semantic separators (`decorative` false) use a stronger border token than decorative ones.
 
 ## Related
 

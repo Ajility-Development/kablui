@@ -55,7 +55,7 @@ const shadows = [
 </script>
 
 <template>
-  <section class="space-y-6">
+  <section id="tokens" class="space-y-6">
     <div class="space-y-2">
       <Text as="h2" size="lg" weight="semibold">Tokens</Text>
       <Text tone="muted" size="sm">

@@ -19,14 +19,14 @@ describe('theme tokens (index.css)', () => {
     )
   })
 
-  it('defines focus and bg semantic tokens', () => {
+  it('defines focus and bg role tokens', () => {
     expect(css).toMatch(/--color-kablui-focus/)
     expect(css).toMatch(/--color-kablui-bg/)
   })
 
   it('documents consumer override guidance for dark reassignment', () => {
-    expect(css).toMatch(/re-declare semantics/i)
-    expect(css).toMatch(/primitive steps/i)
+    expect(css).toMatch(/re-declare roles/i)
+    expect(css).toMatch(/palette steps/i)
   })
 
   it('defines elevation shadows md and lg', () => {
@@ -55,15 +55,23 @@ describe('theme tokens (index.css)', () => {
   })
 
   it('defines z-index scale tokens', () => {
-    expect(css).toMatch(/--z-kablui-dropdown:\s*1000/)
+    expect(css).toMatch(/--z-kablui-menu:\s*1000/)
     expect(css).toMatch(/--z-kablui-sticky:\s*1100/)
-    expect(css).toMatch(/--z-kablui-overlay:\s*1200/)
-    expect(css).toMatch(/--z-kablui-modal:\s*1300/)
+    expect(css).toMatch(/--z-kablui-dialog:\s*1300/)
     expect(css).toMatch(/--z-kablui-toast:\s*1400/)
     expect(css).toMatch(/--z-kablui-tooltip:\s*1500/)
+    expect(css).not.toMatch(/--z-kablui-dropdown/)
+    expect(css).not.toMatch(/--z-kablui-modal/)
+    expect(css).not.toMatch(/--z-kablui-overlay/)
   })
 
-  it('defines success and warning primitives and semantics', () => {
+  it('applies sans font via data-slot', () => {
+    expect(css).toMatch(
+      /\[data-slot\]\s*\{\s*font-family:\s*var\(--font-kablui-sans\);/,
+    )
+  })
+
+  it('defines success and warning palette and role tokens', () => {
     expect(css).toMatch(/--color-kablui-success-400/)
     expect(css).toMatch(/--color-kablui-success-500/)
     expect(css).toMatch(/--color-kablui-success-600/)

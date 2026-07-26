@@ -11,13 +11,40 @@ See [Releasing](docs/guides/releasing.md) for versioning policy and publish step
 
 ### Added
 
+- Shared `Tone` / `TextTone` types and public exports from the package root.
+- `OpenReason` overlay type; floating placement helpers (`useFloating` + related types) and `useDismissible` exported from the package root.
+- Badge `success` and `warning` tones.
+- Button `loading` state.
+- Progress `caption` for visible copy above the bar (with optional separate `label` for accessible name).
+- Toast `action` object prop (`{ label, onClick }` via `useToast` / presentational `{ label }` on `Toast`).
+- Select teleports its listbox; public `SelectOption` type for the `options` prop.
+- Docs IA: Patterns section; Menu and Toast under Overlays; RadioGroup at `/components/radio-group`.
+
 ### Changed
 
-### Deprecated
+- Renamed `Label` → `FieldLabel` (`FieldLabelProps`).
+- Renamed `CardBody` → `CardContent` (`CardContentProps`).
+- Renamed Dialog `showClose` → `showDismiss`.
+- Renamed composable `useDismissable` → `useDismissible` (and related option types).
+- Separator uses `decorative` (default `true`) instead of a `semantic` prop.
+- Overlay z-index tokens / layers: `z-kablui-menu` and `z-kablui-dialog` (replacing dropdown/modal names); `OverlayLayer` is `'menu' | 'dialog' | 'toast' | 'tooltip'`.
+- Renamed Select option type `SelectOptionProp` → `SelectOption`.
+- Card no longer applies root padding; region components own their padding.
+- Pagination clamps `page` into `[1, pageCount]` when `pageCount >= 1`.
+- Field control ids stay reactive when the `id` prop changes.
+- Tooltip merges into existing `aria-describedby` on the anchor instead of replacing it.
+- Playground and docs use “Patterns” for higher-level composition demos (hash `#composition`).
 
 ### Removed
 
+- Public exports of `Label` / `LabelProps`, `CardBody` / `CardBodyProps`, and `SelectOptionProp`.
+- `DismissButton` remains internal (not part of the public API).
+
 ### Fixed
+
+- Barrel exports and consumer docs aligned with FieldLabel, CardContent, and RadioGroup paths.
+- VitePress brand CSS variables mapped to kablui accent OKLCH tokens.
+- Hybrid `useId` format (`kablui-${prefix}-v-*` in setup) accepted in component tests.
 
 ### Security
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Polymorphic typography primitive. Renders as a paragraph by default, or as another element via `as`, with size, weight, and tone tokens.
+Polymorphic text primitive. Renders as a paragraph by default, or as another element via `as`, with size, weight, and tone tokens.
 
 ## Usage
 

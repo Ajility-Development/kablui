@@ -1,7 +1,6 @@
 import type { ComputedRef, InjectionKey, Ref } from 'vue'
 import type { FloatingPlacement } from '../composables/useFloating'
-
-export type MenuOpenReason = 'keyboard' | 'pointer'
+import type { OpenReason } from '../types/overlay'
 
 export interface MenuContext {
   open: Ref<boolean>
@@ -9,8 +8,8 @@ export interface MenuContext {
   placement: ComputedRef<FloatingPlacement>
   triggerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
-  setOpen: (value: boolean, reason?: MenuOpenReason) => void
-  toggle: (reason?: MenuOpenReason) => void
+  setOpen: (value: boolean, reason?: OpenReason) => void
+  toggle: (reason?: OpenReason) => void
   getEnabledItems: () => HTMLElement[]
   focusFirstItem: () => void
   focusItemRelative: (current: HTMLElement | null, delta: number) => void

@@ -6,14 +6,14 @@ kablui styles are driven by design tokens in `@theme` / CSS variables (see `src/
 
 | Layer | Role | When to touch |
 | --- | --- | --- |
-| **Primitives** | Mode-stable palette steps (`--color-kablui-neutral-*`, `--color-kablui-accent-400`, etc.) | Brand color that should work in both light and dark |
-| **Semantics** | Mode-aware roles (`--color-kablui-bg`, `--color-kablui-fg`, `--color-kablui-accent`, …) | Role-level tweaks; components use semantic utilities only (e.g. `bg-kablui-bg`, `text-kablui-fg`) |
+| **palette** | Mode-stable color steps (`--color-kablui-neutral-*`, `--color-kablui-accent-400`, etc.) | Brand color that should work in both light and dark |
+| **roles** | Mode-aware tokens (`--color-kablui-bg`, `--color-kablui-fg`, `--color-kablui-accent`, …) | Role-level tweaks; components use role utilities only (e.g. `bg-kablui-bg`, `text-kablui-fg`) |
 
-Components should consume **semantic** utilities. Prefer overriding **primitive** steps when you want a brand accent that remains coherent across themes.
+Components should consume **role** utilities. Prefer overriding **palette** steps when you want a brand accent that remains coherent across themes.
 
 ## Light and dark
 
-- **Default:** `prefers-color-scheme` reassigns semantic variables under dark OS settings.
+- **Default:** `prefers-color-scheme` reassigns role variables under dark OS settings.
 - **Forced theme:** set `data-theme="dark"` or `data-theme="light"` on `html`, `:root`, or `:host`.
 - Forced **light** wins over OS dark.
 
@@ -27,7 +27,7 @@ Components should consume **semantic** utilities. Prefer overriding **primitive*
 
 Load your app CSS **after** `kablui/style.css` so overrides win.
 
-### Brand via primitives (recommended for both modes)
+### Brand via palette (recommended for both modes)
 
 ```css
 :root {
@@ -36,9 +36,9 @@ Load your app CSS **after** `kablui/style.css` so overrides win.
 }
 ```
 
-### Role-level semantics
+### Role-level overrides
 
-Re-declare semantics inside each theme selector (`:root`, dark media, `[data-theme=…]`). Dark rules reassign semantic vars and will overwrite a lone `:root { --color-kablui-accent: … }` in dark mode if you only set light values.
+Re-declare roles inside each theme selector (`:root`, dark media, `[data-theme=…]`). Dark rules reassign role vars and will overwrite a lone `:root { --color-kablui-accent: … }` in dark mode if you only set light values.
 
 ```css
 :root {
@@ -57,6 +57,8 @@ Keep accent / danger / success / warning foreground pairs at least **4.5:1** aga
 ## Other tokens
 
 Beyond color, `@theme` also defines type (`--font-kablui-sans`, `--text-kablui-*`), radius, elevation (`--shadow-kablui-*`), and z-index (`--z-kablui-*`). Override the same way when needed.
+
+`--font-kablui-sans` is applied to component roots via `[data-slot] { font-family: var(--font-kablui-sans); }` in the published stylesheet. Override the variable (or the `[data-slot]` rule) if you want a different family.
 
 ## Related
 

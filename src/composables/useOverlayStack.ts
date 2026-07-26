@@ -7,13 +7,18 @@ import {
   type ComponentInternalInstance,
 } from 'vue'
 
-export type OverlayLayer = 'dropdown' | 'overlay' | 'modal' | 'toast' | 'tooltip'
+/**
+ * Overlay stacking layers (map to `--z-kablui-*` tokens).
+ *
+ * `sticky` (`--z-kablui-sticky`) is intentionally NOT an OverlayLayer —
+ * it is reserved for app chrome only and must not be registered on this stack.
+ */
+export type OverlayLayer = 'menu' | 'dialog' | 'toast' | 'tooltip'
 
 /** Token scale values matching `--z-kablui-*` in theme CSS. */
 const Z_INDEX: Record<OverlayLayer, number> = {
-  dropdown: 1000,
-  overlay: 1200,
-  modal: 1300,
+  menu: 1000,
+  dialog: 1300,
   toast: 1400,
   tooltip: 1500,
 }
@@ -29,8 +34,8 @@ const stack: StackEntry[] = []
 const version = ref(0)
 
 /**
- * Same-setup queue so each `useDismissable` can claim the matching
- * `useOverlayStack` `isTop` (FIFO — call stack then dismissable, or all stacks then dismissables).
+ * Same-setup queue so each `useDismissible` can claim the matching
+ * `useOverlayStack` `isTop` (FIFO — call stack then dismissible, or all stacks then dismissibles).
  */
 const instanceOverlayQueue = new WeakMap<
   ComponentInternalInstance,
@@ -88,7 +93,7 @@ export function useOverlayStack(layer: OverlayLayer): {
   return { zIndex, isTop, register, unregister }
 }
 
-/** @internal — used by `useDismissable` to honor stack top for Escape. */
+/** @internal — used by `useDismissible` to honor stack top for Escape. */
 export function __claimOverlayIsTop(
   instance: ComponentInternalInstance | null,
 ): ComputedRef<boolean> | null {

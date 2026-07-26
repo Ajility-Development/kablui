@@ -7,8 +7,10 @@ export interface ProgressProps {
   max?: number
   /** Force indeterminate mode even when `value` is set. */
   indeterminate?: boolean
-  /** Accessible name for the progressbar. */
+  /** Accessible name for the progressbar (not shown visually). */
   label?: string
+  /** Visible caption above the bar. Used for `aria-label` when `label` is omitted. */
+  caption?: string
 }
 
 const props = withDefaults(defineProps<ProgressProps>(), {
@@ -32,6 +34,8 @@ const percent = computed(() => {
   return (clampedValue.value / max) * 100
 })
 
+const ariaLabel = computed(() => props.label ?? props.caption)
+
 const trackClasses = [
   'relative h-2 w-full overflow-hidden rounded-kablui-full',
   'bg-kablui-muted',
@@ -44,24 +48,24 @@ const barClasses = [
 
 const indeterminateClasses = [
   'absolute inset-y-0 w-1/3 rounded-kablui-full bg-kablui-accent',
-  'animate-pulse',
+  'kablui-progress-indeterminate',
 ].join(' ')
 </script>
 
 <template>
   <div class="flex w-full flex-col gap-1">
     <div
-      v-if="label"
+      v-if="caption"
       class="text-kablui-sm text-kablui-muted-fg"
     >
-      {{ label }}
+      {{ caption }}
     </div>
     <div
       role="progressbar"
       :aria-valuemin="0"
       :aria-valuemax="max"
       :aria-valuenow="isIndeterminate ? undefined : clampedValue"
-      :aria-label="label || undefined"
+      :aria-label="ariaLabel || undefined"
       :aria-busy="isIndeterminate ? true : undefined"
       :class="trackClasses"
     >
@@ -77,3 +81,18 @@ const indeterminateClasses = [
     </div>
   </div>
 </template>
+
+<style scoped>
+@keyframes kablui-progress-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+.kablui-progress-indeterminate {
+  animation: kablui-progress-indeterminate 1.2s ease-in-out infinite;
+}
+</style>

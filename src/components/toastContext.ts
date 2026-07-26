@@ -1,6 +1,8 @@
 import type { InjectionKey } from 'vue'
+import type { Tone } from '../types/tone'
 
-export type ToastTone = 'neutral' | 'accent' | 'danger' | 'success' | 'warning'
+/** Alias of shared `Tone` — kept for existing barrel exports. */
+export type ToastTone = Tone
 
 export type ToastPlacement =
   | 'top-start'
@@ -14,7 +16,7 @@ export interface ToastAction {
 }
 
 export interface ToastOptions {
-  tone?: ToastTone
+  tone?: Tone
   title: string
   description?: string
   /** Auto-dismiss ms. Defaults to `5000`. Use `0` for sticky. */
@@ -24,7 +26,7 @@ export interface ToastOptions {
 
 export interface ToastItem {
   id: string
-  tone: ToastTone
+  tone: Tone
   title: string
   description?: string
   duration: number

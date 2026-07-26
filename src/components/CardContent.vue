@@ -1,5 +1,5 @@
 <script setup lang="ts">
-export type CardBodyProps = Record<string, never>
+export type CardContentProps = Record<string, never>
 
 const classes = 'px-4 py-3 text-kablui-md text-kablui-fg'
 </script>
@@ -7,7 +7,7 @@ const classes = 'px-4 py-3 text-kablui-md text-kablui-fg'
 <template>
   <div
     :class="classes"
-    data-slot="card-body"
+    data-slot="card-content"
   >
     <slot />
   </div>

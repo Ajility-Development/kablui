@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import Button from './Button.vue'
 
 export interface PaginationProps {
@@ -25,12 +25,35 @@ function range(start: number, end: number): number[] {
   return Array.from({ length }, (_, i) => start + i)
 }
 
+const normalizedPageCount = computed(() => Math.max(0, Math.floor(props.pageCount)))
+
+/** Clamped page used for UI once pageCount >= 1; otherwise the raw model. */
+const effectivePage = computed(() => {
+  const pageCount = normalizedPageCount.value
+  if (pageCount < 1) return page.value
+  return Math.min(Math.max(1, page.value), pageCount)
+})
+
+watch(
+  [page, normalizedPageCount],
+  () => {
+    const pageCount = normalizedPageCount.value
+    // Avoid thrashing when there is no valid page range.
+    if (pageCount < 1) return
+    const clamped = Math.min(Math.max(1, page.value), pageCount)
+    if (clamped !== page.value) {
+      page.value = clamped
+    }
+  },
+  { immediate: true },
+)
+
 const items = computed<PageItem[]>(() => {
-  const pageCount = Math.max(0, Math.floor(props.pageCount))
+  const pageCount = normalizedPageCount.value
   if (pageCount === 0) return []
 
   const siblingCount = Math.max(0, Math.floor(props.siblingCount))
-  const current = Math.min(Math.max(1, page.value), pageCount)
+  const current = effectivePage.value
 
   // first + last + current + 2*siblings + 2 ellipsis
   const totalNumbers = siblingCount * 2 + 5
@@ -64,23 +87,27 @@ const items = computed<PageItem[]>(() => {
   ]
 })
 
-const atStart = computed(() => page.value <= 1)
-const atEnd = computed(() => page.value >= props.pageCount)
+const atStart = computed(() => effectivePage.value <= 1)
+const atEnd = computed(() => {
+  const pageCount = normalizedPageCount.value
+  if (pageCount < 1) return true
+  return effectivePage.value >= pageCount
+})
 
 function goTo(next: number) {
   if (props.disabled) return
-  const pageCount = Math.max(0, Math.floor(props.pageCount))
+  const pageCount = normalizedPageCount.value
   if (next < 1 || next > pageCount) return
   if (next === page.value) return
   page.value = next
 }
 
 function prev() {
-  goTo(page.value - 1)
+  goTo(effectivePage.value - 1)
 }
 
 function next() {
-  goTo(page.value + 1)
+  goTo(effectivePage.value + 1)
 }
 </script>
 
@@ -110,11 +137,11 @@ function next() {
       </span>
       <Button
         v-else
-        :variant="item === page ? 'solid' : 'outline'"
+        :variant="item === effectivePage ? 'solid' : 'outline'"
         size="sm"
         :disabled="disabled"
         :aria-label="`Page ${item}`"
-        :aria-current="item === page ? 'page' : undefined"
+        :aria-current="item === effectivePage ? 'page' : undefined"
         @click="goTo(item)"
       >
         {{ item }}

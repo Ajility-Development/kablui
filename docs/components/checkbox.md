@@ -4,14 +4,14 @@ Boolean checkbox with optional indeterminate state and Field-aware labeling.
 
 ## Overview
 
-Use `Checkbox` for on/off choices. Pair it with `Label` inside `Field` so click-to-focus/toggle wiring stays correct. Supports `indeterminate` for a mixed state (DOM `indeterminate` + `aria-checked="mixed"`).
+Use `Checkbox` for on/off choices. Pair it with `FieldLabel` inside `Field` so click-to-focus/toggle wiring stays correct. Supports `indeterminate` for a mixed state (DOM `indeterminate` + `aria-checked="mixed"`).
 
 ## Usage
 
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Checkbox, Field, Label } from 'kablui'
+import { Checkbox, Field, FieldLabel } from 'kablui'
 
 const subscribe = ref(false)
 </script>
@@ -20,7 +20,7 @@ const subscribe = ref(false)
   <Field>
     <div class="flex items-center gap-2">
       <Checkbox v-model="subscribe" name="subscribe" />
-      <Label>Subscribe to product updates</Label>
+      <FieldLabel>Subscribe to product updates</FieldLabel>
     </div>
   </Field>
 </template>
@@ -71,4 +71,4 @@ No custom emits or slots. Extra attributes fall through to the native `<input ty
 
 - [Field](./field.md)
 - [Switch](./switch.md)
-- [Radio](./radio.md)
+- [RadioGroup](./radio-group.md)

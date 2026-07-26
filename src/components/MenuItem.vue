@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { inject } from 'vue'
+import { computed, inject } from 'vue'
+import { listItemBase, listItemState } from '../utils/listItemClasses'
 import { MENU_KEY } from './menuContext'
 
 export interface MenuItemProps {
@@ -37,14 +38,9 @@ function onKeydown(event: KeyboardEvent) {
   }
 }
 
-const classes = [
-  'flex w-full cursor-pointer items-center px-3 py-1.5 text-left',
-  'text-kablui-md text-kablui-fg rounded-kablui-sm',
-  'hover:bg-kablui-muted',
-  'focus:outline-none focus:bg-kablui-muted',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kablui-focus focus-visible:ring-offset-2 focus-visible:ring-offset-kablui-bg',
-  'disabled:pointer-events-none disabled:opacity-50',
-].join(' ')
+const classes = computed(() =>
+  [listItemBase, listItemState({ disabled: props.disabled })].filter(Boolean).join(' '),
+)
 </script>
 
 <template>

@@ -17,12 +17,12 @@ export type FloatingPlacement =
   | FloatingSide
   | `${FloatingSide}-${FloatingAlign}`
 
-export interface UseFloatingOptions {
+export type UseFloatingOptions = {
   open: MaybeRefOrGetter<boolean>
   placement: MaybeRefOrGetter<FloatingPlacement>
 }
 
-export interface UseFloatingReturn {
+export type UseFloatingReturn = {
   style: Ref<CSSProperties>
 }
 

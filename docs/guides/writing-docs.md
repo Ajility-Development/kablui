@@ -1,6 +1,6 @@
 # Writing docs
 
-Conventions for component pages (Wave 1+). Sidebar and stubs are owned by the docs scaffold; fill content in the existing `.md` files only.
+Conventions for component pages. Fill content in the existing `.md` files under `docs/components/` and `docs/guides/`.
 
 ## Page template
 
@@ -24,9 +24,11 @@ import { Button } from 'kablui'
 </script>
 
 <template>
-  <Button variant="primary">Save</Button>
+  <Button variant="solid">Save</Button>
 </template>
 ```
+
+`Button` `variant` values are `'solid' | 'outline' | 'ghost'` only (not `primary` / `secondary`).
 
 ## Prop tables
 
@@ -34,7 +36,7 @@ Use markdown tables. Source columns from exported `*Props` types and the SFC—d
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `variant` | `'primary' \| 'secondary'` | `'primary'` | Visual style |
+| `variant` | `'solid' \| 'outline' \| 'ghost'` | `'solid'` | Visual style |
 
 ## Compounds
 
@@ -42,4 +44,4 @@ One page per root pattern. Nested parts (e.g. `AccordionItem` / `Trigger` / `Con
 
 ## File naming
 
-Kebab-case under `docs/components/`, matching the primary component (`button.md`, `radio.md`, `toast.md`).
+Kebab-case under `docs/components/`, matching the primary component (`button.md`, `radio-group.md`, `toast.md`).

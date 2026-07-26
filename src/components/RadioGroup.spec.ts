@@ -6,7 +6,7 @@ import { defineComponent, h, nextTick, ref } from 'vue'
 import RadioGroup from './RadioGroup.vue'
 import Radio from './Radio.vue'
 import Field from './Field.vue'
-import Label from './Label.vue'
+import FieldLabel from './FieldLabel.vue'
 
 describe('RadioGroup / Radio', () => {
   it('updates model when selection changes', async () => {
@@ -158,7 +158,7 @@ describe('RadioGroup / Radio', () => {
         setup() {
           return () =>
             h(Field, { invalid: true, id: 'plan' }, () => [
-              h(Label, null, () => 'Plan'),
+              h(FieldLabel, null, () => 'Plan'),
               h(RadioGroup, { name: 'plan' }, () => [
                 h(Radio, { value: 'free' }),
                 h(Radio, { value: 'pro' }),
@@ -183,6 +183,7 @@ describe('RadioGroup / Radio', () => {
     })
     const className = wrapper.find('input').attributes('class') ?? ''
     expect(className).toMatch(/focus-visible:ring-kablui-focus/)
+    expect(className).toMatch(/rounded-kablui-full/)
   })
 
   it('is available from barrels', async () => {
@@ -198,5 +199,8 @@ describe('RadioGroup / Radio', () => {
       expect(source).not.toMatch(/#[0-9a-fA-F]{3,8}\b/)
       expect(source).not.toMatch(/kablui-neutral-\d+/)
     }
+    const radioSource = readFileSync(resolve(__dirname, 'Radio.vue'), 'utf8')
+    expect(radioSource).toMatch(/rounded-kablui-full/)
+    expect(radioSource).not.toMatch(/\brounded-full\b/)
   })
 })

@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import { useId } from '../composables/useId'
-import type { ToastTone } from './toastContext'
+import type { Tone } from '../types/tone'
+import { SURFACE_TONE_CLASSES } from '../utils/tones'
+import DismissButton from './DismissButton.vue'
+
+export interface ToastActionProp {
+  label: string
+}
 
 export interface ToastProps {
-  tone?: ToastTone
+  tone?: Tone
   title: string
   description?: string
-  actionLabel?: string
+  /** Presentational action; click emits `action` (provider wires `onClick`). */
+  action?: ToastActionProp
 }
 
 withDefaults(defineProps<ToastProps>(), {
@@ -25,20 +32,6 @@ const baseClasses = [
   'pointer-events-auto relative flex w-80 max-w-[calc(100vw-2rem)] gap-3',
   'rounded-kablui-md border px-3 py-2.5 shadow-kablui-md',
   'text-kablui-md',
-].join(' ')
-
-const toneClasses: Record<ToastTone, string> = {
-  neutral: 'border-kablui-border bg-kablui-bg text-kablui-fg',
-  accent: 'border-kablui-accent bg-kablui-accent text-kablui-accent-fg',
-  danger: 'border-kablui-danger bg-kablui-danger text-kablui-danger-fg',
-  success: 'border-kablui-success bg-kablui-success text-kablui-success-fg',
-  warning: 'border-kablui-warning bg-kablui-warning text-kablui-warning-fg',
-}
-
-const dismissClasses = [
-  'shrink-0 -mr-1 -mt-0.5 inline-flex size-6 items-center justify-center',
-  'rounded-kablui-sm text-current opacity-70 hover:opacity-100',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kablui-focus focus-visible:ring-offset-2 focus-visible:ring-offset-kablui-bg',
 ].join(' ')
 
 const actionClasses = [
@@ -61,7 +54,7 @@ function onAction() {
     :role="tone === 'danger' ? 'alert' : 'status'"
     :aria-labelledby="titleId"
     :aria-describedby="description ? descriptionId : undefined"
-    :class="[baseClasses, toneClasses[tone]]"
+    :class="[baseClasses, SURFACE_TONE_CLASSES[tone]]"
     data-kablui-toast
   >
     <div class="min-w-0 flex-1">
@@ -79,21 +72,17 @@ function onAction() {
         {{ description }}
       </div>
       <button
-        v-if="actionLabel"
+        v-if="action"
         type="button"
         :class="actionClasses"
         @click="onAction"
       >
-        {{ actionLabel }}
+        {{ action.label }}
       </button>
     </div>
-    <button
-      type="button"
-      :class="dismissClasses"
-      aria-label="Dismiss"
+    <DismissButton
+      class="-mr-1 -mt-0.5"
       @click="onDismiss"
-    >
-      <span aria-hidden="true">&times;</span>
-    </button>
+    />
   </div>
 </template>

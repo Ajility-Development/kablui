@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { Cluster, Container, Stack, Text } from '../../src'
+import { Badge, Cluster, Container, Stack, Text } from '../../src'
 </script>
 
 <template>
-  <section class="space-y-8">
+  <section id="layout" class="space-y-8">
     <div class="space-y-2">
       <Text as="h2" size="lg" weight="semibold">Layout</Text>
       <Text tone="muted" size="sm">
@@ -29,14 +29,14 @@ import { Cluster, Container, Stack, Text } from '../../src'
         gap="sm"
         class="rounded-kablui-md border border-kablui-border bg-kablui-muted/40 p-3"
       >
-        <Text
+        <Badge
           v-for="n in 8"
           :key="n"
+          :tone="n % 3 === 0 ? 'accent' : 'neutral'"
           size="sm"
-          class="rounded-kablui-sm bg-kablui-bg px-2 py-1"
         >
-          Chip {{ n }}
-        </Text>
+          Item {{ n }}
+        </Badge>
       </Cluster>
     </div>
 

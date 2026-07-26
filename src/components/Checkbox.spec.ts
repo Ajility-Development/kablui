@@ -6,7 +6,7 @@ import { defineComponent, h, nextTick, ref } from 'vue'
 import { expectNoA11yViolations } from '../test/a11y'
 import Checkbox from './Checkbox.vue'
 import Field from './Field.vue'
-import Label from './Label.vue'
+import FieldLabel from './FieldLabel.vue'
 
 describe('Checkbox', () => {
   it('toggles v-model on change', async () => {
@@ -59,7 +59,7 @@ describe('Checkbox', () => {
           return () =>
             h(Field, { id: 'tos' }, () => [
               h(Checkbox),
-              h(Label, null, () => 'Accept terms'),
+              h(FieldLabel, null, () => 'Accept terms'),
             ])
         },
       }),
@@ -92,7 +92,7 @@ describe('a11y', () => {
             h('main', null, [
               h(Field, { id: 'tos' }, () => [
                 h(Checkbox),
-                h(Label, null, () => 'Accept terms'),
+                h(FieldLabel, null, () => 'Accept terms'),
               ]),
             ])
         },

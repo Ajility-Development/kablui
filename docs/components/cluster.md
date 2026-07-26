@@ -2,25 +2,25 @@
 
 ## Overview
 
-`Cluster` lays out children in a wrapping horizontal flex row with gap, alignment, and justify controls. Use it for chip groups, button toolbars, and other wrap-friendly collections.
+`Cluster` lays out children in a wrapping horizontal flex row with gap, alignment, and justify controls. Use it for badge groups, button toolbars, and other wrap-friendly collections.
 
 ## Usage
 
 ```vue
 <script setup lang="ts">
-import { Cluster, Text } from 'kablui'
+import { Badge, Cluster } from 'kablui'
 </script>
 
 <template>
   <Cluster gap="sm">
-    <Text
+    <Badge
       v-for="n in 8"
       :key="n"
       size="sm"
-      class="rounded-kablui-sm bg-kablui-bg px-2 py-1"
+      tone="neutral"
     >
-      Chip {{ n }}
-    </Text>
+      Item {{ n }}
+    </Badge>
   </Cluster>
 </template>
 ```
@@ -72,3 +72,4 @@ Layout-only. No ARIA roles or keyboard behavior are applied. Prefer `as="ul"` / 
 - [Stack](./stack.md) — vertical layout
 - [Container](./container.md) — max-width page width
 - [Button](./button.md)
+- [Badge](./badge.md)

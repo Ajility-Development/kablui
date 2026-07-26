@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, nextTick, provide, ref, watch } from 'vue'
 import type { FloatingPlacement } from '../composables/useFloating'
-import { useDismissable } from '../composables/useDismissable'
+import { useDismissible } from '../composables/useDismissible'
 import { useId } from '../composables/useId'
 import { useOverlayStack } from '../composables/useOverlayStack'
-import { MENU_KEY, type MenuOpenReason } from './menuContext'
+import type { OpenReason } from '../types/overlay'
+import { MENU_KEY } from './menuContext'
 
 export interface MenuProps {
   /** Floating placement relative to the trigger. */
@@ -23,7 +24,7 @@ const contentRef = ref<HTMLElement | null>(null)
 const contentId = useId('menu')
 const previouslyFocused = ref<HTMLElement | null>(null)
 
-const { register, unregister } = useOverlayStack('dropdown')
+const { register, unregister } = useOverlayStack('menu')
 
 function getEnabledItems(): HTMLElement[] {
   const content = contentRef.value
@@ -59,11 +60,11 @@ function focusItemAtEdge(edge: 'start' | 'end') {
   ;(edge === 'start' ? items[0] : items[items.length - 1])?.focus()
 }
 
-function setOpen(value: boolean, _reason?: MenuOpenReason) {
+function setOpen(value: boolean, _reason?: OpenReason) {
   open.value = value
 }
 
-function toggle(reason?: MenuOpenReason) {
+function toggle(reason?: OpenReason) {
   setOpen(!open.value, reason)
 }
 
@@ -74,13 +75,6 @@ function closeOnSelect() {
 function dismiss() {
   open.value = false
 }
-
-useDismissable(rootRef, {
-  active: open,
-  onDismiss: dismiss,
-  escape: true,
-  outside: true,
-})
 
 watch(
   open,
@@ -107,6 +101,14 @@ watch(
   },
   { immediate: true },
 )
+
+// Call after useOverlayStack so Escape ownership uses `isTop`.
+useDismissible(rootRef, {
+  active: open,
+  onDismiss: dismiss,
+  escape: true,
+  outside: true,
+})
 
 provide(MENU_KEY, {
   open,

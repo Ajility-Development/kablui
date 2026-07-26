@@ -41,7 +41,7 @@ describe('Alert', () => {
     const wrapper = mount(Alert, { slots: { default: 'Default' } })
     const classes = wrapper.classes()
 
-    expect(classes).toContain('bg-kablui-muted')
+    expect(classes).toContain('bg-kablui-bg')
     expect(classes).toContain('text-kablui-fg')
     expect(classes).toContain('border-kablui-border')
   })
@@ -49,7 +49,7 @@ describe('Alert', () => {
   it('maps each tone exclusively', () => {
     const tones = ['neutral', 'accent', 'danger', 'success', 'warning'] as const
     const tokenByTone = {
-      neutral: 'bg-kablui-muted',
+      neutral: 'bg-kablui-bg',
       accent: 'bg-kablui-accent',
       danger: 'bg-kablui-danger',
       success: 'bg-kablui-success',

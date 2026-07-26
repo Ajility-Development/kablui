@@ -5,7 +5,7 @@ import { mount } from '@vue/test-utils'
 import { defineComponent, h, ref } from 'vue'
 import Textarea from './Textarea.vue'
 import Field from './Field.vue'
-import Label from './Label.vue'
+import FieldLabel from './FieldLabel.vue'
 
 describe('Textarea', () => {
   it('renders a native textarea and updates v-model', async () => {
@@ -50,7 +50,7 @@ describe('Textarea', () => {
         setup() {
           return () =>
             h(Field, { id: 'bio', invalid: true }, () => [
-              h(Label, null, () => 'Bio'),
+              h(FieldLabel, null, () => 'Bio'),
               h(Textarea),
             ])
         },
