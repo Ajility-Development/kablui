@@ -4,6 +4,7 @@ import { useId } from '../composables/useId'
 import type {
   TableAlign,
   TableColumnDef,
+  TableColumnSlots,
   TableFrozenAlign,
   TableSelectionMode,
 } from '../utils/table/types'
@@ -72,7 +73,7 @@ const props = withDefaults(defineProps<TableColumnProps>(), {
   rowspan: 1,
 })
 
-const slots = useSlots()
+const slots = useSlots() as TableColumnSlots
 const table = inject(TABLE_KEY, null)
 const headerRow = inject(TABLE_HEADER_ROW_KEY, null)
 const columnId = useId('table-column')

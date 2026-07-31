@@ -1,6 +1,9 @@
 {
   "name": "kablui",
-  "version": "0.1.0",
+  "version": "0.2.0",
+  "publishConfig": {
+    "provenance": true
+  },
   "description": "A Tailwind CSS–based UI component library for Vue 3",
   "type": "module",
   "files": [

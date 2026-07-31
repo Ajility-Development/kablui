@@ -26,16 +26,21 @@ export default defineConfig(({ command }) => {
       vue(),
       tailwindcss(),
       // Declaration emit is scoped to library sources via tsconfig.lib.json.
-      // Build type safety is gated by `vue-tsc --noEmit -p tsconfig.app.json`
-      // in the build script. To also fail vite on dts diagnostics once the
-      // public type surface is clean, throw from afterDiagnostic when
-      // diagnostics.length > 0.
+      // Build type safety is also gated by `vue-tsc --noEmit -p tsconfig.app.json`
+      // in the build script; afterDiagnostic fails the Vite build on dts errors.
       dts({
         include: ['src'],
         exclude: ['src/**/*.{spec,test}.ts', 'src/test/**'],
         outDir: 'dist',
         rollupTypes: true,
         tsconfigPath: './tsconfig.lib.json',
+        afterDiagnostic: (diagnostics) => {
+          if (diagnostics.length > 0) {
+            throw new Error(
+              `vite-plugin-dts: ${diagnostics.length} TypeScript diagnostic(s) during declaration emit`,
+            )
+          }
+        },
       }),
     ],
     resolve: {

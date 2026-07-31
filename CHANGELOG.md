@@ -11,6 +11,22 @@ See [Releasing](docs/guides/releasing.md) for versioning policy and publish step
 
 ### Added
 
+### Changed
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.2.0] - 2026-07-31
+
+### Added
+
+- `Table` / `TableColumn` (plus column group and header row primitives) with consumer docs and demos.
+- Table filtering (`FilterMatchMode`, `FilterOperator`, and related filter utilities).
+- Table CSV export (`exportTableCsv`, `downloadCsv`).
+- Table persistence utilities (`TablePersistedState` and state storage helpers).
 - Shared `Tone` / `TextTone` types and public exports from the package root.
 - `OpenReason` overlay type; floating placement helpers (`useFloating` + related types) and `useDismissible` exported from the package root.
 - Badge `success` and `warning` tones.
@@ -23,22 +39,24 @@ See [Releasing](docs/guides/releasing.md) for versioning policy and publish step
 
 ### Changed
 
-- Renamed `Label` → `FieldLabel` (`FieldLabelProps`).
-- Renamed `CardBody` → `CardContent` (`CardContentProps`).
-- Renamed Dialog `showClose` → `showDismiss`.
-- Renamed composable `useDismissable` → `useDismissible` (and related option types).
-- Separator uses `decorative` (default `true`) instead of a `semantic` prop.
-- Overlay z-index tokens / layers: `z-kablui-menu` and `z-kablui-dialog` (replacing dropdown/modal names); `OverlayLayer` is `'menu' | 'dialog' | 'toast' | 'tooltip'`.
-- Renamed Select option type `SelectOptionProp` → `SelectOption`.
+- **Breaking:** Renamed `Label` → `FieldLabel` (`FieldLabelProps`).
+- **Breaking:** Renamed `CardBody` → `CardContent` (`CardContentProps`).
+- **Breaking:** Renamed Dialog `showClose` → `showDismiss`.
+- **Breaking:** Renamed composable `useDismissable` → `useDismissible` (and related option types).
+- **Breaking:** Separator uses `decorative` (default `true`) instead of a `semantic` prop.
+- **Breaking:** Overlay z-index tokens / layers: `z-kablui-menu` and `z-kablui-dialog` (replacing dropdown/modal names); `OverlayLayer` is `'menu' | 'dialog' | 'toast' | 'tooltip'`.
+- **Breaking:** Renamed Select option type `SelectOptionProp` → `SelectOption`.
 - Card no longer applies root padding; region components own their padding.
 - Pagination clamps `page` into `[1, pageCount]` when `pageCount >= 1`.
 - Field control ids stay reactive when the `id` prop changes.
 - Tooltip merges into existing `aria-describedby` on the anchor instead of replacing it.
 - Playground and docs use “Patterns” for higher-level composition demos (hash `#composition`).
+- Table selection emit hardening and persisted-state validation/restore behavior.
+- Menu/Popover remount behavior for more reliable open/close lifecycle.
 
 ### Removed
 
-- Public exports of `Label` / `LabelProps`, `CardBody` / `CardBodyProps`, and `SelectOptionProp`.
+- **Breaking:** Public exports of `Label` / `LabelProps`, `CardBody` / `CardBodyProps`, and `SelectOptionProp`.
 - `DismissButton` remains internal (not part of the public API).
 
 ### Fixed
@@ -48,6 +66,7 @@ See [Releasing](docs/guides/releasing.md) for versioning policy and publish step
 - Barrel exports and consumer docs aligned with FieldLabel, CardContent, and RadioGroup paths.
 - VitePress brand CSS variables mapped to kablui accent OKLCH tokens.
 - Hybrid `useId` format (`kablui-${prefix}-v-*` in setup) accepted in component tests.
+- Floating overlay positioning/lifecycle fixes (shared with Menu/Popover).
 
 ### Security
 
@@ -69,5 +88,6 @@ First public release of kablui — Vue 3 + Tailwind CSS component library with d
 
 - Select and Popover SFC accessibility naming / ARIA wiring so axe checks and assistive tech patterns align with component APIs.
 
-[Unreleased]: https://github.com/ajility/kablui/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/ajility/kablui/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/ajility/kablui/releases/tag/v0.2.0
 [0.1.0]: https://github.com/ajility/kablui/releases/tag/v0.1.0

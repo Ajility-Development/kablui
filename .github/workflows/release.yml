@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Upgrade npm for trusted publishing
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build library
+        run: npm run build
+
+      - name: Publish to npm
+        run: npm publish
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          NOTES_FILE="$(mktemp)"
+
+          if [[ -f CHANGELOG.md ]]; then
+            awk -v ver="${VERSION}" '
+              BEGIN { capture = 0 }
+              $0 ~ "^## \\[" ver "\\]" { capture = 1; next }
+              capture && /^## \[/ { exit }
+              capture && /^\[Unreleased\]:/ { exit }
+              capture && /^\[[0-9]/ { exit }
+              capture { print }
+            ' CHANGELOG.md > "${NOTES_FILE}" || true
+            # Drop leading blank lines
+            if [[ -s "${NOTES_FILE}" ]]; then
+              awk 'NF { p = 1 } p' "${NOTES_FILE}" > "${NOTES_FILE}.trim"
+              mv "${NOTES_FILE}.trim" "${NOTES_FILE}"
+            fi
+          fi
+
+          if [[ ! -s "${NOTES_FILE}" ]]; then
+            echo "Release ${TAG}" > "${NOTES_FILE}"
+          fi
+
+          gh release create "${TAG}" \
+            --title "${TAG}" \
+            --notes-file "${NOTES_FILE}"

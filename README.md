@@ -159,13 +159,14 @@ Add a component under `src/components/`, export it from `src/components/index.ts
 
 ## Status
 
-**0.1.0** has shipped. Ongoing work is iterative (fixes, polish, new components). See [`CHANGELOG.md`](CHANGELOG.md) for release history.
+**0.2.0** has shipped. Ongoing work is iterative (fixes, polish, new components). See [`CHANGELOG.md`](CHANGELOG.md) for release history.
 
 ## Publish
 
-Requires `npm login` (verify with `npm whoami`). Publish may still need 2FA (`--otp`) or a granular token with bypass 2FA—see [Releasing](docs/guides/releasing.md).
+Normal releases use GitHub Actions with an npm Trusted Publisher under **Ajility Technologies** (OIDC; no `NPM_TOKEN`). The workflow binds to GitHub repo `ajility/kablui` and `.github/workflows/release.yml`—see [Releasing](docs/guides/releasing.md). Manual `npm publish` is emergency-only (login + OTP).
 
 ```bash
 npm run build   # also runs via prepublishOnly
-npm publish
+npm publish     # emergency fallback only
 ```
+
