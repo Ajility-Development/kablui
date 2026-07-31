@@ -26,6 +26,22 @@ describe('escapeCsvCell', () => {
     expect(escapeCsvCell(d)).toBe('2024-01-15T12:00:00.000Z')
     expect(escapeCsvCell({ a: 1 })).toBe('"{""a"":1}"')
   })
+
+  it('neutralizes formula prefixes without needing quotes', () => {
+    expect(escapeCsvCell('=SUM(1)')).toBe("'=SUM(1)")
+    expect(escapeCsvCell('+123')).toBe("'+123")
+    expect(escapeCsvCell('-cmd')).toBe("'-cmd")
+    expect(escapeCsvCell('@cmd')).toBe("'@cmd")
+    expect(escapeCsvCell('\tfoo')).toBe("'\tfoo")
+  })
+
+  it('neutralizes formula prefixes that also need quoting', () => {
+    expect(escapeCsvCell('=SUM(1),2')).toBe('"\'=SUM(1),2"')
+    expect(escapeCsvCell('+a,b')).toBe('"\'+a,b"')
+    expect(escapeCsvCell('-say "hi"')).toBe('"\'-say ""hi"""')
+    expect(escapeCsvCell('@line\nbreak')).toBe('"\'@line\nbreak"')
+    expect(escapeCsvCell('\rfoo')).toBe('"\'\rfoo"')
+  })
 })
 
 describe('exportTableCsv', () => {
@@ -43,6 +59,15 @@ describe('exportTableCsv', () => {
       ],
     })
     expect(csv).toBe('Name,Role\nAda,Engineer\n"Grace, Hopper",Admiral')
+  })
+
+  it('applies formula neutralization to headers and data', () => {
+    const csv = exportTableCsv({
+      data: [{ formula: '=1+1', safe: 'ok' }],
+      fields: ['formula', 'safe'],
+      headers: ['=Header', 'Safe'],
+    })
+    expect(csv).toBe("'=Header,Safe\n'=1+1,ok")
   })
 
   it('supports custom fields and header map', () => {

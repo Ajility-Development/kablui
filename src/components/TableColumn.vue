@@ -14,9 +14,9 @@ export interface TableColumnProps {
   field?: string
   header?: string
   footer?: string
-  /** Wave 1+: sortable header. Ignored in Wave 0 render. */
+  /** Enable click / keyboard sort on the header. */
   sortable?: boolean
-  /** Wave 2+: filterable column. Ignored in Wave 0 render. */
+  /** Show column filter UI when Table `filterDisplay` is set. */
   filterable?: boolean
   /**
    * Filter value / match-mode UI. Default `'text'`.
@@ -29,16 +29,16 @@ export interface TableColumnProps {
   alignFrozen?: TableFrozenAlign
   width?: string
   minWidth?: string
-  /** Wave 1+: selection column mode. Ignored in Wave 0 render. */
+  /** Selection column: `multiple` → checkbox + select-all; `single` → radio. */
   selectionMode?: TableSelectionMode
-  /** Wave 2+: row editor controls column (Edit / Save / Cancel). */
+  /** Row editor controls column (Edit / Save / Cancel) when `editMode="row"`. */
   rowEditor?: boolean
-  /** Wave 3+: expander column. Ignored in Wave 0 render. */
+  /** Expand/collapse control for row detail (`#expansion`). */
   expander?: boolean
-  /** Wave 3+: row drag-handle column. */
+  /** Row drag-handle column when Table `reorderableRows` is set. */
   rowReorder?: boolean
   /**
-   * When `false`, excluded from column header reorder (Wave 3).
+   * When `false`, excluded from column header reorder.
    * Default `true` for data columns.
    */
   reorderableColumn?: boolean

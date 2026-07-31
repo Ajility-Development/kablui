@@ -20,6 +20,7 @@ afterEach(() => {
   wrapper?.unmount()
   wrapper = undefined
   document.body.innerHTML = ''
+  vi.restoreAllMocks()
 })
 
 function mountPopover(props: { open?: boolean; placement?: FloatingPlacement } = {}) {
@@ -106,19 +107,24 @@ describe('Popover', () => {
     mountPopover()
     const trigger = wrapper!.find('[data-slot="popover-trigger"]')
     const triggerEl = trigger.element as HTMLElement
-    const content = contentEl()
-    expect(content).not.toBeNull()
 
-    vi.spyOn(triggerEl, 'getBoundingClientRect').mockReturnValue(
-      rect({ top: 100, left: 200, width: 80, height: 32 }),
-    )
-    vi.spyOn(content!, 'getBoundingClientRect').mockReturnValue(
-      rect({ width: 120, height: 40 }),
+    expect(contentEl()).toBeNull()
+
+    const triggerRect = rect({ top: 100, left: 200, width: 80, height: 32 })
+    const floatingRect = rect({ width: 120, height: 40 })
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(
+      function (this: HTMLElement) {
+        if (this === triggerEl) return triggerRect
+        if (this.getAttribute?.('data-slot') === 'popover-content') return floatingRect
+        return rect({})
+      },
     )
 
     await trigger.trigger('click')
     await flushMeasure()
 
+    const content = contentEl()
+    expect(content).not.toBeNull()
     expect(contentIsShown()).toBe(true)
     expect(content!.style.position).toBe('fixed')
     expect(content!.style.top).toBe('132px')
@@ -133,6 +139,31 @@ describe('Popover', () => {
     expect(wrapper!.find('[data-testid="popover"]').exists()).toBe(true)
     expect(wrapper!.find('[data-testid="popover-trigger"]').exists()).toBe(true)
     expect(document.querySelector('[data-testid="popover-content"]')).not.toBeNull()
+  })
+
+  it('allows overriding PopoverTrigger dataTestId', async () => {
+    const open = ref(false)
+    const Host = defineComponent({
+      setup() {
+        return () =>
+          h(
+            Popover,
+            {
+              open: open.value,
+              'onUpdate:open': (value: boolean) => {
+                open.value = value
+              },
+            },
+            () => [
+              h(PopoverTrigger, { dataTestId: 'custom-trigger' }, () => 'Open'),
+              h(PopoverContent, null, () => 'Body'),
+            ],
+          )
+      },
+    })
+    wrapper = mount(Host, { attachTo: document.body })
+    expect(wrapper!.find('[data-testid="custom-trigger"]').exists()).toBe(true)
+    expect(wrapper!.find('[data-testid="popover-trigger"]').exists()).toBe(false)
   })
 
   it('dismisses on Escape', async () => {

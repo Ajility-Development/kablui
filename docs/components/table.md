@@ -64,6 +64,8 @@ Table `#header` / `#footer` are toolbar / summary regions above and below the gr
 
 `TableColumn selection-mode="multiple"` adds a checkbox column and header select-all. Select-all applies to **all matching pipeline rows** (`pageSourceRows` — filtered/sorted/grouped, every page). In `lazy` mode that is the current `value` chunk only. Shift-range selection stays page-scoped.
 
+Select-all, clear-all, and shift-range emit `row-select` / `row-unselect` only for **real transitions** (rows that actually change selection state). Each event’s `index` is the row’s **pipeline index** (position in the filtered/sorted/grouped source), not an index into the selection array.
+
 <Demo src="./demos/table-selection-checkbox.vue" />
 
 #### Radio selection
@@ -391,8 +393,8 @@ A richer sample: global search, status filter, checkbox selection with bulk acti
 | Emit | Payload | Description |
 | --- | --- | --- |
 | `row-contextmenu` | `TableRowContextMenuEvent` | Row right-click when `contextMenu` (`{ originalEvent, data, index }`) |
-| `row-select` | `TableRowSelectEvent` | Fired when a row becomes selected (`{ originalEvent, data, index }`) |
-| `row-unselect` | `TableRowUnselectEvent` | Fired when a row becomes unselected |
+| `row-select` | `TableRowSelectEvent` | Fired when a row becomes selected (`{ originalEvent, data, index }`). Select-all / range emit only for newly selected rows; `index` is the pipeline index |
+| `row-unselect` | `TableRowUnselectEvent` | Fired when a row becomes unselected. Clear-all / range emit only for newly unselected rows; `index` is the pipeline index (not selection-array order) |
 | `sort` | `TableSortEvent` | Fired after a header sort activation |
 | `filter` | `TableFilterEvent` | Fired after a column filter apply/clear (`{ filters, filteredValue }`) |
 | `page` | `TablePageEvent` | Fired when `v-model:page` changes while `paginate` is on (`first`, `rows`, sort, filters, …) |
@@ -440,13 +442,20 @@ Extra attributes fall through to the root wrapper.
 | `minWidth` | `string` | — | Column min-width |
 | `sortable` | `boolean` | `false` | Enable click / keyboard sort on the header |
 | `filterable` | `boolean` | `false` | Show column filter UI when `filterDisplay` is set |
+| `dataType` | `'text' \| 'numeric'` | `'text'` | Filter value / match-mode UI; `'numeric'` uses number inputs and numeric match modes |
 | `frozen` | `boolean` | `false` | Pin column during horizontal scroll |
 | `alignFrozen` | `'left' \| 'right'` | `'left'` | Side to pin when `frozen` |
 | `selectionMode` | `'single' \| 'multiple'` | — | `multiple` → checkbox + select-all; `single` → radio column |
 | `rowEditor` | `boolean` | `false` | Shows Edit / Save / Cancel controls when `editMode="row"` |
 | `expander` | `boolean` | `false` | Expand/collapse control for row detail (`#expansion`) |
 | `rowReorder` | `boolean` | `false` | Row drag-handle column when Table `reorderableRows` is set |
-| `reorderableColumn` | `boolean` | — | When `false`, excluded from column header reorder |
+| `reorderableColumn` | `boolean` | `true` | When `false`, excluded from column header reorder |
+| `headerStyle` | `string \| CSSProperties` | — | Inline styles for the header cell |
+| `bodyStyle` | `string \| CSSProperties` | — | Inline styles for body cells |
+| `footerStyle` | `string \| CSSProperties` | — | Inline styles for the footer cell |
+| `headerClass` | `string` | — | Extra class on the header cell |
+| `bodyClass` | `string` | — | Extra class on body cells |
+| `footerClass` | `string` | — | Extra class on the footer cell |
 
 | Slot | Props | Description |
 | --- | --- | --- |
@@ -477,7 +486,7 @@ No props. Nest `TableColumn` children (leaf columns with `field` are body column
 - Sortable headers set `aria-sort` to `ascending`, `descending`, or `none`, and use a focusable `<button>` (Enter / Space activate sort).
 - Prefer checkbox / radio selection columns for accessible selection. Selected rows expose `aria-selected`. When selection is active, rows use roving `tabindex` (Arrow Up/Down, including frozen rows) with Space/Enter and related shortcuts as secondary keyboard support.
 - Checkbox / radio selection columns reuse [Checkbox](./checkbox.md) and [Radio](./radio-group.md) with accessible labels and `data-testid` parts (`table-select-all`, `table-row-select-*`). Header select-all targets all matching rows, not only the current page.
-- Filter menu triggers are labeled buttons that open a [Popover](./popover.md) dialog (Escape / outside dismiss). Row/menu filter UI is text-default; labeled text inputs.
+- Filter menu triggers are labeled buttons (`table-filter-trigger-{field}`) that open a [Popover](./popover.md) dialog (Escape / outside dismiss). The column filter trigger owns the test id — do not rely on a nested `popover-trigger`. Row/menu filter UI is text-default; labeled text inputs.
 - When `loading`, the `<table>` gets `aria-busy="true"`; loading UI replaces body rows (default `Spinner`, or `#loading`).
 - Empty state uses the shared `Empty` component (or your `#empty` slot content).
 - Scrollable tables keep a real `<table>`; the overflow wrapper (`data-slot="table-scroll"`) provides the scrollport only when scrolling is needed. Sticky headers / frozen cells use `position: sticky` within that scrollport. `#header` / `#footer` stay outside the scrollport.
@@ -485,6 +494,20 @@ No props. Nest `TableColumn` children (leaf columns with `field` are body column
 - Cell edit: Enter completes, Escape cancels (both stopPropagation so selection toggles do not fire). With `editMode="cell"`, prefer a checkbox/radio column for selection so body-cell clicks stay dedicated to editing. Frozen rows support the same cell/row editors and selection controls. Row editor buttons use `editButtonAriaLabel` / `saveButtonAriaLabel` / `cancelButtonAriaLabel` (defaults Edit / Save / Cancel).
 - Row / group expand toggles expose `aria-expanded` and `aria-controls`, with `expandButtonAriaLabel` / `collapseButtonAriaLabel` (not used under virtual scroll).
 - Column resize handles are labeled buttons (`columnResizeHandleAriaLabel`). Column / row reorder handles are labeled buttons (`columnReorderHandleAriaLabel` / `rowReorderHandleAriaLabel`). Group chrome cells (`body: false`) are not reorderable/resizable.
+
+## Test IDs
+
+Stable `data-testid` values for cells, editors, and column filters (`{rowKey}` is the row’s `dataKey` value, or the pipeline index when `dataKey` is unset):
+
+| Pattern | Description |
+| --- | --- |
+| `table-cell-{rowKey}-{field}` | Body cell |
+| `table-cell-editor-{rowKey}-{field}` | Active cell/row editor host |
+| `table-frozen-cell-{rowKey}-{field}` | Frozen-row body cell |
+| `table-frozen-cell-editor-{rowKey}-{field}` | Active editor host in a frozen row |
+| `table-filter-trigger-{field}` | Column filter menu trigger (not a nested `popover-trigger`) |
+
+Selection controls also expose `table-select-all` and `table-row-select-{rowKey}` (see Accessibility).
 
 ## Related
 

@@ -24,6 +24,7 @@ afterEach(() => {
   wrapper?.unmount()
   wrapper = undefined
   document.body.innerHTML = ''
+  vi.restoreAllMocks()
 })
 
 function mountMenu(
@@ -102,6 +103,33 @@ function contentIsShown() {
 async function flushFocus() {
   await nextTick()
   await nextTick()
+}
+
+async function flushMeasure() {
+  await nextTick()
+  await new Promise<void>((resolve) => {
+    requestAnimationFrame(() => resolve())
+  })
+}
+
+type Rect = Pick<DOMRect, 'top' | 'right' | 'bottom' | 'left' | 'width' | 'height' | 'x' | 'y'>
+
+function rect(partial: Partial<Rect>): DOMRect {
+  const top = partial.top ?? 0
+  const left = partial.left ?? 0
+  const width = partial.width ?? 0
+  const height = partial.height ?? 0
+  return {
+    top,
+    left,
+    width,
+    height,
+    right: partial.right ?? left + width,
+    bottom: partial.bottom ?? top + height,
+    x: left,
+    y: top,
+    toJSON: () => ({}),
+  } as DOMRect
 }
 
 describe('Menu', () => {
@@ -224,6 +252,35 @@ describe('Menu', () => {
 
     const content = document.querySelector('[data-slot="menu-content"]')
     expect(content?.getAttribute('data-placement')).toBe('top-end')
+  })
+
+  it('positions content with fixed coordinates on first open without scroll', async () => {
+    mountMenu()
+    const trigger = wrapper!.find('[data-slot="menu-trigger"]')
+    const triggerEl = trigger.element as HTMLElement
+
+    expect(contentEl()).toBeNull()
+
+    const triggerRect = rect({ top: 100, left: 200, width: 80, height: 32 })
+    const floatingRect = rect({ width: 120, height: 40 })
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(
+      function (this: HTMLElement) {
+        if (this === triggerEl) return triggerRect
+        if (this.getAttribute?.('data-slot') === 'menu-content') return floatingRect
+        return rect({})
+      },
+    )
+
+    await trigger.trigger('click')
+    await flushMeasure()
+
+    const content = contentEl()
+    expect(content).not.toBeNull()
+    expect(contentIsShown()).toBe(true)
+    expect(content!.style.position).toBe('fixed')
+    expect(content!.style.top).toBe('132px')
+    expect(content!.style.left).toBe('200px')
+    expect(content!.style.visibility).not.toBe('hidden')
   })
 
   it('focuses the first item when opened', async () => {

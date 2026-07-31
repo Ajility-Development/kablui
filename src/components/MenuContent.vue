@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeUnmount, ref, type ComponentPublicInstance } from 'vue'
+import {
+  computed,
+  inject,
+  onBeforeUnmount,
+  ref,
+  watch,
+  type ComponentPublicInstance,
+} from 'vue'
 import { useFloating } from '../composables/useFloating'
 import { MENU_KEY } from './menuContext'
 
@@ -14,6 +21,8 @@ if (!menu) {
 
 const fallbackTrigger = ref<HTMLElement | null>(null)
 const fallbackContent = ref<HTMLElement | null>(null)
+/** Keep content mounted after the first open so later toggles only use v-show. */
+const hasOpened = ref(false)
 
 function setContentRef(el: Element | ComponentPublicInstance | null) {
   if (!menu) return
@@ -26,6 +35,14 @@ onBeforeUnmount(() => {
 
 const open = computed(() => !!menu?.open.value)
 const placement = computed(() => menu?.placement.value ?? 'bottom-start')
+
+watch(
+  open,
+  (isOpen) => {
+    if (isOpen) hasOpened.value = true
+  },
+  { immediate: true },
+)
 
 const { style } = useFloating(
   menu?.triggerRef ?? fallbackTrigger,
@@ -72,7 +89,7 @@ const classes = [
 <template>
   <Teleport to="body">
     <div
-      v-if="menu"
+      v-if="menu && (open || hasOpened)"
       v-show="open"
       :id="menu.contentId"
       :ref="setContentRef"

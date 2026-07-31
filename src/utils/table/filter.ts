@@ -57,13 +57,16 @@ function toDate(value: unknown): Date | null {
   return null
 }
 
+const DANGEROUS_PATH_SEGMENTS = new Set(['__proto__', 'prototype', 'constructor'])
+
 /** Resolve a (possibly nested) field path like `country.name`. */
 export function resolveFieldValue(row: unknown, field: string): unknown {
   if (row == null || typeof row !== 'object' || !field) return undefined
-  if (!field.includes('.')) return (row as Record<string, unknown>)[field]
 
+  const parts = field.includes('.') ? field.split('.') : [field]
   let current: unknown = row
-  for (const part of field.split('.')) {
+  for (const part of parts) {
+    if (DANGEROUS_PATH_SEGMENTS.has(part)) return undefined
     if (current == null || typeof current !== 'object') return undefined
     current = (current as Record<string, unknown>)[part]
   }
@@ -216,9 +219,9 @@ export function matchConstraint(
   locale?: string,
 ): boolean {
   if (!isConstraintActive(constraint)) return true
-  const fn = matchers[constraint.matchMode]
-  if (!fn) return true
-  return fn(value, constraint.value, locale)
+  const matchMode = constraint.matchMode
+  if (!Object.prototype.hasOwnProperty.call(matchers, matchMode)) return false
+  return matchers[matchMode](value, constraint.value, locale)
 }
 
 function matchFieldMeta(

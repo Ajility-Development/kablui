@@ -146,7 +146,7 @@ describe('Table', () => {
       await nextTick()
 
       const th = wrapper.find('[data-testid="table-column-header-name"]')
-      const td = wrapper.find('[data-testid="table-cell-name"]')
+      const td = wrapper.find('[data-testid="table-cell-1-name"]')
       expect(th.classes().join(' ')).toContain(paddingClass)
       expect(th.classes().join(' ')).toContain(textClass)
       expect(td.classes().join(' ')).toContain(paddingClass)
@@ -159,7 +159,7 @@ describe('Table', () => {
     await nextTick()
 
     const th = wrapper.find('[data-testid="table-column-header-name"]')
-    const td = wrapper.find('[data-testid="table-cell-name"]')
+    const td = wrapper.find('[data-testid="table-cell-1-name"]')
     const row = wrapper.find('[data-testid="table-row-1"]')
     expect(th.classes().join(' ')).not.toMatch(/\bborder\b/)
     expect(td.classes().join(' ')).not.toMatch(/\bborder\b/)
@@ -174,7 +174,7 @@ describe('Table', () => {
     expect(root.attributes('data-striped')).toBe('true')
 
     const thGrid = wrapper.find('[data-testid="table-column-header-name"]')
-    const tdGrid = wrapper.find('[data-testid="table-cell-name"]')
+    const tdGrid = wrapper.find('[data-testid="table-cell-1-name"]')
     expect(thGrid.classes().join(' ')).toMatch(/\bborder\b/)
     expect(tdGrid.classes().join(' ')).toMatch(/\bborder\b/)
     // Striped backgrounds stay independent of gridlines
@@ -303,7 +303,7 @@ describe('Table', () => {
 
     function rowNames(w: VueWrapper) {
       return w.findAll('[data-testid^="table-row-"]').map((row) => {
-        const cell = row.find('[data-testid="table-cell-name"]')
+        const cell = row.find('[data-testid^="table-cell-"][data-testid$="-name"]:not([data-testid*="-editor-"])')
         return cell.text()
       })
     }
@@ -771,6 +771,41 @@ describe('Table', () => {
       })
     })
 
+    it('emits transition-only select-all / clear-all with pipeline indices', async () => {
+      const mounted = mountSelectable({ columnSelection: 'multiple' })
+      wrapper = mounted.wrapper
+      await nextTick()
+
+      const table = wrapper.findComponent(Table)
+
+      // Pre-select middle row, then select-all — only missing rows emit row-select.
+      await wrapper.find('[data-testid="table-row-select-2"]').setValue(true)
+      await nextTick()
+      expect(table.emitted('row-select')).toHaveLength(1)
+
+      await wrapper.find('[data-testid="table-select-all"]').setValue(true)
+      await nextTick()
+      const afterSelectAll = table.emitted('row-select')!
+      expect(afterSelectAll).toHaveLength(3)
+      expect(afterSelectAll.slice(1).map((e) => (e[0] as { index: number }).index).sort()).toEqual([
+        0, 2,
+      ])
+      expect(mounted.selection.value).toHaveLength(3)
+
+      // Select-all again must not re-emit already-selected rows.
+      await wrapper.find('[data-testid="table-select-all"]').setValue(true)
+      await nextTick()
+      expect(table.emitted('row-select')).toHaveLength(3)
+
+      // Clear-all emits pipeline indices (not selection-array order).
+      await wrapper.find('[data-testid="table-select-all"]').setValue(false)
+      await nextTick()
+      const unselects = table.emitted('row-unselect')!
+      expect(unselects).toHaveLength(3)
+      expect(unselects.map((e) => (e[0] as { index: number }).index).sort()).toEqual([0, 1, 2])
+      expect(mounted.selection.value).toHaveLength(0)
+    })
+
     it('has no a11y violations for checkbox selection', async () => {
       const mounted = mountSelectable({ columnSelection: 'multiple' })
       wrapper = mounted.wrapper
@@ -926,7 +961,7 @@ describe('Table', () => {
       expect(balanceHeader.classes().join(' ')).toMatch(/sticky/)
       expect((balanceHeader.element as HTMLElement).style.right).toBe('0px')
 
-      const nameCell = wrapper.find('[data-testid="table-cell-name"]')
+      const nameCell = wrapper.find('[data-testid="table-cell-1-name"]')
       expect(nameCell.attributes('data-frozen')).toBe('true')
       expect(nameCell.classes().join(' ')).toMatch(/sticky/)
     })
@@ -957,6 +992,42 @@ describe('Table', () => {
 
       expect(wrapper.find('[data-testid="table-row-1"]').exists()).toBe(true)
       expect(wrapper.find('[data-slot="table-thead"]').attributes('data-sticky')).toBe('true')
+    })
+
+    it('uses accent-tinted opaque background on selected frozen cells', async () => {
+      const frozen = [{ id: 0, name: 'Pinned', role: 'Lead' }]
+      const selection = ref(frozen.slice())
+
+      wrapper = mount(
+        defineComponent({
+          components: { Table, TableColumn },
+          setup() {
+            return { rows: sampleRows, frozen, selection }
+          },
+          template: `
+            <Table
+              v-model:selection="selection"
+              :value="rows"
+              :frozen-value="frozen"
+              data-key="id"
+              selection-mode="multiple"
+              scroll-height="200px"
+            >
+              <TableColumn field="name" header="Name" frozen min-width="120px" />
+              <TableColumn field="role" header="Role" />
+            </Table>
+          `,
+        }),
+        { attachTo: document.body },
+      )
+      await nextTick()
+
+      const frozenCell = wrapper.find('[data-testid="table-frozen-cell-0-name"]')
+      expect(frozenCell.exists()).toBe(true)
+      expect(frozenCell.classes().join(' ')).toMatch(/bg-kablui-accent/)
+      expect(wrapper.find('[data-testid="table-frozen-row-0"]').attributes('data-selected')).toBe(
+        'true',
+      )
     })
 
     it('keeps size/gridlines/striped working with scrollHeight', async () => {
@@ -1011,7 +1082,7 @@ describe('Table', () => {
 
     function filterRowNames(w: VueWrapper) {
       return w.findAll('[data-testid^="table-row-"]').map((row) => {
-        return row.find('[data-testid="table-cell-name"]').text()
+        return row.find('[data-testid^="table-cell-"][data-testid$="-name"]:not([data-testid*="-editor-"])').text()
       })
     }
 
@@ -1092,7 +1163,7 @@ describe('Table', () => {
 
       const menu = wrapper.find('[data-testid="table-filter-menu-role"]')
       expect(menu.exists()).toBe(true)
-      await menu.find('[data-testid="popover-trigger"]').trigger('click')
+      await wrapper.find('[data-testid="table-filter-trigger-role"]').trigger('click')
       await nextTick()
 
       const input0 = document.body.querySelector(
@@ -1346,11 +1417,11 @@ describe('Table', () => {
       )
       await nextTick()
 
-      const nameCells = wrapper.findAll('[data-testid="table-cell-name"]')
+      const nameCells = wrapper.findAll('[data-testid^="table-cell-"][data-testid$="-name"]:not([data-testid*="-editor-"])')
       await nameCells[0]!.trigger('click')
       await nextTick()
 
-      expect(wrapper.find('[data-testid="table-cell-editor-name"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="table-cell-editor-1-name"]').exists()).toBe(true)
       expect(wrapper.find('[data-editing="true"]').exists()).toBe(true)
 
       const input = wrapper.find('[data-testid="name-editor"]')
@@ -1365,7 +1436,7 @@ describe('Table', () => {
         index: 0,
       })
       expect(rows.value[0]!.name).toBe('Augusta')
-      expect(wrapper.find('[data-testid="table-cell-editor-name"]').exists()).toBe(false)
+      expect(wrapper.find('[data-testid="table-cell-editor-1-name"]').exists()).toBe(false)
     })
 
     it('cancels cell edit on Escape and emits cell-edit-cancel', async () => {
@@ -1389,9 +1460,9 @@ describe('Table', () => {
       )
       await nextTick()
 
-      await wrapper.find('[data-testid="table-cell-name"]').trigger('click')
+      await wrapper.find('[data-testid="table-cell-1-name"]').trigger('click')
       await nextTick()
-      expect(wrapper.find('[data-testid="table-cell-editor-name"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="table-cell-editor-1-name"]').exists()).toBe(true)
 
       const table = wrapper.findComponent(Table)
       await wrapper.find('[data-testid="name-editor"]').trigger('keydown', { key: 'Escape' })
@@ -1402,7 +1473,7 @@ describe('Table', () => {
         field: 'name',
         index: 0,
       })
-      expect(wrapper.find('[data-testid="table-cell-editor-name"]').exists()).toBe(false)
+      expect(wrapper.find('[data-testid="table-cell-editor-1-name"]').exists()).toBe(false)
       expect(wrapper.find('[data-testid="table-row-1"]').text()).toContain('Ada')
     })
 
@@ -1464,7 +1535,7 @@ describe('Table', () => {
       await nextTick()
 
       expect(editingRows.value).toHaveLength(1)
-      expect(wrapper.find('[data-testid="table-cell-editor-name"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="table-cell-editor-1-name"]').exists()).toBe(true)
       expect(wrapper.find('[data-testid="table-row-save-1"]').attributes('aria-label')).toBe('Save')
       expect(wrapper.find('[data-testid="table-row-cancel-1"]').attributes('aria-label')).toBe(
         'Cancel',
@@ -1528,11 +1599,11 @@ describe('Table', () => {
       await wrapper.find('[data-testid="table-row-select-1"]').setValue(true)
       await nextTick()
       expect(selection.value).toHaveLength(1)
-      expect(wrapper.find('[data-testid="table-cell-editor-name"]').exists()).toBe(false)
+      expect(wrapper.find('[data-testid="table-cell-editor-1-name"]').exists()).toBe(false)
 
-      await wrapper.find('[data-testid="table-cell-name"]').trigger('click')
+      await wrapper.find('[data-testid="table-cell-1-name"]').trigger('click')
       await nextTick()
-      expect(wrapper.find('[data-testid="table-cell-editor-name"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="table-cell-editor-1-name"]').exists()).toBe(true)
       expect(selection.value).toHaveLength(1)
     })
 
@@ -1603,7 +1674,7 @@ describe('Table', () => {
       await nextTick()
 
       const th = wrapper.find('[data-testid="table-column-header-name"]')
-      const td = wrapper.find('[data-testid="table-cell-name"]')
+      const td = wrapper.find('[data-testid="table-cell-1-name"]')
       for (const el of [th, td]) {
         const classes = el.classes().join(' ')
         expect(classes).toMatch(/overflow-hidden/)
@@ -1876,7 +1947,7 @@ describe('Table', () => {
 
       expect(wrapper.find('[data-testid="table-column-header-name"]').exists()).toBe(true)
       expect(wrapper.find('[data-testid="table-column-header-role"]').exists()).toBe(false)
-      expect(wrapper.find('[data-testid="table-cell-role"]').exists()).toBe(false)
+      expect(wrapper.find('[data-testid^="table-cell-"][data-testid$="-role"]').exists()).toBe(false)
       expect(wrapper.findAll('th')).toHaveLength(1)
     })
 
@@ -2178,7 +2249,7 @@ describe('Table', () => {
         }),
       )
       await nextTick()
-      const roleCells = wrapper.findAll('[data-testid="table-cell-role"]')
+      const roleCells = wrapper.findAll('[data-testid^="table-cell-"][data-testid$="-role"]:not([data-testid*="-editor-"])')
       expect(roleCells[0]!.attributes('rowspan')).toBe('2')
       expect(roleCells).toHaveLength(3)
     })
@@ -2506,6 +2577,53 @@ describe('Table', () => {
       expect(selection2.value).toEqual(sampleRows[0])
       expect(hiddenColumns2.value).toEqual(['role'])
     })
+
+    it('clamps restored page when past pageCount', async () => {
+      const STATE_KEY = 'kablui-table-spec-page-clamp'
+      sessionStorage.setItem(
+        STATE_KEY,
+        JSON.stringify({
+          page: 99,
+          sortField: null,
+          sortOrder: null,
+          multiSortMeta: [],
+          filters: {},
+          columnOrder: [],
+          hiddenColumns: [],
+        }),
+      )
+
+      const page = ref(1)
+      wrapper = mount(
+        defineComponent({
+          components: { Table, TableColumn },
+          setup() {
+            return { rows: sampleRows, page }
+          },
+          template: `
+            <Table
+              v-model:page="page"
+              :value="rows"
+              data-key="id"
+              paginate
+              :rows="2"
+              state-key="${STATE_KEY}"
+              state-storage="session"
+            >
+              <TableColumn field="name" header="Name" />
+              <TableColumn field="role" header="Role" />
+            </Table>
+          `,
+        }),
+        { attachTo: document.body },
+      )
+      await nextTick()
+      await nextTick()
+
+      // 3 rows / 2 per page → pageCount 2; page 99 clamps to 2.
+      expect(page.value).toBe(2)
+      sessionStorage.removeItem(STATE_KEY)
+    })
   })
 
   describe('export', () => {
@@ -2772,6 +2890,58 @@ describe('Table', () => {
       expect(wrapper.find('[data-testid="table-virtual-spacer-bottom"]').exists()).toBe(true)
     })
 
+    it('scrolls the virtual window so End/Arrow focus lands on the target row', async () => {
+      const selection = ref<(typeof manyVirtual)[number] | null>(null)
+
+      wrapper = mount(
+        defineComponent({
+          components: { Table, TableColumn },
+          setup() {
+            return {
+              rows: manyVirtual,
+              selection,
+              virtualScrollerOptions: { itemSize: 40, numToleratedItems: 2 },
+            }
+          },
+          template: `
+            <Table
+              v-model:selection="selection"
+              :value="rows"
+              data-key="id"
+              selection-mode="single"
+              scroll-height="200px"
+              :virtual-scroller-options="virtualScrollerOptions"
+            >
+              <TableColumn field="name" header="Name" />
+            </Table>
+          `,
+        }),
+        { attachTo: document.body },
+      )
+      await nextTick()
+      await nextTick()
+
+      const first = wrapper.find('[data-testid="table-row-1"]')
+      expect(first.exists()).toBe(true)
+      expect(wrapper.find('[data-testid="table-row-200"]').exists()).toBe(false)
+
+      await first.trigger('keydown', { key: 'End' })
+      await nextTick()
+      await nextTick()
+
+      const last = wrapper.find('[data-testid="table-row-200"]')
+      expect(last.exists()).toBe(true)
+      expect(document.activeElement).toBe(last.element)
+
+      await last.trigger('keydown', { key: 'ArrowUp' })
+      await nextTick()
+      await nextTick()
+
+      const prev = wrapper.find('[data-testid="table-row-199"]')
+      expect(prev.exists()).toBe(true)
+      expect(document.activeElement).toBe(prev.element)
+    })
+
     it('emits lazy-load for virtual lazy mode', async () => {
       const events: TableVirtualLazyLoadEvent[] = []
       const sparse = Array.from({ length: 100 }) as unknown[]
@@ -3028,9 +3198,9 @@ describe('Table', () => {
       expect(wrapper.text()).not.toContain('Ada')
 
       // Cell-edit Margaret's name.
-      await wrapper.find('[data-testid="table-cell-name"]').trigger('click')
+      await wrapper.find('[data-testid="table-cell-5-name"]').trigger('click')
       await nextTick()
-      const editor = wrapper.find('[data-testid="table-cell-editor-name"] input')
+      const editor = wrapper.find('[data-testid="table-cell-editor-5-name"] input')
       expect(editor.exists()).toBe(true)
       await editor.setValue('Maggie')
       await editor.trigger('keydown', { key: 'Enter' })
@@ -3082,9 +3252,9 @@ describe('Table', () => {
       )
       await nextTick()
 
-      await wrapper.find('[data-testid="table-frozen-cell-name"]').trigger('click')
+      await wrapper.find('[data-testid="table-frozen-cell-0-name"]').trigger('click')
       await nextTick()
-      const editor = wrapper.find('[data-testid="table-frozen-cell-editor-name"] input')
+      const editor = wrapper.find('[data-testid="table-frozen-cell-editor-0-name"] input')
       expect(editor.exists()).toBe(true)
       await editor.setValue('Pinned Lead')
       await editor.trigger('keydown', { key: 'Enter' })
@@ -3289,7 +3459,7 @@ describe('Table', () => {
       expect(texts[0]).toContain('FR')
       expect(texts[1]).toContain('UK')
       expect(texts[2]).toContain('US')
-      expect(wrapper.find('[data-testid="table-cell-country-name"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid^="table-cell-"][data-testid$="-country-name"]').exists()).toBe(true)
     })
 
     it('gives frozen rows keyboard focus parity', async () => {
@@ -3482,8 +3652,7 @@ describe('Table', () => {
       )
       await nextTick()
 
-      const menu = wrapper.find('[data-testid="table-filter-menu-name"]')
-      const trigger = menu.find('[data-testid="popover-trigger"]')
+      const trigger = wrapper.find('[data-testid="table-filter-trigger-name"]')
       await trigger.trigger('click')
       await nextTick()
 
@@ -3541,8 +3710,7 @@ describe('Table', () => {
       )
       await nextTick()
 
-      const menu = wrapper.find('[data-testid="table-filter-menu-name"]')
-      const trigger = menu.find('[data-testid="popover-trigger"]')
+      const trigger = wrapper.find('[data-testid="table-filter-trigger-name"]')
       await trigger.trigger('click')
       await nextTick()
 
@@ -3596,8 +3764,7 @@ describe('Table', () => {
       )
       await nextTick()
 
-      const menu = wrapper.find('[data-testid="table-filter-menu-name"]')
-      await menu.find('[data-testid="popover-trigger"]').trigger('click')
+      await wrapper.find('[data-testid="table-filter-trigger-name"]').trigger('click')
       await nextTick()
 
       const apply = () =>
@@ -3621,7 +3788,7 @@ describe('Table', () => {
       await nextTick()
 
       // Re-open: committed state matches draft → Apply disabled again.
-      await menu.find('[data-testid="popover-trigger"]').trigger('click')
+      await wrapper.find('[data-testid="table-filter-trigger-name"]').trigger('click')
       await nextTick()
       expect(apply()?.disabled).toBe(true)
       expect(filters.value.name.constraints[0]?.value).toBe('Ada')
@@ -3667,8 +3834,7 @@ describe('Table', () => {
       await nextTick()
 
       await wrapper
-        .find('[data-testid="table-filter-menu-role"]')
-        .find('[data-testid="popover-trigger"]')
+        .find('[data-testid="table-filter-trigger-role"]')
         .trigger('click')
       await nextTick()
 
@@ -3714,8 +3880,7 @@ describe('Table', () => {
       )
       await nextTick()
 
-      const menu = wrapper.find('[data-testid="table-filter-menu-score"]')
-      await menu.find('[data-testid="popover-trigger"]').trigger('click')
+      await wrapper.find('[data-testid="table-filter-trigger-score"]').trigger('click')
       await nextTick()
 
       const matchSelect = document.body.querySelector(
@@ -3745,7 +3910,7 @@ describe('Table', () => {
 
       const names = wrapper!
         .findAll('[data-testid^="table-row-"]')
-        .map((row) => row.find('[data-testid="table-cell-name"]').text())
+        .map((row) => row.find('[data-testid^="table-cell-"][data-testid$="-name"]:not([data-testid*="-editor-"])').text())
       expect(names).toEqual(['Ada'])
     })
 
@@ -3785,8 +3950,7 @@ describe('Table', () => {
       await nextTick()
 
       await wrapper
-        .find('[data-testid="table-filter-menu-score"]')
-        .find('[data-testid="popover-trigger"]')
+        .find('[data-testid="table-filter-trigger-score"]')
         .trigger('click')
       await nextTick()
 
@@ -3818,7 +3982,7 @@ describe('Table', () => {
 
       const names = wrapper!
         .findAll('[data-testid^="table-row-"]')
-        .map((row) => row.find('[data-testid="table-cell-name"]').text())
+        .map((row) => row.find('[data-testid^="table-cell-"][data-testid$="-name"]:not([data-testid*="-editor-"])').text())
       expect(names).toEqual(['Ada'])
     })
   })

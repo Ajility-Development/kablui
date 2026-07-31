@@ -44,6 +44,7 @@ import { exportTableCsv } from '../utils/table/exportCsv'
 import {
   keysToSelection,
   loadTableState,
+  normalizeTableState,
   saveTableState,
   selectionToKeys,
 } from '../utils/table/stateStorage'
@@ -1187,10 +1188,18 @@ function headerCellClass(column: TableColumnDef): string {
 
 function bodyCellClass(
   column: TableColumnDef,
-  options?: { frozenRow?: boolean; striped?: boolean },
+  options?: { frozenRow?: boolean; striped?: boolean; selected?: boolean },
 ): string {
   const needsOpaqueBg = !!(options?.frozenRow || frozenOffsetMap.value[column.id])
-  const opaqueBg = options?.striped ? 'bg-kablui-muted' : 'bg-kablui-bg'
+  let opaqueBg = ''
+  if (needsOpaqueBg) {
+    if (options?.selected) {
+      // Opaque accent tint so sticky frozen cells do not mask selectionRowClasses.
+      opaqueBg = options.striped ? 'bg-kablui-accent/20' : 'bg-kablui-accent/10'
+    } else {
+      opaqueBg = options?.striped ? 'bg-kablui-muted' : 'bg-kablui-bg'
+    }
+  }
   return [
     sizeCellClasses[props.size],
     props.showGridlines ? gridlineCellClasses : '',
@@ -1199,7 +1208,7 @@ function bodyCellClass(
     column.bodyClass,
     options?.frozenRow ? 'sticky z-[1]' : '',
     frozenColumnClass(column, 'body'),
-    needsOpaqueBg ? opaqueBg : '',
+    opaqueBg,
   ]
     .filter(Boolean)
     .join(' ')
@@ -1219,7 +1228,12 @@ function footerCellClass(column: TableColumnDef): string {
     .join(' ')
 }
 
-function frozenRowClasses(index: number): string {
+function frozenRowClasses(index: number, row?: unknown): string {
+  if (row != null && selectionEnabled.value && isRowSelected(row)) {
+    return props.striped && index % 2 === 1
+      ? 'bg-kablui-accent/20'
+      : 'bg-kablui-accent/10'
+  }
   return [
     props.striped && index % 2 === 1
       ? 'bg-kablui-muted/40 dark:bg-kablui-muted/55'
@@ -1641,6 +1655,42 @@ function emitUnselect(originalEvent: Event, data: unknown, index: number) {
   emit('row-unselect', { originalEvent, data, index })
 }
 
+/**
+ * Pipeline index for bulk selection events (same contract as handleRowSelection).
+ * Prefer pageSourceRows / frozen positions; never use selection-array index.
+ */
+function pipelineIndexForSelectionRow(row: unknown): number {
+  const srcIdx = pageSourceRows.value.findIndex((r) => rowsEqual(r, row))
+  if (srcIdx >= 0) {
+    return props.lazy ? pipelineRowIndex(srcIdx) : srcIdx
+  }
+  const frozenIdx = frozenRows.value.findIndex((r) => rowsEqual(r, row))
+  if (frozenIdx >= 0) return frozenRowEventIndex(row, frozenIdx)
+  const valueIdx = (props.value ?? []).findIndex((r) => rowsEqual(r, row))
+  if (valueIdx >= 0) return valueIdx
+  return 0
+}
+
+/**
+ * Emit row-select / row-unselect only for real transitions (by dataKey / identity).
+ */
+function emitSelectionTransitions(
+  originalEvent: Event,
+  previous: unknown[],
+  next: unknown[],
+) {
+  for (const row of previous) {
+    if (!next.some((item) => rowsEqual(item, row))) {
+      emitUnselect(originalEvent, row, pipelineIndexForSelectionRow(row))
+    }
+  }
+  for (const row of next) {
+    if (!previous.some((item) => rowsEqual(item, row))) {
+      emitSelect(originalEvent, row, pipelineIndexForSelectionRow(row))
+    }
+  }
+}
+
 function addToSelection(row: unknown, index: number, originalEvent: Event) {
   const current = Array.isArray(selection.value) ? selection.value : []
   if (current.some((item) => rowsEqual(item, row))) return
@@ -1657,34 +1707,29 @@ function removeFromSelection(row: unknown, index: number, originalEvent: Event) 
 function selectRange(from: number, to: number, originalEvent: Event) {
   const start = Math.min(from, to)
   const end = Math.max(from, to)
-  const range = displayRows.value.slice(start, end + 1)
+  const range = displayRows.value.slice(start, end + 1).filter((row) => row != null)
+  const prev = Array.isArray(selection.value) ? [...selection.value] : []
   selection.value = [...range]
-  for (let i = start; i <= end; i++) {
-    const row = displayRows.value[i]
-    if (row !== undefined) emitSelect(originalEvent, row, pipelineRowIndex(i))
-  }
+  emitSelectionTransitions(originalEvent, prev, range)
 }
 
 function selectAllRows(originalEvent: Event) {
   // All matching pipeline rows (`pageSourceRows`); lazy = current `value` chunk.
-  // Sparse holes are skipped for the model but emit indices stay pipeline-aligned.
+  // Sparse holes are skipped; emits are transition-only with pipeline indices.
   const all: unknown[] = []
-  pageSourceRows.value.forEach((row, index) => {
+  pageSourceRows.value.forEach((row) => {
     if (row == null) return
     all.push(row)
-    emitSelect(
-      originalEvent,
-      row,
-      props.lazy ? pipelineRowIndex(index) : index,
-    )
   })
+  const prev = Array.isArray(selection.value) ? [...selection.value] : []
   selection.value = all
+  emitSelectionTransitions(originalEvent, prev, all)
 }
 
 function clearAllSelection(originalEvent: Event) {
-  const prev = Array.isArray(selection.value) ? selection.value : []
+  const prev = Array.isArray(selection.value) ? [...selection.value] : []
   selection.value = []
-  prev.forEach((row, index) => emitUnselect(originalEvent, row, index))
+  emitSelectionTransitions(originalEvent, prev, [])
 }
 
 const allRowsSelected = computed(() => {
@@ -1813,8 +1858,27 @@ function focusRow(index: number) {
   const next = Math.max(0, Math.min(max, index))
   focusedFrozenIndex.value = null
   focusedRowIndex.value = next
+
+  // Virtual scroll: bring target into the window before focusing.
+  if (virtualEnabled.value) {
+    const win = virtualWindow.value
+    const itemSize = virtualItemSize.value
+    const el = scrollEl.value
+    if (el && win && itemSize > 0 && (next < win.startIndex || next >= win.endIndex)) {
+      const headerOffset = measuredHeaderHeight.value + frozenRowsVirtualOffset.value
+      el.scrollTop = next * itemSize + headerOffset
+      scrollTop.value = el.scrollTop
+    }
+  }
+
   nextTick(() => {
-    rowRefs.value[next]?.focus()
+    if (rowRefs.value[next]) {
+      rowRefs.value[next]!.focus()
+      return
+    }
+    nextTick(() => {
+      rowRefs.value[next]?.focus()
+    })
   })
 }
 
@@ -2562,39 +2626,49 @@ function applyPendingSelectionKeys() {
   pendingSelectionKeys.value = null
 }
 
+function clampPageToCount() {
+  if (!props.paginate) return
+  const maxPage = Math.max(1, tablePageCount.value)
+  if (page.value > maxPage) page.value = maxPage
+  else if (page.value < 1) page.value = 1
+}
+
 function restoreTableState() {
   if (!props.stateKey) return
   const loaded = loadTableState(props.stateKey, props.stateStorage)
   if (!loaded) return
+  const normalized = normalizeTableState(loaded)
+  if (!normalized) return
 
   // Stay hydrating until after mount watchers flush (filter watch resets page).
   stateHydrating.value = true
-  if (loaded.sortField !== undefined) {
-    sortField.value = loaded.sortField
+  if (normalized.sortField !== undefined) {
+    sortField.value = normalized.sortField
   }
-  if (loaded.sortOrder !== undefined) {
-    sortOrder.value = loaded.sortOrder
+  if (normalized.sortOrder !== undefined) {
+    sortOrder.value = normalized.sortOrder
   }
-  if (Array.isArray(loaded.multiSortMeta)) {
-    multiSortMeta.value = loaded.multiSortMeta.map((m) => ({ ...m }))
+  if (Array.isArray(normalized.multiSortMeta)) {
+    multiSortMeta.value = normalized.multiSortMeta.map((m) => ({ ...m }))
   }
-  if (loaded.filters && typeof loaded.filters === 'object') {
-    filters.value = { ...loaded.filters }
+  if (normalized.filters && typeof normalized.filters === 'object') {
+    filters.value = { ...normalized.filters }
   }
-  if (Array.isArray(loaded.columnOrder)) {
-    columnOrder.value = [...loaded.columnOrder]
+  if (Array.isArray(normalized.columnOrder)) {
+    columnOrder.value = [...normalized.columnOrder]
   }
-  if (Array.isArray(loaded.hiddenColumns)) {
-    hiddenColumns.value = [...loaded.hiddenColumns]
+  if (Array.isArray(normalized.hiddenColumns)) {
+    hiddenColumns.value = [...normalized.hiddenColumns]
   }
-  if (Array.isArray(loaded.selectionKeys) && props.dataKey) {
-    pendingSelectionKeys.value = [...loaded.selectionKeys]
+  if (Array.isArray(normalized.selectionKeys) && props.dataKey) {
+    pendingSelectionKeys.value = [...normalized.selectionKeys]
     applyPendingSelectionKeys()
   }
   // Restore page last so filter/sort watches cannot clear it during hydration.
-  if (typeof loaded.page === 'number' && Number.isFinite(loaded.page)) {
-    page.value = Math.max(1, Math.floor(loaded.page))
+  if (typeof normalized.page === 'number' && Number.isFinite(normalized.page)) {
+    page.value = Math.max(1, Math.floor(normalized.page))
   }
+  clampPageToCount()
 }
 
 restoreTableState()
@@ -2614,6 +2688,10 @@ watch(
     if (pendingSelectionKeys.value) applyPendingSelectionKeys()
   },
 )
+
+watch(tablePageCount, () => {
+  clampPageToCount()
+})
 
 watch(
   [
@@ -3080,7 +3158,7 @@ provide(TABLE_KEY, {
             :key="`frozen-${rowKey(row, frozenIndex)}`"
             :ref="(el) => setFrozenRowRef(el, frozenIndex)"
             :class="[
-              frozenRowClasses(frozenIndex),
+              frozenRowClasses(frozenIndex, row),
               selectionRowClasses(row),
               focusedFrozenRowClasses(frozenIndex),
               contextMenuRowClasses(row),
@@ -3115,6 +3193,7 @@ provide(TABLE_KEY, {
                 bodyCellClass(column, {
                   frozenRow: true,
                   striped: striped && frozenIndex % 2 === 1,
+                  selected: selectionEnabled && isRowSelected(row),
                 })
               "
               :style="bodyCellStyle(column, { frozenRow: true })"
@@ -3136,7 +3215,11 @@ provide(TABLE_KEY, {
                         rowKey(row, frozenIndex),
                       )
                     : column.field
-                      ? valueTestId(testIdBase, 'frozen-cell', column.field)
+                      ? valueTestId(
+                          testIdBase,
+                          'frozen-cell',
+                          `${rowKey(row, frozenIndex)}-${column.field}`,
+                        )
                       : partTestId(testIdBase, 'frozen-cell')
               "
               @click="
@@ -3265,7 +3348,11 @@ provide(TABLE_KEY, {
                 class="block w-full"
                 :data-testid="
                   column.field
-                    ? valueTestId(testIdBase, 'frozen-cell-editor', column.field)
+                    ? valueTestId(
+                        testIdBase,
+                        'frozen-cell-editor',
+                        `${rowKey(row, frozenIndex)}-${column.field}`,
+                      )
                     : partTestId(testIdBase, 'frozen-cell-editor')
                 "
                 @click.stop
@@ -3430,6 +3517,8 @@ provide(TABLE_KEY, {
                   :class="
                     bodyCellClass(column, {
                       striped: striped && item.rowIndex % 2 === 1,
+                      selected:
+                        selectionEnabled && item.row != null && isRowSelected(item.row),
                     })
                   "
                   :style="bodyCellStyle(column)"
@@ -3463,7 +3552,11 @@ provide(TABLE_KEY, {
                               rowKey(item.row, item.pipelineIndex),
                             )
                           : column.field
-                            ? valueTestId(testIdBase, 'cell', column.field)
+                            ? valueTestId(
+                                testIdBase,
+                                'cell',
+                                `${rowKey(item.row, item.pipelineIndex)}-${column.field}`,
+                              )
                             : partTestId(testIdBase, 'cell')
                   "
                   @click="onCellClick($event, item.row, column, item.rowIndex)"
@@ -3657,7 +3750,11 @@ provide(TABLE_KEY, {
                     class="block w-full"
                     :data-testid="
                       column.field
-                        ? valueTestId(testIdBase, 'cell-editor', column.field)
+                        ? valueTestId(
+                            testIdBase,
+                            'cell-editor',
+                            `${rowKey(item.row, item.pipelineIndex)}-${column.field}`,
+                          )
                         : partTestId(testIdBase, 'cell-editor')
                     "
                     @click.stop

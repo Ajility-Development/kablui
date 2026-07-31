@@ -353,6 +353,7 @@ const inputSize = computed(() => (props.size === 'lg' ? 'md' : 'sm') as 'sm' | '
     <PopoverTrigger
       variant="ghost"
       size="sm"
+      :data-test-id="valueTestId(testIdBase, 'filter-trigger', field)"
       :aria-label="`Filter ${column.header ?? field}`"
     >
       <Icon size="sm" :class="hasActiveFilter ? 'text-kablui-accent' : 'text-kablui-muted-fg'">

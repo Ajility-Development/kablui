@@ -5,8 +5,12 @@ import {
   getTableStateStorage,
   keysToSelection,
   loadTableState,
+  normalizeTableState,
   saveTableState,
   selectionToKeys,
+  TABLE_STATE_MAX_COLUMN_KEYS,
+  TABLE_STATE_MAX_FILTER_CONSTRAINTS,
+  TABLE_STATE_MAX_MULTI_SORT,
 } from './stateStorage'
 import type { TablePersistedState } from './types'
 
@@ -96,6 +100,157 @@ describe('saveTableState / loadTableState / clearTableState', () => {
     })
     expect(saveTableState(KEY, { page: 1 })).toBe(false)
     expect(loadTableState(KEY)).toBeNull()
+  })
+})
+
+describe('normalizeTableState', () => {
+  it('returns null for non-objects', () => {
+    expect(normalizeTableState(null)).toBeNull()
+    expect(normalizeTableState(undefined)).toBeNull()
+    expect(normalizeTableState('string')).toBeNull()
+    expect(normalizeTableState(42)).toBeNull()
+    expect(normalizeTableState([])).toBeNull()
+  })
+
+  it('keeps a valid snapshot and drops unknown keys', () => {
+    const normalized = normalizeTableState({
+      page: 2,
+      sortField: 'name',
+      sortOrder: -1,
+      multiSortMeta: [{ field: 'name', order: -1 }],
+      filters: { name: { value: 'Ada', matchMode: 'contains' } },
+      selectionKeys: ['1', '3'],
+      columnOrder: ['role', 'name'],
+      hiddenColumns: ['role'],
+      evil: true,
+      __proto__: { polluted: true },
+    })
+    expect(normalized).toEqual({
+      page: 2,
+      sortField: 'name',
+      sortOrder: -1,
+      multiSortMeta: [{ field: 'name', order: -1 }],
+      filters: { name: { value: 'Ada', matchMode: 'contains' } },
+      selectionKeys: ['1', '3'],
+      columnOrder: ['role', 'name'],
+      hiddenColumns: ['role'],
+    })
+    expect(normalized).not.toHaveProperty('evil')
+  })
+
+  it('rejects invalid page values without clamping to pageCount', () => {
+    expect(normalizeTableState({ page: 0 })).toEqual({})
+    expect(normalizeTableState({ page: -3 })).toEqual({})
+    expect(normalizeTableState({ page: Number.NaN })).toEqual({})
+    expect(normalizeTableState({ page: Number.POSITIVE_INFINITY })).toEqual({})
+    expect(normalizeTableState({ page: 1.9 })).toEqual({ page: 1 })
+    expect(normalizeTableState({ page: 9999 })).toEqual({ page: 9999 })
+  })
+
+  it('validates sortField / sortOrder and multiSortMeta entries', () => {
+    expect(
+      normalizeTableState({
+        sortField: 12,
+        sortOrder: 2,
+        multiSortMeta: [
+          { field: 'ok', order: 1 },
+          { field: '', order: 1 },
+          { field: 'bad', order: 5 },
+          null,
+          'x',
+        ],
+      }),
+    ).toEqual({
+      multiSortMeta: [{ field: 'ok', order: 1 }],
+    })
+    expect(normalizeTableState({ sortField: null, sortOrder: null })).toEqual({
+      sortField: null,
+      sortOrder: null,
+    })
+  })
+
+  it('drops filters with bad matchMode or invalid shape', () => {
+    const normalized = normalizeTableState({
+      filters: {
+        good: { value: 'a', matchMode: 'contains' },
+        badMode: { value: 'a', matchMode: 'toString' },
+        missingMode: { value: 'a' },
+        advanced: {
+          operator: 'or',
+          constraints: [
+            { value: 1, matchMode: 'equals' },
+            { value: 2, matchMode: 'valueOf' },
+            { value: 3, matchMode: 'gt' },
+          ],
+        },
+        emptyAdvanced: { operator: 'and', constraints: [] },
+        __proto__: { value: 'x', matchMode: 'contains' },
+        constructor: { value: 'x', matchMode: 'contains' },
+      },
+    })
+    expect(normalized).toEqual({
+      filters: {
+        good: { value: 'a', matchMode: 'contains' },
+        advanced: {
+          operator: 'or',
+          constraints: [
+            { value: 1, matchMode: 'equals' },
+            { value: 3, matchMode: 'gt' },
+          ],
+        },
+      },
+    })
+  })
+
+  it('caps oversized arrays', () => {
+    const multiSortMeta = Array.from({ length: TABLE_STATE_MAX_MULTI_SORT + 5 }, (_, i) => ({
+      field: `f${i}`,
+      order: 1 as const,
+    }))
+    const columnOrder = Array.from(
+      { length: TABLE_STATE_MAX_COLUMN_KEYS + 3 },
+      (_, i) => `c${i}`,
+    )
+    const hiddenColumns = Array.from(
+      { length: TABLE_STATE_MAX_COLUMN_KEYS + 1 },
+      (_, i) => `h${i}`,
+    )
+    const constraints = Array.from(
+      { length: TABLE_STATE_MAX_FILTER_CONSTRAINTS + 4 },
+      (_, i) => ({ value: i, matchMode: 'equals' as const }),
+    )
+
+    const normalized = normalizeTableState({
+      multiSortMeta,
+      columnOrder,
+      hiddenColumns,
+      filters: { name: { operator: 'and', constraints } },
+    })
+
+    expect(normalized?.multiSortMeta).toHaveLength(TABLE_STATE_MAX_MULTI_SORT)
+    expect(normalized?.columnOrder).toHaveLength(TABLE_STATE_MAX_COLUMN_KEYS)
+    expect(normalized?.hiddenColumns).toHaveLength(TABLE_STATE_MAX_COLUMN_KEYS)
+    expect(
+      (normalized?.filters?.name as { constraints: unknown[] }).constraints,
+    ).toHaveLength(TABLE_STATE_MAX_FILTER_CONSTRAINTS)
+  })
+
+  it('can sanitize payloads returned by loadTableState', () => {
+    sessionStorage.setItem(
+      KEY,
+      JSON.stringify({
+        page: -1,
+        sortField: 'name',
+        filters: { name: { value: 'x', matchMode: 'toString' } },
+        columnOrder: ['a', 2, null, 'b'],
+        unknown: 1,
+      }),
+    )
+    const loaded = loadTableState(KEY)
+    expect(normalizeTableState(loaded)).toEqual({
+      sortField: 'name',
+      columnOrder: ['a', 'b'],
+    })
   })
 })
 

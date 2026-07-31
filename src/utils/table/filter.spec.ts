@@ -26,6 +26,15 @@ describe('resolveFieldValue', () => {
     expect(resolveFieldValue(rows[0], 'country.name')).toBe('UK')
     expect(resolveFieldValue(rows[0], 'missing')).toBeUndefined()
   })
+
+  it('rejects dangerous path segments', () => {
+    expect(resolveFieldValue(rows[0], '__proto__')).toBeUndefined()
+    expect(resolveFieldValue(rows[0], 'prototype')).toBeUndefined()
+    expect(resolveFieldValue(rows[0], 'constructor')).toBeUndefined()
+    expect(resolveFieldValue(rows[0], 'country.__proto__')).toBeUndefined()
+    expect(resolveFieldValue(rows[0], '__proto__.polluted')).toBeUndefined()
+    expect(resolveFieldValue(rows[0], 'a.constructor.b')).toBeUndefined()
+  })
 })
 
 describe('matchConstraint', () => {
@@ -80,6 +89,15 @@ describe('matchConstraint', () => {
     expect(matchConstraint(a, { value: c, matchMode: FilterMatchMode.DATE_IS_NOT })).toBe(true)
     expect(matchConstraint(a, { value: c, matchMode: FilterMatchMode.DATE_BEFORE })).toBe(true)
     expect(matchConstraint(c, { value: a, matchMode: FilterMatchMode.DATE_AFTER })).toBe(true)
+  })
+
+  it('fails closed for unknown matchMode when constraint is active', () => {
+    expect(
+      matchConstraint('Ada', { value: 'ada', matchMode: 'unknownMode' as never }),
+    ).toBe(false)
+    expect(
+      matchConstraint('Ada', { value: 'ada', matchMode: 'toString' as never }),
+    ).toBe(false)
   })
 })
 

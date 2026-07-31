@@ -12,11 +12,14 @@ import { POPOVER_KEY } from './popoverContext'
 export interface PopoverTriggerProps {
   variant?: ButtonVariant
   size?: ButtonSize
+  /** Override for `data-testid` on the trigger button. */
+  dataTestId?: string
 }
 
 const props = withDefaults(defineProps<PopoverTriggerProps>(), {
   variant: 'outline',
   size: 'md',
+  dataTestId: 'popover-trigger',
 })
 
 const popover = inject(POPOVER_KEY, null)
@@ -70,7 +73,7 @@ const classes = computed(() => [base, variantClasses[props.variant], sizeClasses
     :ref="setTriggerRef"
     type="button"
     data-slot="popover-trigger"
-    data-testid="popover-trigger"
+    :data-testid="props.dataTestId"
     :class="classes"
     aria-haspopup="dialog"
     :aria-expanded="isOpen ? 'true' : 'false'"

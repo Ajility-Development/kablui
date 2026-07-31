@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeUnmount, ref, useAttrs, type ComponentPublicInstance } from 'vue'
+import {
+  computed,
+  inject,
+  onBeforeUnmount,
+  ref,
+  useAttrs,
+  watch,
+  type ComponentPublicInstance,
+} from 'vue'
 import { useFloating } from '../composables/useFloating'
 import { omitDataTestId, resolveTestId } from '../utils/testId'
 import { POPOVER_KEY } from './popoverContext'
@@ -19,6 +27,8 @@ if (!popover) {
 
 const fallbackTrigger = ref<HTMLElement | null>(null)
 const fallbackContent = ref<HTMLElement | null>(null)
+/** Keep content mounted after the first open so later toggles only use v-show. */
+const hasOpened = ref(false)
 
 function setContentRef(el: Element | ComponentPublicInstance | null) {
   if (!popover) return
@@ -31,6 +41,14 @@ onBeforeUnmount(() => {
 
 const open = computed(() => !!popover?.open.value)
 const placement = computed(() => popover?.placement.value ?? 'bottom-start')
+
+watch(
+  open,
+  (isOpen) => {
+    if (isOpen) hasOpened.value = true
+  },
+  { immediate: true },
+)
 
 const { style } = useFloating(
   popover?.triggerRef ?? fallbackTrigger,
@@ -51,7 +69,7 @@ const classes = [
 <template>
   <Teleport to="body">
     <div
-      v-if="popover"
+      v-if="popover && (open || hasOpened)"
       v-show="open"
       :id="popover.contentId"
       :ref="setContentRef"

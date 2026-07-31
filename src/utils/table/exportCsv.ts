@@ -14,6 +14,10 @@ export function escapeCsvCell(value: unknown, separator = ','): string {
   } else {
     text = String(value)
   }
+  // OWASP CSV formula neutralization: neutralize formula/injection prefixes.
+  if (/^[=+\-@\t\r]/.test(text)) {
+    text = `'${text}`
+  }
   const needsQuotes =
     text.includes('"') ||
     text.includes('\n') ||
