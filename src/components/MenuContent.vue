@@ -72,7 +72,8 @@ const classes = [
 <template>
   <Teleport to="body">
     <div
-      v-if="open && menu"
+      v-if="menu"
+      v-show="open"
       :id="menu.contentId"
       :ref="setContentRef"
       role="menu"

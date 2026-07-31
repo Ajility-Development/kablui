@@ -1,0 +1,32 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { Table, TableColumn } from 'kablui'
+
+const rows = [
+  { id: 1, name: 'Ada Lovelace', role: 'Mathematician', score: 90 },
+  { id: 2, name: 'Grace Hopper', role: 'Admiral', score: 95 },
+  { id: 3, name: 'Alan Turing', role: 'Scientist', score: 88 },
+]
+
+const sortField = ref<string | null>(null)
+const sortOrder = ref<1 | -1 | 0 | null>(null)
+</script>
+
+<template>
+  <div class="space-y-2">
+    <p class="text-kablui-sm text-kablui-muted-fg">
+      With <code>removableSort</code>, the third click clears sort (asc → desc → none).
+    </p>
+    <Table
+      :value="rows"
+      data-key="id"
+      removable-sort
+      v-model:sort-field="sortField"
+      v-model:sort-order="sortOrder"
+    >
+      <TableColumn field="name" header="Name" sortable />
+      <TableColumn field="role" header="Role" sortable />
+      <TableColumn field="score" header="Score" sortable align="right" />
+    </Table>
+  </div>
+</template>

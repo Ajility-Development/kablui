@@ -51,7 +51,8 @@ const classes = [
 <template>
   <Teleport to="body">
     <div
-      v-if="open && popover"
+      v-if="popover"
+      v-show="open"
       :id="popover.contentId"
       :ref="setContentRef"
       role="dialog"

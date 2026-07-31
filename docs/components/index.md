@@ -61,3 +61,4 @@ API reference for kablui. Each page follows Overview → Usage → Props/Models/
 | [Accordion](/components/accordion) | Expandable sections |
 | [Tabs](/components/tabs) | Tabbed panels |
 | [Pagination](/components/pagination) | Page controls |
+| [Table](/components/table) | `Table` / `TableColumn` / `TableColumnGroup` / `TableHeaderRow` |

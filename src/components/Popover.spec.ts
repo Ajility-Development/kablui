@@ -49,6 +49,42 @@ function mountPopover(props: { open?: boolean; placement?: FloatingPlacement } =
   return { open }
 }
 
+function contentEl() {
+  return document.querySelector('[data-slot="popover-content"]') as HTMLElement | null
+}
+
+function contentIsShown() {
+  const el = contentEl()
+  return !!el && el.style.display !== 'none'
+}
+
+async function flushMeasure() {
+  await nextTick()
+  await new Promise<void>((resolve) => {
+    requestAnimationFrame(() => resolve())
+  })
+}
+
+type Rect = Pick<DOMRect, 'top' | 'right' | 'bottom' | 'left' | 'width' | 'height' | 'x' | 'y'>
+
+function rect(partial: Partial<Rect>): DOMRect {
+  const top = partial.top ?? 0
+  const left = partial.left ?? 0
+  const width = partial.width ?? 0
+  const height = partial.height ?? 0
+  return {
+    top,
+    left,
+    width,
+    height,
+    right: partial.right ?? left + width,
+    bottom: partial.bottom ?? top + height,
+    x: left,
+    y: top,
+    toJSON: () => ({}),
+  } as DOMRect
+}
+
 describe('Popover', () => {
   it('toggles open via trigger click and aria-expanded', async () => {
     const { open } = mountPopover()
@@ -56,14 +92,38 @@ describe('Popover', () => {
 
     expect(trigger.attributes('aria-expanded')).toBe('false')
     expect(trigger.attributes('aria-haspopup')).toBe('dialog')
-    expect(document.querySelector('[data-slot="popover-content"]')).toBeNull()
+    expect(contentIsShown()).toBe(false)
 
     await trigger.trigger('click')
     await nextTick()
 
     expect(open.value).toBe(true)
     expect(trigger.attributes('aria-expanded')).toBe('true')
-    expect(document.querySelector('[data-slot="popover-content"]')).not.toBeNull()
+    expect(contentIsShown()).toBe(true)
+  })
+
+  it('positions content with fixed coordinates on first open without scroll', async () => {
+    mountPopover()
+    const trigger = wrapper!.find('[data-slot="popover-trigger"]')
+    const triggerEl = trigger.element as HTMLElement
+    const content = contentEl()
+    expect(content).not.toBeNull()
+
+    vi.spyOn(triggerEl, 'getBoundingClientRect').mockReturnValue(
+      rect({ top: 100, left: 200, width: 80, height: 32 }),
+    )
+    vi.spyOn(content!, 'getBoundingClientRect').mockReturnValue(
+      rect({ width: 120, height: 40 }),
+    )
+
+    await trigger.trigger('click')
+    await flushMeasure()
+
+    expect(contentIsShown()).toBe(true)
+    expect(content!.style.position).toBe('fixed')
+    expect(content!.style.top).toBe('132px')
+    expect(content!.style.left).toBe('200px')
+    expect(content!.style.visibility).not.toBe('hidden')
   })
 
   it('exposes default data-testid matching data-slot names', async () => {
@@ -79,7 +139,7 @@ describe('Popover', () => {
     const { open } = mountPopover({ open: true })
     await nextTick()
 
-    expect(document.querySelector('[data-slot="popover-content"]')).not.toBeNull()
+    expect(contentIsShown()).toBe(true)
 
     document.dispatchEvent(
       new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
@@ -87,7 +147,7 @@ describe('Popover', () => {
     await nextTick()
 
     expect(open.value).toBe(false)
-    expect(document.querySelector('[data-slot="popover-content"]')).toBeNull()
+    expect(contentIsShown()).toBe(false)
   })
 
   it('dismisses on outside pointerdown', async () => {
@@ -215,11 +275,11 @@ describe('Popover', () => {
     wrapper = mount(Host, { attachTo: document.body })
     open.value = true
     await nextTick()
-    expect(document.querySelector('[data-slot="popover-content"]')).not.toBeNull()
+    expect(contentIsShown()).toBe(true)
 
     open.value = false
     await nextTick()
-    expect(document.querySelector('[data-slot="popover-content"]')).toBeNull()
+    expect(contentIsShown()).toBe(false)
   })
 
   it('uses menu stacking classes', async () => {

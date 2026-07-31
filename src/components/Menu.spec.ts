@@ -90,6 +90,15 @@ function mountMenu(
   return { open, selected }
 }
 
+function contentEl() {
+  return document.querySelector('[data-slot="menu-content"]') as HTMLElement | null
+}
+
+function contentIsShown() {
+  const el = contentEl()
+  return !!el && el.style.display !== 'none'
+}
+
 async function flushFocus() {
   await nextTick()
   await nextTick()
@@ -114,7 +123,7 @@ describe('Menu', () => {
     expect(trigger.attributes('aria-expanded')).toBe('false')
     expect(trigger.attributes('aria-haspopup')).toBe('menu')
     expect(trigger.attributes('aria-controls')).toBeTruthy()
-    expect(document.querySelector('[data-slot="menu-content"]')).toBeNull()
+    expect(contentIsShown()).toBe(false)
 
     await trigger.trigger('click')
     await nextTick()
@@ -122,8 +131,8 @@ describe('Menu', () => {
     expect(open.value).toBe(true)
     expect(trigger.attributes('aria-expanded')).toBe('true')
 
-    const content = document.querySelector('[data-slot="menu-content"]')
-    expect(content).not.toBeNull()
+    const content = contentEl()
+    expect(contentIsShown()).toBe(true)
     expect(content?.getAttribute('role')).toBe('menu')
     expect(content?.id).toBe(trigger.attributes('aria-controls'))
   })
@@ -142,7 +151,7 @@ describe('Menu', () => {
     expect(onSelect).toHaveBeenCalled()
     expect(selected.value).toBe('edit')
     expect(open.value).toBe(false)
-    expect(document.querySelector('[data-slot="menu-content"]')).toBeNull()
+    expect(contentIsShown()).toBe(false)
   })
 
   it('does not select a disabled MenuItem', async () => {
@@ -180,7 +189,7 @@ describe('Menu', () => {
     await flushFocus()
 
     expect(open.value).toBe(false)
-    expect(document.querySelector('[data-slot="menu-content"]')).toBeNull()
+    expect(contentIsShown()).toBe(false)
     expect(document.activeElement).toBe(button)
   })
 
@@ -348,11 +357,11 @@ describe('Menu', () => {
     wrapper = mount(Host, { attachTo: document.body })
     open.value = true
     await nextTick()
-    expect(document.querySelector('[data-slot="menu-content"]')).not.toBeNull()
+    expect(contentIsShown()).toBe(true)
 
     open.value = false
     await nextTick()
-    expect(document.querySelector('[data-slot="menu-content"]')).toBeNull()
+    expect(contentIsShown()).toBe(false)
   })
 
   it('uses menu stacking classes', async () => {

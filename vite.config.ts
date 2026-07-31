@@ -14,6 +14,10 @@ export default defineConfig(({ command }) => {
         },
       },
       root: 'playground',
+      server: {
+        port: 5173,
+        strictPort: true,
+      },
     }
   }
 

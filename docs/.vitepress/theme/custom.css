@@ -57,8 +57,20 @@
 
 .kablui-demo__preview {
   padding: 1.25rem 1rem;
+  overflow-x: auto;
+  min-width: 0;
   background: var(--vp-c-bg);
   color: var(--color-kablui-fg, var(--vp-c-text-1));
+}
+
+/*
+ * VitePress `.vp-doc` table rules are unlayered and beat Tailwind `@layer
+ * utilities` (padding, borders, font-size, zebra rows). Live demos sit inside
+ * `.vp-doc`; `vp-raw` on Demo.vue is a no-op in this VitePress version.
+ * `revert-layer` drops those unlayered overrides so kablui cell utilities win.
+ */
+.vp-doc .kablui-demo__preview :is(table, thead, tbody, tfoot, tr, th, td) {
+  all: revert-layer;
 }
 
 .kablui-demo__missing {

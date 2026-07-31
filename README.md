@@ -86,8 +86,17 @@ import {
   MenuItem,
   MenuSeparator,
   Pagination,
+  Table,
+  TableColumn,
+  TableColumnGroup,
+  TableHeaderRow,
+  exportTableCsv,
+  FilterMatchMode,
+  FilterOperator,
 } from 'kablui'
 ```
+
+Table also exports helpers and types such as `downloadCsv`, `TableFilters`, `TableSortMeta`, `TableSelectionValue`, `TableRowSelectEvent`, and `TablePersistedState`.
 
 ### Styling model
 
@@ -113,7 +122,7 @@ Theme tokens live in `@theme static` / CSS variables in `src/styles/index.css` (
 Consumer docs live in [`docs/`](docs/) (VitePress), alongside the playground:
 
 ```bash
-npm run docs:dev
+npm run docs:dev     # http://localhost:5174
 npm run docs:build
 npm run docs:preview
 ```
@@ -127,7 +136,7 @@ This README keeps install/usage short; use the docs site for full guidance.
 ```bash
 npm install
 npm run dev      # playground at http://localhost:5173
-npm run docs:dev # VitePress docs
+npm run docs:dev # VitePress docs at http://localhost:5174
 npm run build    # emit dist/ for publishing
 npm run typecheck
 npm test

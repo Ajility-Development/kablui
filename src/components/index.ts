@@ -86,6 +86,82 @@ export { default as Stack } from './Stack.vue'
 export type { StackProps } from './Stack.vue'
 export { default as Switch } from './Switch.vue'
 export type { SwitchProps } from './Switch.vue'
+/** Filter helpers before Table SFCs so docs demos never see a TDZ `undefined` during HMR. */
+export {
+  DEFAULT_NUMERIC_MATCH_MODE_OPTIONS,
+  DEFAULT_TEXT_MATCH_MODE_OPTIONS,
+  FilterMatchMode,
+  FilterOperator,
+} from '../utils/table/filter'
+export { exportTableCsv, downloadCsv, escapeCsvCell } from '../utils/table/exportCsv'
+export {
+  clearTableState,
+  loadTableState,
+  saveTableState,
+} from '../utils/table/stateStorage'
+export type {
+  ExportTableCsvColumn,
+  ExportTableCsvOptions,
+  TablePersistedState,
+  TableStateStorage,
+} from '../utils/table/types'
+export type {
+  TableAlign,
+  TableCellEditCancelEvent,
+  TableCellEditCompleteEvent,
+  TableColumnDef,
+  TableColumnGroupType,
+  TableColumnReorderEvent,
+  TableColumnResizeEndEvent,
+  TableColumnResizeMode,
+  TableColumnSlots,
+  TableEditMode,
+  TableExpandedRows,
+  TableFilterConstraint,
+  TableFilterDisplay,
+  TableFilterEvent,
+  TableFilterMatchMode,
+  TableFilterMeta,
+  TableFilterMetaAdvanced,
+  TableFilterMetaSimple,
+  TableFilterOperator,
+  TableFilters,
+  TableFrozenAlign,
+  TableHeaderRowDef,
+  TableLoadEvent,
+  TablePageEvent,
+  TablePageState,
+  TableRowCollapseEvent,
+  TableRowContextMenuEvent,
+  TableRowData,
+  TableRowEditCancelEvent,
+  TableRowEditInitEvent,
+  TableRowEditSaveEvent,
+  TableRowExpandEvent,
+  TableRowGroupCollapseEvent,
+  TableRowGroupExpandEvent,
+  TableRowGroupMode,
+  TableRowReorderEvent,
+  TableRowSelectEvent,
+  TableRowUnselectEvent,
+  TableSelectionMode,
+  TableSelectionValue,
+  TableSize,
+  TableSortEvent,
+  TableSortMeta,
+  TableSortMode,
+  TableSortOrder,
+  TableVirtualLazyLoadEvent,
+  TableVirtualScrollerOptions,
+} from '../utils/table/types'
+export { default as Table } from './Table.vue'
+export type { TableProps } from './Table.vue'
+export { default as TableColumn } from './TableColumn.vue'
+export type { TableColumnProps } from './TableColumn.vue'
+export { default as TableColumnGroup } from './TableColumnGroup.vue'
+export type { TableColumnGroupProps } from './TableColumnGroup.vue'
+export { default as TableHeaderRow } from './TableHeaderRow.vue'
+export type { TableHeaderRowProps } from './TableHeaderRow.vue'
 export { default as Tab } from './Tab.vue'
 export type { TabProps } from './Tab.vue'
 export { default as TabList } from './TabList.vue'

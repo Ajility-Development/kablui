@@ -49,9 +49,19 @@ export default defineConfig({
         kablui: fileURLToPath(new URL('../../src', import.meta.url)),
       },
     },
+    // Build output / transform cache live under docs/; ignore so they don't HMR-storm docs:dev.
+    server: {
+      port: 5174,
+      strictPort: true,
+      watch: {
+        ignored: ['**/.vitepress/dist/**', '**/.vitepress/.temp/**'],
+      },
+    },
   },
 
   themeConfig: {
+    outline: [2, 4],
+
     nav: [
       { text: 'Guides', link: '/guides/getting-started' },
       { text: 'Components', link: '/components/' },
@@ -132,6 +142,7 @@ export default defineConfig({
           { text: 'Accordion', link: '/components/accordion' },
           { text: 'Tabs', link: '/components/tabs' },
           { text: 'Pagination', link: '/components/pagination' },
+          { text: 'Table', link: '/components/table' },
         ],
       },
     ],

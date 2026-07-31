@@ -32,6 +32,13 @@ function mockRect(el: HTMLElement, value: DOMRect) {
   vi.spyOn(el, 'getBoundingClientRect').mockReturnValue(value)
 }
 
+async function flushMeasure() {
+  await nextTick()
+  await new Promise<void>((resolve) => {
+    requestAnimationFrame(() => resolve())
+  })
+}
+
 describe('useFloating', () => {
   let originalInnerWidth: number
   let originalInnerHeight: number
@@ -109,6 +116,81 @@ describe('useFloating', () => {
     open.value = true
     await nextTick()
     expect(styleSnapshot.value.position).toBe('fixed')
+  })
+
+  it('uses pending fixed/hidden style when open but floating el is missing', async () => {
+    const open = ref(true)
+    const placement = ref<FloatingPlacement>('bottom-start')
+    const styleSnapshot = ref<Record<string, string>>({})
+
+    const Host = defineComponent({
+      setup() {
+        const anchorRef = ref<HTMLElement | null>(null)
+        const floatingRef = ref<HTMLElement | null>(null)
+        const { style } = useFloating(anchorRef, floatingRef, { open, placement })
+
+        return () => {
+          styleSnapshot.value = { ...(style.value as Record<string, string>) }
+          return h('div', [
+            h('button', { ref: anchorRef, 'data-testid': 'anchor' }, 'anchor'),
+            // floatingRef intentionally left null
+          ])
+        }
+      },
+    })
+
+    const wrapper = mount(Host)
+    await flushMeasure()
+
+    expect(styleSnapshot.value).toEqual({
+      position: 'fixed',
+      visibility: 'hidden',
+      top: '0px',
+      left: '0px',
+    })
+    wrapper.unmount()
+  })
+
+  it('measures on open via nextTick + rAF without scroll', async () => {
+    const open = ref(false)
+    const placement = ref<FloatingPlacement>('bottom-start')
+    const styleSnapshot = ref<Record<string, string>>({})
+
+    const Host = defineComponent({
+      setup() {
+        const anchorRef = ref<HTMLElement | null>(null)
+        const floatingRef = ref<HTMLElement | null>(null)
+        const { style } = useFloating(anchorRef, floatingRef, { open, placement })
+
+        return () => {
+          styleSnapshot.value = { ...(style.value as Record<string, string>) }
+          return h('div', [
+            h('button', { ref: anchorRef, 'data-testid': 'anchor' }, 'anchor'),
+            h(
+              'div',
+              { ref: floatingRef, 'data-testid': 'floating', style: style.value },
+              'floating',
+            ),
+          ])
+        }
+      },
+    })
+
+    const wrapper = mount(Host)
+    const anchor = wrapper.get('[data-testid="anchor"]').element as HTMLElement
+    const floating = wrapper.get('[data-testid="floating"]').element as HTMLElement
+    mockRect(anchor, rect({ top: 100, left: 200, width: 80, height: 32 }))
+    mockRect(floating, rect({ width: 120, height: 40 }))
+
+    open.value = true
+    await flushMeasure()
+
+    expect(styleSnapshot.value).toEqual({
+      position: 'fixed',
+      top: '132px',
+      left: '200px',
+    })
+    wrapper.unmount()
   })
 
   it('positions bottom-start with position: fixed', async () => {

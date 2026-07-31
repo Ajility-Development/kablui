@@ -1,4 +1,5 @@
 import {
+  nextTick,
   onScopeDispose,
   ref,
   toValue,
@@ -32,6 +33,16 @@ const OPPOSITE: Record<FloatingSide, FloatingSide> = {
   left: 'right',
   right: 'left',
 }
+
+/** Keep teleported content out of normal flow until the first successful measure. */
+const PENDING_STYLE: CSSProperties = {
+  position: 'fixed',
+  visibility: 'hidden',
+  top: '0px',
+  left: '0px',
+}
+
+const MAX_MEASURE_ATTEMPTS = 3
 
 function parsePlacement(placement: FloatingPlacement): {
   side: FloatingSide
@@ -145,20 +156,21 @@ export function useFloating(
 ): UseFloatingReturn {
   const style = ref<CSSProperties>({})
 
-  const update = () => {
+  const update = (): boolean => {
     if (!toValue(options.open)) {
       style.value = {}
-      return
+      return false
     }
 
     const anchor = unref(anchorRef)
     const floating = unref(floatingRef)
     if (!anchor || !floating) {
-      style.value = {}
-      return
+      style.value = PENDING_STYLE
+      return false
     }
 
     style.value = computeStyle(anchor, floating, toValue(options.placement))
+    return true
   }
 
   const onScrollOrResize = () => {
@@ -166,6 +178,50 @@ export function useFloating(
   }
 
   let listening = false
+  let rafId: number | null = null
+  let measureGeneration = 0
+
+  const cancelScheduledMeasure = () => {
+    measureGeneration += 1
+    if (rafId != null && typeof cancelAnimationFrame !== 'undefined') {
+      cancelAnimationFrame(rafId)
+      rafId = null
+    }
+  }
+
+  const scheduleMeasure = () => {
+    cancelScheduledMeasure()
+    const generation = measureGeneration
+
+    void nextTick(() => {
+      if (generation !== measureGeneration) return
+      if (!toValue(options.open)) return
+
+      const run = (attempt: number) => {
+        if (generation !== measureGeneration) return
+        if (!toValue(options.open)) return
+
+        if (update()) return
+
+        if (attempt + 1 >= MAX_MEASURE_ATTEMPTS) return
+        if (typeof requestAnimationFrame === 'undefined') return
+
+        rafId = requestAnimationFrame(() => {
+          rafId = null
+          run(attempt + 1)
+        })
+      }
+
+      if (typeof requestAnimationFrame !== 'undefined') {
+        rafId = requestAnimationFrame(() => {
+          rafId = null
+          run(0)
+        })
+      } else {
+        run(0)
+      }
+    })
+  }
 
   const startListening = () => {
     if (listening || typeof window === 'undefined') return
@@ -187,7 +243,9 @@ export function useFloating(
       if (open) {
         startListening()
         update()
+        scheduleMeasure()
       } else {
+        cancelScheduledMeasure()
         stopListening()
         style.value = {}
       }
@@ -196,6 +254,7 @@ export function useFloating(
   )
 
   onScopeDispose(() => {
+    cancelScheduledMeasure()
     stopListening()
   })
 
