@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { defineComponent, h } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import Toast from './Toast.vue'
 
 describe('Toast', () => {
@@ -103,5 +105,43 @@ describe('Toast', () => {
 
     expect(source).toMatch(/kablui-/)
     expect(source).not.toMatch(/#[0-9a-fA-F]{3,8}\b/)
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations for a status toast', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [
+              h(Toast, {
+                title: 'Saved',
+                description: 'Your changes were stored.',
+              }),
+            ])
+        },
+      }),
+    )
+    await expectNoA11yViolations(wrapper.element)
+  })
+
+  it('has no axe violations for a danger toast with an action', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [
+              h(Toast, {
+                title: 'Could not save',
+                description: 'Check your connection and try again.',
+                tone: 'danger',
+                action: { label: 'Retry' },
+              }),
+            ])
+        },
+      }),
+    )
+    await expectNoA11yViolations(wrapper.element)
   })
 })

@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { defineComponent, h, nextTick, ref } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import Field from './Field.vue'
 import FieldLabel from './FieldLabel.vue'
 import FieldHint from './FieldHint.vue'
@@ -146,5 +147,45 @@ describe('Field composition', () => {
       expect(source).not.toMatch(/kablui-accent-\d+/)
       expect(source).not.toMatch(/kablui-danger-\d+/)
     }
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations when labeled with a hint', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [
+              h(Field, { id: 'email' }, () => [
+                h(FieldLabel, null, () => 'Email'),
+                h(Input, { 'modelValue': '', 'onUpdate:modelValue': () => {} }),
+                h(FieldHint, null, () => 'Work email'),
+              ]),
+            ])
+        },
+      }),
+    )
+    await nextTick()
+    await expectNoA11yViolations(wrapper.element)
+  })
+
+  it('has no axe violations when invalid with an error', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [
+              h(Field, { id: 'email', invalid: true }, () => [
+                h(FieldLabel, null, () => 'Email'),
+                h(Input, { 'modelValue': '', 'onUpdate:modelValue': () => {} }),
+                h(FieldError, null, () => 'Required'),
+              ]),
+            ])
+        },
+      }),
+    )
+    await nextTick()
+    await expectNoA11yViolations(wrapper.element)
   })
 })

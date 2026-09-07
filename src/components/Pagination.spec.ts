@@ -2,7 +2,8 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
-import { defineComponent, ref } from 'vue'
+import { defineComponent, h, ref } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import Pagination from './Pagination.vue'
 
 function pageButtons(wrapper: ReturnType<typeof mount>) {
@@ -379,5 +380,40 @@ describe('Pagination', () => {
     expect(source).not.toMatch(/kablui-neutral-\d+/)
     expect(source).not.toMatch(/kablui-accent-\d+/)
     expect(source).not.toMatch(/kablui-danger-\d+/)
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations for a typical page range', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [
+              h(Pagination, { pageCount: 5, page: 2 }),
+            ])
+        },
+      }),
+    )
+    await expectNoA11yViolations(wrapper.element)
+  })
+
+  it('has no axe violations when disabled with ellipsis', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [
+              h(Pagination, {
+                pageCount: 10,
+                page: 5,
+                siblingCount: 1,
+                disabled: true,
+              }),
+            ])
+        },
+      }),
+    )
+    await expectNoA11yViolations(wrapper.element)
   })
 })

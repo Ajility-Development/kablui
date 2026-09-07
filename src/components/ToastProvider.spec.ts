@@ -4,6 +4,7 @@ import { mount, type VueWrapper } from '@vue/test-utils'
 import { __resetIdCounter } from '../composables/useId'
 import { __resetOverlayStack } from '../composables/useOverlayStack'
 import { useToast } from '../composables/useToast'
+import { expectNoA11yViolations } from '../test/a11y'
 import ToastProvider from './ToastProvider.vue'
 
 /** Must match EXIT_DURATION_MS in ToastProvider.vue */
@@ -348,5 +349,50 @@ describe('ToastProvider', () => {
     const node = document.querySelector('[data-kablui-toast]')
     expect(node?.getAttribute('role')).toBe('alert')
     expect(node?.textContent).toContain('Something broke')
+  })
+})
+
+describe('ToastProvider a11y', () => {
+  let wrapper: VueWrapper | undefined
+
+  beforeEach(() => {
+    __resetIdCounter()
+    __resetOverlayStack()
+  })
+
+  afterEach(() => {
+    wrapper?.unmount()
+    wrapper = undefined
+    document.body.innerHTML = ''
+  })
+
+  it('has no axe violations for a visible toast', async () => {
+    const Child = defineComponent({
+      setup() {
+        const { toast } = useToast()
+        return {
+          onTrigger: () =>
+            toast({
+              title: 'Saved',
+              description: 'Your changes were stored.',
+              duration: 0,
+            }),
+        }
+      },
+      template: `
+        <main>
+          <button type="button" data-trigger @click="onTrigger">Show toast</button>
+        </main>
+      `,
+    })
+
+    wrapper = mount(ToastProvider, {
+      slots: { default: Child },
+      attachTo: document.body,
+    })
+
+    await wrapper.find('[data-trigger]').trigger('click')
+    await nextTick()
+    await expectNoA11yViolations(document.body)
   })
 })

@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { defineComponent, h } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import Link from './Link.vue'
 
 describe('Link', () => {
@@ -128,5 +130,40 @@ describe('Link', () => {
     expect(source).not.toMatch(/kablui-neutral-\d+/)
     expect(source).not.toMatch(/kablui-accent-\d+/)
     expect(source).not.toMatch(/kablui-danger-\d+/)
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations for a named link', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [
+              h(Link, { href: '/docs' }, () => 'Docs'),
+            ])
+        },
+      }),
+    )
+    await expectNoA11yViolations(wrapper.element)
+  })
+
+  it('has no axe violations when disabled or external', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [
+              h(Link, { href: '/blocked', disabled: true }, () => 'Disabled'),
+              h(
+                Link,
+                { href: 'https://example.com', external: true },
+                () => 'External',
+              ),
+            ])
+        },
+      }),
+    )
+    await expectNoA11yViolations(wrapper.element)
   })
 })

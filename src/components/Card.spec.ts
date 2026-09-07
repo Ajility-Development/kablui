@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from 'vue'
 import { mount } from '@vue/test-utils'
+import { expectNoA11yViolations } from '../test/a11y'
 import Card from './Card.vue'
 import CardContent from './CardContent.vue'
 import CardDescription from './CardDescription.vue'
@@ -178,5 +179,33 @@ describe('Card', () => {
       expect(source).not.toMatch(/\bprovide\b/)
       expect(source).not.toMatch(/\binject\b/)
     }
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations for a composed card', async () => {
+    const Demo = defineComponent({
+      components: {
+        Card,
+        CardHeader,
+        CardTitle,
+        CardDescription,
+        CardContent,
+      },
+      template: `
+        <main>
+          <Card as="article">
+            <CardHeader>
+              <CardTitle as="h2">Plan</CardTitle>
+              <CardDescription>Monthly billing</CardDescription>
+            </CardHeader>
+            <CardContent>Details go here</CardContent>
+          </Card>
+        </main>
+      `,
+    })
+
+    const wrapper = mount(Demo)
+    await expectNoA11yViolations(wrapper.element)
   })
 })
