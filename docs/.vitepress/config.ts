@@ -79,6 +79,7 @@ export default defineConfig({
           { text: 'Theming', link: '/guides/theming' },
           { text: 'Tailwind composition', link: '/guides/tailwind' },
           { text: 'Tree-shaking & imports', link: '/guides/tree-shaking' },
+          { text: 'Composables', link: '/guides/composables' },
           { text: 'Writing docs', link: '/guides/writing-docs' },
           { text: 'Contributing', link: '/guides/contributing' },
           { text: 'Releasing', link: '/guides/releasing' },
