@@ -1566,6 +1566,48 @@ describe('Table', () => {
       expect(editingRows.value).toHaveLength(0)
     })
 
+    it('does not start row edit without dataKey and warns', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const editingRows = ref<typeof sampleRows>([])
+
+      wrapper = mount(
+        defineComponent({
+          components: { Table, TableColumn, Input },
+          setup() {
+            return { rows: sampleRows, editingRows }
+          },
+          template: `
+            <Table
+              v-model:editing-rows="editingRows"
+              :value="rows"
+              edit-mode="row"
+            >
+              <TableColumn field="name" header="Name">
+                <template #editor="{ data, field }">
+                  <Input v-model="data[field]" data-testid="name-editor" />
+                </template>
+              </TableColumn>
+              <TableColumn row-editor />
+            </Table>
+          `,
+        }),
+        { attachTo: document.body },
+      )
+      await nextTick()
+
+      const editBtn = wrapper.find('[data-testid="table-row-edit-0"]')
+      expect(editBtn.exists()).toBe(true)
+      await editBtn.trigger('click')
+      await nextTick()
+
+      const table = wrapper.findComponent(Table)
+      expect(warn).toHaveBeenCalledWith('[kablui] Table row edit requires dataKey')
+      expect(table.emitted('row-edit-init')).toBeFalsy()
+      expect(editingRows.value).toHaveLength(0)
+      expect(wrapper.find('[data-testid="name-editor"]').exists()).toBe(false)
+      warn.mockRestore()
+    })
+
     it('keeps checkbox selection independent of cell edit clicks', async () => {
       const rows = ref([...sampleRows])
       const selection = ref<typeof sampleRows>([])
@@ -3031,7 +3073,9 @@ describe('Table', () => {
 
       expect(wrapper.find('[data-testid="table"]').attributes('data-virtual')).toBeUndefined()
       expect(wrapper.findAll('[data-testid^="table-row-"]')).toHaveLength(30)
-      expect(warn).toHaveBeenCalled()
+      expect(warn).toHaveBeenCalledWith(
+        '[kablui Table] virtualScrollerOptions requires scrollHeight; virtualization is disabled.',
+      )
       warn.mockRestore()
     })
 
@@ -3070,7 +3114,9 @@ describe('Table', () => {
 
       expect(wrapper.find('[data-testid="table"]').attributes('data-virtual')).toBe('true')
       expect(wrapper.find('[data-slot="table-expansion"]').exists()).toBe(false)
-      expect(warn.mock.calls.some((c) => String(c[0]).includes('expansion'))).toBe(true)
+      expect(warn).toHaveBeenCalledWith(
+        '[kablui Table] virtualScrollerOptions is incompatible with row expansion; expansion rows are skipped.',
+      )
       warn.mockRestore()
     })
 
@@ -3111,7 +3157,10 @@ describe('Table', () => {
       await nextTick()
 
       expect(wrapper.find('[data-slot="table-group-header"]').exists()).toBe(false)
-      expect(warn.mock.calls.some((c) => String(c[0]).includes('groupRowsBy'))).toBe(true)
+      expect(wrapper.find('[data-testid="table"]').attributes('data-virtual')).toBe('true')
+      expect(warn).toHaveBeenCalledWith(
+        '[kablui Table] virtualScrollerOptions is incompatible with groupRowsBy; group chrome is disabled.',
+      )
       warn.mockRestore()
     })
   })
