@@ -67,7 +67,7 @@ export default defineConfig({
       { text: 'Components', link: '/components/' },
       {
         text: 'GitHub',
-        link: 'https://github.com/ajility/kablui',
+        link: 'https://github.com/Ajility-Development/kablui',
       },
     ],
 
@@ -149,7 +149,7 @@ export default defineConfig({
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/ajility/kablui' },
+      { icon: 'github', link: 'https://github.com/Ajility-Development/kablui' },
     ],
 
     search: {
@@ -157,7 +157,7 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: 'https://github.com/ajility/kablui/edit/main/docs/:path',
+      pattern: 'https://github.com/Ajility-Development/kablui/edit/main/docs/:path',
       text: 'Edit this page',
     },
   },

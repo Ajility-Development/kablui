@@ -10,7 +10,7 @@ Thanks for helping improve kablui. This guide covers local setup, quality checks
 ## Clone and install
 
 ```bash
-git clone https://github.com/ajility/kablui.git
+git clone https://github.com/Ajility-Development/kablui.git
 cd kablui
 npm install
 ```
