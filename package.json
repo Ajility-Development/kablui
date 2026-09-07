@@ -70,12 +70,16 @@
     "tailwind"
   ],
   "license": "MIT",
+  "author": "Ajility Technologies",
+  "engines": {
+    "node": ">=20"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ajility/kablui.git"
+    "url": "git+https://github.com/Ajility-Development/kablui.git"
   },
   "bugs": {
-    "url": "https://github.com/ajility/kablui/issues"
+    "url": "https://github.com/Ajility-Development/kablui/issues"
   },
-  "homepage": "https://github.com/ajility/kablui#readme"
+  "homepage": "https://github.com/Ajility-Development/kablui#readme"
 }

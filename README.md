@@ -163,7 +163,7 @@ Add a component under `src/components/`, export it from `src/components/index.ts
 
 ## Publish
 
-Normal releases use GitHub Actions with an npm Trusted Publisher under **Ajility Technologies** (OIDC; no `NPM_TOKEN`). The workflow binds to GitHub repo `ajility/kablui` and `.github/workflows/release.yml`—see [Releasing](docs/guides/releasing.md). Manual `npm publish` is emergency-only (login + OTP).
+Normal releases use GitHub Actions with an npm Trusted Publisher under **Ajility Technologies** (OIDC; no `NPM_TOKEN`). The workflow binds to GitHub repo `Ajility-Development/kablui` (GitHub org, not the npm publisher name) and `.github/workflows/release.yml`—see [Releasing](docs/guides/releasing.md). Manual `npm publish` is emergency-only (login + OTP).
 
 ```bash
 npm run build   # also runs via prepublishOnly
