@@ -6,8 +6,6 @@ import type { CSSProperties, Slot } from 'vue'
  *
  * Lazy mode: render `value` as-is and emit intent events (page/sort/filter)
  * instead of running the client pipeline.
- *
- * Wave 0 renders `value` directly. Later waves hook into this order additively.
  */
 
 export type TableSize = 'sm' | 'md' | 'lg'
@@ -29,7 +27,7 @@ export interface TableSortMeta {
   order: TableSortOrder
 }
 
-/** Payload for the `sort` emit (Wave 1). */
+/** Payload for the `sort` emit. */
 export interface TableSortEvent {
   originalEvent: Event
   sortField: string | null
@@ -42,16 +40,13 @@ export interface TableColumnSlots {
   body?: Slot
   header?: Slot
   footer?: Slot
-  /** Wave 2+: filter UI */
+  /** Column filter UI. */
   filter?: Slot
-  /** Wave 2+: cell/row editor */
+  /** Cell or row editor UI. */
   editor?: Slot
 }
 
-/**
- * Registered column definition.
- * Additive-friendly: later waves may read optional fields without renaming.
- */
+/** Registered column definition. */
 export interface TableColumnDef {
   /** Stable instance id for register / unregister. */
   id: string
@@ -65,7 +60,7 @@ export interface TableColumnDef {
    * PrimeVue Column `dataType` parity.
    */
   dataType?: 'text' | 'numeric'
-  /** Pin during horizontal scroll (Wave 2). */
+  /** Pin during horizontal scroll. */
   frozen?: boolean
   /** `'left'` (default) or `'right'` when `frozen`. */
   alignFrozen?: TableFrozenAlign
@@ -74,10 +69,10 @@ export interface TableColumnDef {
   selectionMode?: TableSelectionMode
   rowEditor?: boolean
   expander?: boolean
-  /** Row drag-handle column (Wave 3). */
+  /** Row drag-handle column. */
   rowReorder?: boolean
   /**
-   * When `false`, excluded from column header reorder (Wave 3).
+   * When `false`, excluded from column header reorder.
    * Default `true` for data columns; special columns often set `false`.
    */
   reorderableColumn?: boolean
@@ -113,7 +108,7 @@ export interface TableHeaderRowDef {
   columnIds: string[]
 }
 
-/** Payload shape helpers for later waves (emits). */
+/** Shared payload for row-level table events. */
 export interface TablePropsRowEvent {
   originalEvent: Event
   data: unknown
@@ -122,7 +117,7 @@ export interface TablePropsRowEvent {
 
 export type TableRowData = Record<string, unknown>
 
-// --- selection (Wave 1) ---
+// --- selection ---
 /** `v-model:selection` value: one row, many rows, or empty. */
 export type TableSelectionValue = unknown | unknown[] | null | undefined
 
@@ -132,9 +127,9 @@ export type TableRowSelectEvent = TablePropsRowEvent
 /** Fired when a row becomes unselected. */
 export type TableRowUnselectEvent = TablePropsRowEvent
 
-// --- pagination (Wave 1) ---
+// --- pagination ---
 
-/** Snapshot of client/lazy page state (lazy Wave 4 may extend). */
+/** Snapshot of client/lazy page state. */
 export interface TablePageState {
   /** Current page (1-based). */
   page: number
@@ -146,7 +141,7 @@ export interface TablePageState {
   totalRecords: number
 }
 
-// --- edit (Wave 2) ---
+// --- edit ---
 
 /** Cell click-to-edit vs row editor controls. */
 export type TableEditMode = 'cell' | 'row'
@@ -189,7 +184,7 @@ export type TableRowEditSaveEvent = TableRowEditInitEvent
 /** Fired when row edit is cancelled. */
 export type TableRowEditCancelEvent = TableRowEditInitEvent
 
-// --- resize / reorder (Wave 3) ---
+// --- resize / reorder ---
 
 /** Column resize mode: fit steals from adjacent; expand grows the table. */
 export type TableColumnResizeMode = 'fit' | 'expand'
@@ -225,7 +220,7 @@ export interface TableRowReorderEvent {
   value: unknown[]
 }
 
-// --- filter (Wave 2) ---
+// --- filter ---
 
 /** Where column filter UI is rendered. */
 export type TableFilterDisplay = 'row' | 'menu'
@@ -279,13 +274,13 @@ export type TableFilterMeta = TableFilterMetaSimple | TableFilterMetaAdvanced
  */
 export type TableFilters = Record<string, TableFilterMeta>
 
-/** Payload for the `filter` emit (Wave 2). */
+/** Payload for the `filter` emit. */
 export interface TableFilterEvent {
   filters: TableFilters
   filteredValue: unknown[]
 }
 
-// --- expand / group (Wave 3) ---
+// --- expand / group ---
 
 /** Subheader chrome vs rowspan merge on the group column. */
 export type TableRowGroupMode = 'subheader' | 'rowspan'
@@ -311,7 +306,7 @@ export type TableRowGroupExpandEvent = TableRowExpandEvent
 /** Fired when a row group is collapsed. `data` is the group field value. */
 export type TableRowGroupCollapseEvent = TableRowExpandEvent
 
-// --- lazy / virtual (Wave 4) ---
+// --- lazy / virtual ---
 
 /**
  * Shared meta for remote fetch when `lazy` is true (page / sort / filter / load).
@@ -361,12 +356,12 @@ export interface TableVirtualLazyLoadEvent {
   last: number
 }
 
-// --- context menu (Wave 4) ---
+// --- context menu ---
 
 /** Fired on row right-click when `contextMenu` is enabled. */
 export type TableRowContextMenuEvent = TablePropsRowEvent
 
-// --- state / export (Wave 4) ---
+// --- state / export ---
 
 /** Where a stateful table persists view state. */
 export type TableStateStorage = 'session' | 'local'

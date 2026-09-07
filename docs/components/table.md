@@ -4,6 +4,19 @@
 
 `Table` presents row data as semantic HTML (`table` / `thead` / `tbody` / `tfoot`). Nest `TableColumn` children to declare fields, headers, and cell templates — columns register through provide/inject so dynamic `v-for` columns work.
 
+## Supported limitations
+
+These combinations are **supported 1.0 behavior**, not unfinished work. The table warns once in the console and keeps the safe path:
+
+| Combination | Runtime behavior |
+| --- | --- |
+| `virtualScrollerOptions` without `scrollHeight` | Virtualization is disabled; every pipeline row renders. `itemSize` must also be greater than `0`. |
+| Virtual + `groupRowsBy` | Group chrome is disabled (flat window only). Subheader, rowspan, and expandable groups do not render. |
+| Virtual + row expansion | Expansion rows are skipped even when `expandedRows` is set or an expander column is present. |
+| `editMode="row"` without `dataKey` | Row-edit init is a no-op. Edit does not start a session and does not emit `row-edit-init`. |
+
+`scrollHeight` may be a CSS length or `'flex'`. Cell edit does not require `dataKey` (it falls back to row identity / index).
+
 ## Examples
 
 Focused scenarios below. Capabilities include:
@@ -336,7 +349,7 @@ A richer sample: global search, status filter, checkbox selection with bulk acti
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `value` | `unknown[]` | `[]` | Row data array |
-| `dataKey` | `string` | — | Property used as a stable row key |
+| `dataKey` | `string` | — | Property used as a stable row key. **Required for row edit** — init is a no-op (and warns) without it |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Cell padding + text density |
 | `showGridlines` | `boolean` | `false` | Draw cell grid borders (off by default) |
 | `striped` | `boolean` | `false` | Alternate row background |
@@ -349,12 +362,12 @@ A richer sample: global search, status filter, checkbox selection with bulk acti
 | `rows` | `number` | `10` | Page size when `paginate` is true |
 | `totalRecords` | `number` | — | Total count for `pageCount` (defaults to pipeline length; required for accurate lazy paging) |
 | `lazy` | `boolean` | `false` | Skip client filter/sort/group/page; render `value` as-is and emit load intents |
-| `virtualScrollerOptions` | `TableVirtualScrollerOptions` | — | Fixed-row virtualization (`itemSize`, optional `lazy` / `numToleratedItems` / `delay` / `onLazyLoad`) |
+| `virtualScrollerOptions` | `TableVirtualScrollerOptions` | — | Fixed-row virtualization (`itemSize`, optional `lazy` / `numToleratedItems` / `delay` / `onLazyLoad`). Requires `scrollHeight`; incompatible with expansion and `groupRowsBy` chrome (those paths are skipped) |
 | `filterDisplay` | `'row' \| 'menu'` | — | Column filter UI placement; omit to hide column filters |
 | `globalFilterFields` | `string[]` | — | Fields searched by the `global` key in `filters` |
 | `scrollHeight` | `string` | — | Opens a scrollport: CSS length for fixed max-height, or `'flex'` to fill a sized flex parent |
 | `frozenValue` | `unknown[]` | `[]` | Rows pinned at the top of the body while the rest scroll |
-| `editMode` | `'cell' \| 'row'` | — | Enable cell click-to-edit or row editor controls |
+| `editMode` | `'cell' \| 'row'` | — | Enable cell click-to-edit or row editor controls. Row mode requires `dataKey` |
 | `editButtonAriaLabel` | `string` | `'Edit'` | Accessible label for the row-edit Edit button |
 | `saveButtonAriaLabel` | `string` | `'Save'` | Accessible label for the row-edit Save button |
 | `cancelButtonAriaLabel` | `string` | `'Cancel'` | Accessible label for the row-edit Cancel button |
