@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { defineComponent, h } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import Badge from './Badge.vue'
 
 describe('Badge', () => {
@@ -81,5 +83,18 @@ describe('Badge', () => {
     expect(source).not.toMatch(/kablui-neutral-\d+/)
     expect(source).not.toMatch(/kablui-accent-\d+/)
     expect(source).not.toMatch(/kablui-danger-\d+/)
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations for a labeled badge', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () => h('main', null, [h(Badge, null, () => 'New')])
+        },
+      }),
+    )
+    await expectNoA11yViolations(wrapper.element)
   })
 })

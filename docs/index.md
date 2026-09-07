@@ -14,7 +14,7 @@ hero:
       link: /components/
     - theme: alt
       text: GitHub
-      link: https://github.com/ajility/kablui
+      link: https://github.com/Ajility-Development/kablui
 
 features:
   - title: Install and go

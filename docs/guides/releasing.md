@@ -2,22 +2,13 @@
 
 How kablui versions, documents breaking changes, and publishes to npm.
 
-First public release was **`0.1.0`**. Later releases use the same SemVer policy and publish process below (next versions are `0.2.0`, `0.1.1`, etc., not a special-case path).
+**1.0.0** freezes the public API. Later releases follow standard SemVer: breaking changes require a major bump. First public release was **`0.1.0`**.
 
 ## Semver policy
 
-### While below 1.0.0 (`0.x`)
-
-The API is not frozen. Use `0.x` until a stable public surface is declared.
-
-| Bump | When |
-| --- | --- |
-| **minor** (`0.Y.0`) | New features, and **breaking changes** (allowed before 1.0.0) |
-| **patch** (`0.Y.Z`) | Bug fixes and other non-breaking changes |
-
-Breaking changes in `0.x` **must** be called out explicitly in [`CHANGELOG.md`](https://github.com/ajility/kablui/blob/main/CHANGELOG.md) under the release notes (do not bury them only in commit messages).
-
 ### From 1.0.0 onward
+
+**1.0.0 freezes** the public API (root named exports, `kablui/style.css`, and exported `*Props`/types). Post-1.0 breaking changes require a **major** version bump.
 
 Standard [Semantic Versioning](https://semver.org/):
 
@@ -26,6 +17,12 @@ Standard [Semantic Versioning](https://semver.org/):
 | **major** | Breaking changes to the public API |
 | **minor** | Backward-compatible features |
 | **patch** | Backward-compatible fixes |
+
+Breaking changes **must** be called out explicitly in [`CHANGELOG.md`](https://github.com/Ajility-Development/kablui/blob/main/CHANGELOG.md) under the release notes (do not bury them only in commit messages).
+
+### Historical: while below 1.0.0 (`0.x`)
+
+Before the 1.0 freeze, the API was not frozen. Breaking changes were allowed in **minor** (`0.Y.0`) bumps and had to be called out in the changelog. That policy no longer applies.
 
 ## What counts as the public API
 
@@ -51,13 +48,13 @@ Configure once on the package’s npm settings under the **Ajility Technologies*
 | --- | --- |
 | npm Trusted Publisher / package owner | **Ajility Technologies** |
 | Provider | GitHub Actions |
-| GitHub user/org | `ajility` |
+| GitHub user/org | `Ajility-Development` |
 | Repository | `kablui` |
 | Workflow filename | `release.yml` |
 
-The GitHub Actions OIDC binding is `ajility/kablui` with workflow `release.yml` (matches `package.json` `repository.url`: `git+https://github.com/ajility/kablui.git`). Do not confuse the npm Trusted Publisher name (**Ajility Technologies**) with the GitHub user/org (`ajility`).
+The GitHub Actions OIDC binding is `Ajility-Development/kablui` with workflow `release.yml` (matches `package.json` `repository.url`: `git+https://github.com/Ajility-Development/kablui.git`). Do not confuse the npm Trusted Publisher name (**Ajility Technologies**) with the GitHub org (`Ajility-Development`).
 
-After this is saved, tag pushes that run [`.github/workflows/release.yml`](https://github.com/ajility/kablui/blob/main/.github/workflows/release.yml) can publish without a long-lived npm token.
+After this is saved, tag pushes that run [`.github/workflows/release.yml`](https://github.com/Ajility-Development/kablui/blob/main/.github/workflows/release.yml) can publish without a long-lived npm token.
 
 ### Deprecated: long-lived granular tokens
 
@@ -78,7 +75,7 @@ Use a current authenticator OTP. This is for emergencies only—not the normal r
 
 ## Release workflow (CI)
 
-File: [`.github/workflows/release.yml`](https://github.com/ajility/kablui/blob/main/.github/workflows/release.yml)
+File: [`.github/workflows/release.yml`](https://github.com/Ajility-Development/kablui/blob/main/.github/workflows/release.yml)
 
 | | |
 | --- | --- |
@@ -92,13 +89,13 @@ Job steps (in order):
 1. `npm ci`
 2. `npm run build`
 3. `npm publish` (OIDC / Trusted Publisher + provenance)
-4. Create a GitHub Release from the matching [`CHANGELOG.md`](https://github.com/ajility/kablui/blob/main/CHANGELOG.md) section
+4. Create a GitHub Release from the matching [`CHANGELOG.md`](https://github.com/Ajility-Development/kablui/blob/main/CHANGELOG.md) section
 
 ## Release steps
 
 Primary sequence: **changelog + version → merge → tag → Actions publish → GitHub Release**.
 
-1. **Changelog** — Move `[Unreleased]` notes into a new `## [X.Y.Z] — YYYY-MM-DD` section in [`CHANGELOG.md`](https://github.com/ajility/kablui/blob/main/CHANGELOG.md). Call out breaking changes clearly (especially while on `0.x`). Leave a fresh empty `[Unreleased]` section at the top.
+1. **Changelog** — Move `[Unreleased]` notes into a new `## [X.Y.Z] — YYYY-MM-DD` section in [`CHANGELOG.md`](https://github.com/Ajility-Development/kablui/blob/main/CHANGELOG.md). Call out breaking changes clearly (they require a major bump). Leave a fresh empty `[Unreleased]` section at the top.
 2. **Version bump** — Update `package.json` `"version"` to `X.Y.Z` (match the changelog heading). Do not tag without aligning version and changelog.
 3. **Merge** — Land the changelog/version commit on the default branch.
 4. **Tag and push** — Create and push an annotated or lightweight tag `vX.Y.Z` (leading `v`). That push starts the release workflow.

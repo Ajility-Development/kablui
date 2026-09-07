@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { defineComponent, h } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import Empty from './Empty.vue'
 
 describe('Empty', () => {
@@ -56,5 +58,28 @@ describe('Empty', () => {
     expect(source).toMatch(/kablui-/)
     expect(source).not.toMatch(/#[0-9a-fA-F]{3,8}\b/)
     expect(source).not.toMatch(/kablui-neutral-\d+/)
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations with title, description, and action', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [
+              h(
+                Empty,
+                { title: 'No results' },
+                {
+                  default: () => 'Try another search.',
+                  action: () => h('button', { type: 'button' }, 'Retry'),
+                },
+              ),
+            ])
+        },
+      }),
+    )
+    await expectNoA11yViolations(wrapper.element)
   })
 })

@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { defineComponent, h, nextTick, ref } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import RadioGroup from './RadioGroup.vue'
 import Radio from './Radio.vue'
 import Field from './Field.vue'
@@ -247,5 +248,38 @@ describe('RadioGroup / Radio', () => {
     const radioSource = readFileSync(resolve(__dirname, 'Radio.vue'), 'utf8')
     expect(radioSource).toMatch(/rounded-kablui-full/)
     expect(radioSource).not.toMatch(/\brounded-full\b/)
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations when the group and options are labeled', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [
+              h(Field, { id: 'plan' }, () => [
+                h(FieldLabel, null, () => 'Plan'),
+                h(
+                  RadioGroup,
+                  { name: 'plan', modelValue: 'free' },
+                  () => [
+                    h('label', null, [
+                      h(Radio, { value: 'free', id: 'plan-free' }),
+                      ' Free',
+                    ]),
+                    h('label', null, [
+                      h(Radio, { value: 'pro', id: 'plan-pro' }),
+                      ' Pro',
+                    ]),
+                  ],
+                ),
+              ]),
+            ])
+        },
+      }),
+    )
+    await nextTick()
+    await expectNoA11yViolations(wrapper.element)
   })
 })

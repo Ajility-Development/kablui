@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { defineComponent, h } from 'vue'
+import { expectNoA11yViolations } from '../test/a11y'
 import Progress from './Progress.vue'
 
 describe('Progress', () => {
@@ -121,5 +123,35 @@ describe('Progress', () => {
     expect(source).not.toMatch(/#[0-9a-fA-F]{3,8}\b/)
     expect(source).not.toMatch(/kablui-neutral-\d+/)
     expect(source).not.toMatch(/kablui-accent-\d+/)
+  })
+})
+
+describe('a11y', () => {
+  it('has no axe violations when determinate with a caption', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [
+              h(Progress, { value: 40, max: 100, caption: 'Upload' }),
+            ])
+        },
+      }),
+    )
+    await expectNoA11yViolations(wrapper.element)
+  })
+
+  it('has no axe violations when indeterminate with a label', async () => {
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h('main', null, [
+              h(Progress, { indeterminate: true, label: 'Loading results' }),
+            ])
+        },
+      }),
+    )
+    await expectNoA11yViolations(wrapper.element)
   })
 })
