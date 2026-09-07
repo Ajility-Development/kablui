@@ -19,6 +19,28 @@ See [Releasing](docs/guides/releasing.md) for versioning policy and publish step
 
 ### Security
 
+## [1.0.0] - 2026-09-07
+
+### Added
+
+- Consumer docs for root-exported composables (`useField` / `provideField` / `useFieldControlAttrs`, `useFloating`, `useDismissible`) in the VitePress Composables guide.
+- Axe coverage for Field, Textarea, RadioGroup, Toast / ToastProvider, Pagination, Progress, Link, plus Badge, Card, and Empty.
+- Playwright visual snapshots for Menu, Select, Switch, Toast, Pagination, and a Table smoke (in addition to Button, Alert, Dialog, and Field).
+- Vitest coverage thresholds (80% statements / functions / lines, 70% branches) including `src/utils/**`; CI quality job runs `test:coverage`.
+
+### Changed
+
+- **API freeze:** 1.0.0 locks the public surface — root named exports, `kablui/style.css`, and exported `*Props`/types. Post-1.0 breaking changes require a major bump.
+- Package identity aligned with GitHub `Ajility-Development/kablui` (`repository`, `bugs`, `homepage`), `engines.node` `>=20`, and author **Ajility Technologies**. Changelog and docs compare/release links point at that org.
+- Table virtual / group / expand / row-edit combinations documented as supported 1.0 limitations (console warn + safe path), with unit tests locking the no-op paths. Internal Wave comments demoted from public-facing types.
+- Visual Playwright job is a required CI gate (no longer a soft/comment-only check).
+
+### Removed
+
+### Fixed
+
+### Security
+
 ## [0.2.0] - 2026-07-31
 
 ### Added
@@ -88,6 +110,7 @@ First public release of kablui — Vue 3 + Tailwind CSS component library with d
 
 - Select and Popover SFC accessibility naming / ARIA wiring so axe checks and assistive tech patterns align with component APIs.
 
-[Unreleased]: https://github.com/Ajility-Development/kablui/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/Ajility-Development/kablui/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/Ajility-Development/kablui/compare/v0.2.0...v1.0.0
 [0.2.0]: https://github.com/Ajility-Development/kablui/releases/tag/v0.2.0
 [0.1.0]: https://github.com/Ajility-Development/kablui/releases/tag/v0.1.0

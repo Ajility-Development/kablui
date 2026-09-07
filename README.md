@@ -159,7 +159,7 @@ Add a component under `src/components/`, export it from `src/components/index.ts
 
 ## Status
 
-**0.2.0** has shipped. Ongoing work is iterative (fixes, polish, new components). See [`CHANGELOG.md`](CHANGELOG.md) for release history.
+**1.0.0** is stable. The public API is frozen (root named exports, `kablui/style.css`, exported `*Props`/types). Breaking changes require a major version bump. See [`CHANGELOG.md`](CHANGELOG.md) for release history.
 
 ## Publish
 
