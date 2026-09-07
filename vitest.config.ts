@@ -15,7 +15,13 @@ export default defineConfig({
     setupFiles: ['src/test/setup.ts'],
     coverage: {
       provider: 'v8',
-      include: ['src/components/**', 'src/composables/**'],
+      include: ['src/components/**', 'src/composables/**', 'src/utils/**'],
+      thresholds: {
+        statements: 80,
+        functions: 80,
+        branches: 70,
+        lines: 80,
+      },
     },
   },
 })

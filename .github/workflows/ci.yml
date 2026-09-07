@@ -24,8 +24,8 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Unit tests
-        run: npm test
+      - name: Unit tests and coverage
+        run: npm run test:coverage
 
       - name: Build library
         run: npm run build
@@ -33,10 +33,7 @@ jobs:
       - name: Build docs
         run: npm run docs:build
 
-  # Soft gate until Agent B adds Playwright tests under e2e/ (and playwright.config).
-  # Quality job above is the required green check for Wave 0.
   visual:
-    if: ${{ hashFiles('e2e/**/*.{ts,js}', 'playwright.config.*') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

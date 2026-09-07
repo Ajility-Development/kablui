@@ -37,5 +37,11 @@ Do **not** update baselines to silence unrelated flakes — fix the cause or tig
 | `/#/alert` | `alert.spec.ts` | Alert tones |
 | `/#/dialog` | `dialog.spec.ts` | Open dialog (full viewport) |
 | `/#/field` | `field.spec.ts` | Field + Input invalid state |
+| `/#/switch` | `switch.spec.ts` | Switch off / on / disabled |
+| `/#/select` | `select.spec.ts` | Open Select listbox (full viewport) |
+| `/#/menu` | `menu.spec.ts` | Open Menu (full viewport) |
+| `/#/toast` | `toast.spec.ts` | Toast tones |
+| `/#/pagination` | `pagination.spec.ts` | Mid-range Pagination with ellipsis |
+| `/#/table` | `table.spec.ts` | Table smoke (3 rows) |
 
 Viewport is fixed at **1280×720**, Chromium only.
