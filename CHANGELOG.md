@@ -88,6 +88,6 @@ First public release of kablui — Vue 3 + Tailwind CSS component library with d
 
 - Select and Popover SFC accessibility naming / ARIA wiring so axe checks and assistive tech patterns align with component APIs.
 
-[Unreleased]: https://github.com/ajility/kablui/compare/v0.2.0...HEAD
-[0.2.0]: https://github.com/ajility/kablui/releases/tag/v0.2.0
-[0.1.0]: https://github.com/ajility/kablui/releases/tag/v0.1.0
+[Unreleased]: https://github.com/Ajility-Development/kablui/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Ajility-Development/kablui/releases/tag/v0.2.0
+[0.1.0]: https://github.com/Ajility-Development/kablui/releases/tag/v0.1.0
