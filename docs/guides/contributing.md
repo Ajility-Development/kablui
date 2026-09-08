@@ -47,4 +47,4 @@ npm test           # unit / component / a11y-oriented coverage as configured
 npm run test:visual
 ```
 
-Treat those commands as the local gates for UI work.
+Treat those commands as the local gates for UI work. Committed screenshots are generated on Linux (CI / `npm run test:visual:update:docker`); see [visual regression](../../e2e/visual/README.md). Do not refresh PNGs on macOS to chase CI drift.

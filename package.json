@@ -31,6 +31,7 @@
     "test:coverage": "vitest run --coverage",
     "test:visual": "playwright test",
     "test:visual:update": "playwright test --update-snapshots",
+    "test:visual:update:docker": "docker run --rm --ipc=host -v \"$PWD\":/work -v /work/node_modules -w /work -e CI=1 -e HOME=/tmp mcr.microsoft.com/playwright:v1.62.0-noble bash -lc \"npm ci && npx playwright test --update-snapshots\"",
     "preview": "vite preview",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
